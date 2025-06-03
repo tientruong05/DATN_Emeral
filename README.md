@@ -85,4 +85,24 @@ git checkout -b feat/user-management
 
 # Commit thay đổi
 git commit -m "[FEAT] Implement user list table with pagination"</code></pre>
+
+<h2>🔧 Git Tip 1: Chỉnh sửa Commit Cuối Cùng Sau Khi Đã Push</h2>
+<p>Trong trường hợp bạn đã <strong>push</strong> code lên nhánh, nhưng sau đó phát hiện cần sửa hoặc thêm code (ví dụ như thiếu code, sửa bug...), hãy dùng các lệnh sau:</p>
+
+<pre><code>
+git add .
+git commit --amend --no-edit
+git push --force origin [tên-nhánh]
+</code></pre>
+
+<h3>💡 Giải thích:</h3>
+<ul>
+  <li><code>git add .</code>: Thêm tất cả thay đổi mới vào staging.</li>
+  <li><code>git commit --amend --no-edit</code>: Gộp thay đổi mới vào commit cũ mà giữ nguyên message.</li>
+  <li><code>git push --force origin [tên-nhánh]</code>: Ghi đè commit trên Git remote bằng commit mới.</li>
+</ul>
+
+<div class="note">
+  ⚠ <strong>Lưu ý:</strong> Cẩn thận khi dùng <code>--force</code> nếu đang làm việc trên nhánh chung có nhiều người cùng phát triển để tránh mất dữ liệu người khác.
+</div>
 </body>
