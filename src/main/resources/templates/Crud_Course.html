@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Quản Lý Khóa Học - EDU102</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f7f9fc;
+      color: #333;
+    }
+    .manage-courses-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .manage-courses-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .manage-courses-header h1 {
+      color: #002855;
+      font-size: 2rem;
+    }
+    .add-course-btn {
+      background-color: #002855;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .add-course-btn:hover {
+      background-color: #001f42;
+    }
+    .courses-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .courses-table th, .courses-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .courses-table th {
+      background-color: #002855;
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+    
+    /* Căn giữa cột hành động */
+    .courses-table th:last-child,
+    .courses-table td:last-child {
+      text-align: center;
+    }
+	
+    .course-name {
+      color: #002855;
+      font-weight: 500;
+    }
+    .course-price {
+      font-weight: 500;
+    }
+    .course-status.active {
+      color: #28a745;
+    }
+    .course-status.inactive {
+      color: #dc3545;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn-action {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .edit-btn {
+      background-color: #ff6b00;
+      color: white;
+    }
+    .edit-btn:hover {
+      background-color: #e65c00;
+    }
+    .content-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .content-btn:hover {
+      background-color: #0056b3;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 0;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .modal-header h2 {
+      color: #002855;
+      margin: 0;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .close-btn:hover {
+      color: #000;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #002855;
+    }
+    
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    
+    .cancel-btn, .save-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+	.cancel-btn {
+	  background-color: #dc3545;
+	  color: white;
+	}
+	.cancel-btn:hover {
+	  background-color: #c82333;
+	}
+    
+    .save-btn {
+      background-color: #002855;
+      color: white;
+    }
+    
+    .save-btn:hover {
+      background-color: #001f42;
+    }
+    
+    .delete-modal-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    
+    .delete-modal-content p {
+      margin-bottom: 1.5rem;
+      color: #333;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="manage-courses-container">
+    <div class="manage-courses-header">
+      <h1>Quản lý khóa học</h1>
+      <button class="add-course-btn" onclick="openModal('add-course-modal')">Thêm khóa học</button>
+    </div>
+
+    <table class="courses-table">
+      <thead>
+        <tr>
+          <th>Tên khóa học</th>
+          <th>Danh mục</th>
+          <th>Giá</th>
+          <th>Số lượng bài học</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="course-name">Quản lý tài chính cá nhân</td>
+          <td>Tài chính</td>
+          <td class="course-price">5,000 VND</td>
+          <td>10 bài</td>
+          <td class="course-status active">Hoạt động</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-action edit-btn" onclick="openModal('edit-course-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+              <a href="course-content.html?courseId=1" class="btn-action content-btn" title="Nội dung"><i class="fas fa-book"></i></a>
+              <button class="btn-action delete-btn" onclick="openModal('delete-course-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="course-name">Lập trình JavaScript cơ bản</td>
+          <td>Công nghệ</td>
+          <td class="course-price">5,000 VND</td>
+          <td>15 bài</td>
+          <td class="course-status active">Hoạt động</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-action edit-btn" onclick="openModal('edit-course-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+              <a href="course-content.html?courseId=2" class="btn-action content-btn" title="Nội dung"><i class="fas fa-book"></i></a>
+              <button class="btn-action delete-btn" onclick="openModal('delete-course-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="course-name">Phân tích dữ liệu với Python</td>
+          <td>Công nghệ</td>
+          <td class="course-price">7,000 VND</td>
+          <td>12 bài</td>
+          <td class="course-status inactive">Không hoạt động</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-action edit-btn" onclick="openModal('edit-course-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+              <a href="course-content.html?courseId=3" class="btn-action content-btn" title="Nội dung"><i class="fas fa-book"></i></a>
+              <button class="btn-action delete-btn" onclick="openModal('delete-course-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Add Course Modal -->
+  <div class="modal" id="add-course-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Thêm khóa học mới</h2>
+        <button class="close-btn" onclick="closeModal('add-course-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-course-form">
+          <div class="form-group">
+            <label for="add-course-name">Tên khóa học</label>
+            <input type="text" id="add-course-name" placeholder="Nhập tên khóa học" required>
+          </div>
+          <div class="form-group">
+            <label for="add-course-category">Danh mục</label>
+            <select id="add-course-category" required>
+              <option value="">Chọn danh mục</option>
+              <option value="finance">Tài chính</option>
+              <option value="technology">Công nghệ</option>
+              <option value="business">Kinh doanh</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="add-course-price">Giá (VND)</label>
+            <input type="number" id="add-course-price" placeholder="Nhập giá khóa học" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn" onclick="closeModal('add-course-modal')">Hủy</button>
+        <button class="save-btn" onclick="addCourse()">Thêm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Course Modal -->
+  <div class="modal" id="edit-course-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Chỉnh sửa khóa học</h2>
+        <button class="close-btn" onclick="closeModal('edit-course-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-course-form">
+          <div class="form-group">
+            <label for="edit-course-name">Tên khóa học</label>
+            <input type="text" id="edit-course-name" placeholder="Nhập tên khóa học" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-course-category">Danh mục</label>
+            <select id="edit-course-category" required>
+              <option value="">Chọn danh mục</option>
+              <option value="finance">Tài chính</option>
+              <option value="technology">Công nghệ</option>
+              <option value="business">Kinh doanh</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-course-price">Giá (VND)</label>
+            <input type="number" id="edit-course-price" placeholder="Nhập giá khóa học" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn" onclick="closeModal('edit-course-modal')">Hủy</button>
+        <button class="save-btn" onclick="updateCourse()">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="delete-course-modal">
+    <div class="delete-modal-content">
+      <p>Xóa khóa học này sẽ không thể khôi phục. Bạn có chắc chắn?</p>
+      <div class="modal-footer">
+        <button class="cancel-btn" onclick="closeModal('delete-course-modal')">Hủy</button>
+        <button class="delete-btn">Xóa</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- JavaScript for Modal -->
+  <script>
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const addModal = document.getElementById('add-course-modal');
+      const editModal = document.getElementById('edit-course-modal');
+      const deleteModal = document.getElementById('delete-course-modal');
+      
+      if (event.target === addModal) {
+        addModal.style.display = 'none';
+      }
+      if (event.target === editModal) {
+        editModal.style.display = 'none';
+      }
+      if (event.target === deleteModal) {
+        deleteModal.style.display = 'none';
+      }
+    };
+
+    // Function to handle adding new course
+    function addCourse() {
+      const courseName = document.getElementById('add-course-name').value;
+      const courseCategory = document.getElementById('add-course-category').value;
+      const coursePrice = document.getElementById('add-course-price').value;
+      
+      if (courseName && courseCategory && coursePrice) {
+        // TODO: Call backend API to add course
+        console.log('Thêm khóa học:', {
+          name: courseName,
+          category: courseCategory,
+          price: coursePrice
+        });
+        
+        // Close modal and reset form
+        closeModal('add-course-modal');
+        document.getElementById('add-course-form').reset();
+        
+        // TODO: Refresh course list or add new row to table
+        alert('Đã thêm khóa học thành công!');
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin!');
+      }
+    }
+
+    // Function to handle updating course
+    function updateCourse() {
+      const courseName = document.getElementById('edit-course-name').value;
+      const courseCategory = document.getElementById('edit-course-category').value;
+      const coursePrice = document.getElementById('edit-course-price').value;
+      
+      if (courseName && courseCategory && coursePrice) {
+        // TODO: Call backend API to update course
+        console.log('Cập nhật khóa học:', {
+          name: courseName,
+          category: courseCategory,
+          price: coursePrice
+        });
+        
+        // Close modal and reset form
+        closeModal('edit-course-modal');
+        document.getElementById('edit-course-form').reset();
+        
+        // TODO: Refresh course list or update existing row
+        alert('Đã cập nhật khóa học thành công!');
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin!');
+      }
+    }
+
+    // Function to populate edit form with course data
+    function editCourse(courseId, courseName, courseCategory, coursePrice) {
+      // Populate form fields
+      document.getElementById('edit-course-name').value = courseName;
+      document.getElementById('edit-course-category').value = courseCategory;
+      document.getElementById('edit-course-price').value = coursePrice;
+      
+      // Store course ID for update
+      document.getElementById('edit-course-form').setAttribute('data-course-id', courseId);
+      
+      // Open modal
+      openModal('edit-course-modal');
+    }
+  </script>
+</body>
+</html>

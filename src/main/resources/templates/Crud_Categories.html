@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Thể Loại - EDU102</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Tái sử dụng từ Crud_Sale */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            color: #333;
+            line-height: 1.6;
+            background-color: #f7f9fc;
+        }
+        .manage-categories-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        .manage-categories-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .manage-categories-header h1 {
+            color: #002855;
+            font-size: 2rem;
+        }
+        .add-category-btn {
+            background-color: #002855;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .add-category-btn:hover {
+            background-color: #001f42;
+        }
+        .categories-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .categories-table th, .categories-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .categories-table th {
+            background-color: #002855;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        /* Căn giữa cột hành động */
+        .categories-table th:last-child,
+        .categories-table td:last-child {
+            text-align: center;
+        }
+        .categories-table tr:hover {
+            background-color: #f0f4f8;
+        }
+        .category-name {
+            font-weight: 500;
+            color: #002855;
+        }
+        .category-status.active {
+            color: #28a745;
+            font-weight: 500;
+        }
+        .category-status.inactive {
+            color: #dc3545;
+            font-weight: 500;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-action {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+        }
+        .edit-btn {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .edit-btn:hover {
+            background-color: #e65c00;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .modal-header h2 {
+            color: #002855;
+            font-size: 1.5rem;
+        }
+        .close-btn {
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.5rem;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+        }
+        .save-btn, .cancel-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .save-btn {
+            background-color: #002855;
+            color: white;
+        }
+        .save-btn:hover {
+            background-color: #001f42;
+        }
+        .cancel-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .cancel-btn:hover {
+            background-color: #c82333;
+        }
+        .delete-modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .delete-modal-content p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="manage-categories-container">
+        <div class="manage-categories-header">
+            <h1>Quản lý thể loại</h1>
+            <button class="add-category-btn" onclick="openModal('add-category-modal')">Thêm thể loại</button>
+        </div>
+        <table class="categories-table">
+            <thead>
+                <tr>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="category-name">Tài chính</td>
+                    <td>Khóa học về quản lý tài chính cá nhân</td>
+                    <td class="category-status active">Hoạt động</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action edit-btn" onclick="openModal('edit-category-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn-action delete-btn" onclick="openModal('delete-category-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="category-name">Công nghệ</td>
+                    <td>Khóa học về lập trình và công nghệ thông tin</td>
+                    <td class="category-status active">Hoạt động</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action edit-btn" onclick="openModal('edit-category-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn-action delete-btn" onclick="openModal('delete-category-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="category-name">Kinh doanh</td>
+                    <td>Khóa học về kỹ năng kinh doanh</td>
+                    <td class="category-status inactive">Không hoạt động</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action edit-btn" onclick="openModal('edit-category-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn-action delete-btn" onclick="openModal('delete-category-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Add -->
+    <div class="modal" id="add-category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Thêm thể loại mới</h2>
+                <button class="close-btn" onclick="closeModal('add-category-modal')">✕</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label for="add-category-name">Tên danh mục</label>
+                    <input type="text" id="add-category-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-category-description">Mô tả</label>
+                    <textarea id="add-category-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="add-category-status">Trạng thái</label>
+                    <select id="add-category-status" required>
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Không hoạt động</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="cancel-btn" type="button" onclick="closeModal('add-category-modal')">Hủy</button>
+                    <button class="save-btn">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal" id="edit-category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sửa thông tin thể loại</h2>
+                <button class="close-btn" onclick="closeModal('edit-category-modal')">✕</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label for="edit-category-name">Tên danh mục</label>
+                    <input type="text" id="edit-category-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-category-description">Mô tả</label>
+                    <textarea id="edit-category-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-category-status">Trạng thái</label>
+                    <select id="edit-category-status" required>
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Không hoạt động</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="cancel-btn" type="button" onclick="closeModal('edit-category-modal')">Hủy</button>
+                    <button class="save-btn">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Delete -->
+    <div class="modal" id="delete-category-modal">
+        <div class="delete-modal-content">
+            <p>Bạn có chắc chắn muốn xóa thể loại này không?</p>
+            <div class="modal-footer">
+                <button class="cancel-btn" type="button" onclick="closeModal('delete-category-modal')">Hủy</button>
+                <button class="delete-btn">Xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        window.onclick = function(event) {
+            ['add-category-modal', 'edit-category-modal', 'delete-category-modal'].forEach(id => {
+                const modal = document.getElementById(id);
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
