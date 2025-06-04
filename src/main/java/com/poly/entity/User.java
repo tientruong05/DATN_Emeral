@@ -3,37 +3,69 @@ package com.poly.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name = "User")
+@Table(name = "[User]")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID_nguoi_dung;
+    @Column(name = "ID_nguoi_dung")
+    private Long idNguoiDung;
 
-    private String ten_nguoi_dung;
-    private String ho_ten;
+    @NotBlank(message = "Tên người dùng không được để trống")
+    @Column(name = "ten_nguoi_dung")
+    private String tenNguoiDung;
+
+    @NotBlank(message = "Họ tên không được để trống")
+    @Column(name = "ho_ten")
+    private String hoTen;
+
+    @NotBlank(message = "Email không được để trống")
+    @Email(message = "Email không hợp lệ")
+    @Column(name = "email")
     private String email;
-    private String mat_khau;
-    private String vai_tro;
-    private String anh_dai_dien;
-    private LocalDate ngay_sinh;
-    private String dia_chi;
-    private String so_dien_thoai;
-    private String status;
 
-    @OneToMany(mappedBy = "user")
-    private List<Enrollment> enrollments;
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
+    @Column(name = "mat_khau")
+    private String matKhau;
 
-    @OneToMany(mappedBy = "user")
-    private List<Cart> cartItems;
+    @Column(name = "vai_tro")
+    private Boolean vaiTro;
+
+    @Column(name = "status")
+    private Boolean status; // BIT: 1 là "Hoạt động", 0 là "Không hoạt động"
+
+    @Column(name = "anh_dai_dien")
+    private String anhDaiDien;
+
+    @Column(name = "ngay_sinh")
+    private String ngaySinh;
+
+    @Column(name = "dia_chi")
+    private String diaChi;
+
+    @Column(name = "so_dien_thoai")
+    private String soDienThoai;
+
+    // Getter/setter cho vai_tro
+    public String getVaiTroAsString() {
+        return vaiTro != null && vaiTro ? "Quản trị viên" : "Học viên";
+    }
+
+    public void setVaiTroAsString(String vaiTro) {
+        this.vaiTro = vaiTro.equals("Quản trị viên");
+    }
+
+    // Getter/setter cho status
+    public String getStatusAsString() {
+        return status != null && status ? "Hoạt động" : "Không hoạt động";
+    }
+
+    public void setStatusAsString(String status) {
+        this.status = status.equals("Hoạt động");
+    }
 }
