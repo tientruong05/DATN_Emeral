@@ -29,7 +29,7 @@ public class Course {
 
     private Double gia_tien;
     private String anh_dai_dien;
-    private String status;
+    private boolean status;
 
     @OneToMany(mappedBy = "course")
     private List<Video> videos;
