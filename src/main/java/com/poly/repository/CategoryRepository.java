@@ -13,4 +13,5 @@ import com.poly.entity.Category;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     
+    boolean existsByTenDanhMuc(String tenDanhMuc);
 }
