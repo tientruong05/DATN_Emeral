@@ -199,7 +199,12 @@
       border-radius: 6px;
       font-size: 1rem;
     }
-    
+    .form-group textarea {
+            padding: 0.5rem;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
     .form-group input:focus,
     .form-group select:focus {
       outline: none;
@@ -254,6 +259,59 @@
       color: #333;
       font-size: 1.1rem;
     }
+    /* Phần avatar */
+        .profile-avatar {
+            flex: 1;
+        }
+    
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+    
+        .avatar-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #e6eaf0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    
+        .user-icon {
+            font-size: 4rem;
+            color: #95a5a6;
+        }
+    
+        .avatar-upload {
+            width: 100%;
+            text-align: center;
+        }
+    
+        .upload-btn {
+            background-color: #f8f9fa;
+            color: #1a3b5d;
+            border: 1px solid #e6eaf0;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+    
+        .upload-btn:hover {
+            background-color: #e6eaf0;
+        }
   </style>
 </head>
 <body>
@@ -266,43 +324,84 @@
     <table class="courses-table">
       <thead>
         <tr>
+        <th>STT</th>
           <th>Tên khóa học</th>
+          <th>Điểm đạt</th>
           <th>Danh mục</th>
           <th>Giá</th>
           <th>Số lượng bài học</th>
+          <th>Ảnh đại diện</th>
           <th>Trạng thái</th>
           <th>Hành động</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="course-name">Quản lý tài chính cá nhân</td>
-          <td>Tài chính</td>
-          <td class="course-price">5,000 VND</td>
-          <td>10 bài</td>
-          <td class="course-status active">Hoạt động</td>
-          <td>
-            <div class="action-buttons">
-              <button class="btn-action edit-btn" onclick="openModal('edit-course-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-              <a href="course-content.html?courseId=1" class="btn-action content-btn" title="Nội dung"><i class="fas fa-book"></i></a>
-              <button class="btn-action delete-btn" onclick="openModal('delete-course-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td class="course-name">Lập trình JavaScript cơ bản</td>
-          <td>Công nghệ</td>
-          <td class="course-price">5,000 VND</td>
-          <td>15 bài</td>
-          <td class="course-status active">Hoạt động</td>
-          <td>
-            <div class="action-buttons">
-              <button class="btn-action edit-btn" onclick="openModal('edit-course-modal')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-              <a href="course-content.html?courseId=2" class="btn-action content-btn" title="Nội dung"><i class="fas fa-book"></i></a>
-              <button class="btn-action delete-btn" onclick="openModal('delete-course-modal')" title="Xóa"><i class="fas fa-trash"></i></button>
-            </div>
-          </td>
-        </tr>
+  <tr th:each="course, iterStat : ${courses}">
+    <td th:text="${iterStat.index + 1}"></td>
+    <td class="course-name" th:text="${course.ten_khoa_hoc}"></td>
+    <td th:text="${course.diem_dat}"></td>
+    <td th:text="${course.category.tenDanhMuc}"></td>
+    <td th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT') + ' VND'}"></td>
+    <!-- 
+    <td th:text="${course.gia_tien != null ? #numbers.formatDecimal(course.gia_tien, 0, 'COMMA', '.', '') + ' VND' : '0 VND'}"></td>
+    
+    <td th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', '.', '') + ' VND'}"></td> -->
+    <td th:text="${#lists.size(course.videos)} + ' bài'"></td>
+    <td>
+    <img th:if="${course.anh_dai_dien != null}" 
+     th:src="@{/upload/{img}(img=${course.anh_dai_dien})}" 
+     alt="Ảnh đại diện" width="80" height="60">
+
+ <!--     
+      <img th:src="@{'/uploads/' + ${course.anh_dai_dien}}" alt="Ảnh đại diện" width="80" height="60">-->
+    </td>
+    <td th:text="${course.status ? 'Hoạt động' : 'Không hoạt động'}"
+    class="course-status"
+    th:classappend="${course.status} ? ' active' : ' inactive'">
+</td>
+
+
+    <td>
+      <div class="action-buttons">
+        <!-- Nút chỉnh sửa -->
+         <!-- data-bs-toggle="modal" data-bs-target="#edit-course-modal" -->
+        <button class="btn-action edit-btn" 
+              
+               onclick="openEditCourseModal(this)"
+              th:attr="data-id=${course.ID_khoa_hoc},
+                       data-title=${course.ten_khoa_hoc},
+                       data-category=${course.category.id},
+                       data-price=${course.gia_tien},
+                       data-point=${course.diem_dat},
+                       data-description=${course.mo_ta},
+                       data-status=${course.status},
+                       data-anh_dai_dien=${course.anh_dai_dien}"
+                title="Chỉnh sửa">
+          <i class="fas fa-edit"></i>
+        </button>
+
+        <!-- Nút nội dung khóa học -->
+        <a th:href="@{'/course-content/' + ${course.ID_khoa_hoc}}" 
+           class="btn-action content-btn" 
+           title="Nội dung">
+          <i class="fas fa-book"></i>
+        </a>
+
+        <!-- Nút xóa -->
+        <!-- Nút mở modal xác nhận xóa -->
+<button class="btn-action delete-btn"
+        onclick="openDeleteModal(this)"
+        	 th:attr="data-id=${course.ID_khoa_hoc}"
+        title="Xóa">
+  <i class="fas fa-trash"></i>
+</button>
+      </div>
+    </td>
+  </tr>
+</tbody>
+
+      <!-- 
+      <tbody>
         <tr>
           <td class="course-name">Phân tích dữ liệu với Python</td>
           <td>Công nghệ</td>
@@ -317,7 +416,7 @@
             </div>
           </td>
         </tr>
-      </tbody>
+      </tbody> -->
     </table>
   </div>
   
@@ -329,88 +428,208 @@
         <button class="close-btn" onclick="closeModal('add-course-modal')">✕</button>
       </div>
       <div class="modal-body">
-        <form id="add-course-form">
+        <form id="add-course-form"
+      th:action="@{/Crud_Course/add}"
+      th:object="${course}"
+      method="post"
+      enctype="multipart/form-data">
+
           <div class="form-group">
             <label for="add-course-name">Tên khóa học</label>
-            <input type="text" id="add-course-name" placeholder="Nhập tên khóa học" required>
+            <input type="text" id="add-course-name" placeholder="Nhập tên khóa học" th:field="*{ten_khoa_hoc}" required>
+          </div>
+          <div class="form-group">
+            <label for="add-category-description">Mô tả</label>
+            <textarea id="add-category-description" th:field="*{mo_ta}"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="add-course-point">Điểm đạt</label>
+            <input type="number" id="add-course-point" placeholder="Nhập điểm để đậu khóa học" th:field="*{diem_dat}" min="0" max="10" required>
           </div>
           <div class="form-group">
             <label for="add-course-category">Danh mục</label>
-            <select id="add-course-category" required>
+            <select id="add-course-category" th:field="*{category.id}">
+            <option value="">Chọn danh mục</option>
+                        <option th:each="category : ${categories}" 
+                                th:value="${category.id}" 
+                                th:text="${category.tenDanhMuc}" >
+                                <!-- th:selected="${category.tenDanhMuc == selectedCategory}" -->
+                                
+                        </option>
+            </select>
+            <!-- <select id="edit-course-category" required>
               <option value="">Chọn danh mục</option>
               <option value="finance">Tài chính</option>
               <option value="technology">Công nghệ</option>
               <option value="business">Kinh doanh</option>
-            </select>
+            </select> -->
           </div>
           <div class="form-group">
             <label for="add-course-price">Giá (VND)</label>
-            <input type="number" id="add-course-price" placeholder="Nhập giá khóa học" required>
+            <input type="number" id="add-course-price" placeholder="Nhập giá khóa học"  th:field="*{gia_tien}" min="1000" required>
           </div>
+           
+                 <div class="profile-avatar">
+                <div class="avatar-container">
+                    <div class="avatar-icon">
+                        <i class="user-icon">👤</i>
+                    </div>
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-file"  name="fileAnhDaiDien" accept="image/*" style="display: none;">
+                        <label for="avatar-file" class="upload-btn">Chọn ảnh</label>
+                    </div>
+                </div>
+            </div>
+                <div class="form-group">
+                    <label for="add-category-status">Trạng thái</label>
+                    <select id="add-category-status"  th:field="*{status}" required>
+                        <option value="true">Hoạt động</option>
+                        <option value="false">Không hoạt động</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+        <button class="cancel-btn" onclick="closeModal('add-course-modal')">Hủy</button>
+        <button class="save-btn" type="submit">Thêm</button>
+      </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button class="cancel-btn" onclick="closeModal('add-course-modal')">Hủy</button>
-        <button class="save-btn" onclick="addCourse()">Thêm</button>
-      </div>
+      
     </div>
   </div>
 
   <!-- Edit Course Modal -->
-  <div class="modal" id="edit-course-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Chỉnh sửa khóa học</h2>
-        <button class="close-btn" onclick="closeModal('edit-course-modal')">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="edit-course-form">
-          <div class="form-group">
-            <label for="edit-course-name">Tên khóa học</label>
-            <input type="text" id="edit-course-name" placeholder="Nhập tên khóa học" required>
+<div class="modal" id="edit-course-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Chỉnh sửa khóa học</h2>
+      <button class="close-btn" onclick="closeModal('edit-course-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="edit-course-form"
+            th:action="@{/Crud_Course/update}"
+            th:object="${course}"
+            method="post"
+            enctype="multipart/form-data">
+
+        <input type="hidden" name="ID_khoa_hoc" id="edit-course-id" th:field="*{ID_khoa_hoc}">
+
+        <div class="form-group">
+          <label for="edit-course-name">Tên khóa học</label>
+          <input type="text" id="edit-course-name" th:field="*{ten_khoa_hoc}" placeholder="Nhập tên khóa học" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-description">Mô tả</label>
+          <textarea id="edit-course-description" th:field="*{mo_ta}" placeholder="Nhập mô tả khóa học"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-point">Điểm đạt</label>
+          <input type="number" id="edit-course-point" th:field="*{diem_dat}" min="0" max="10" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-category">Danh mục</label>
+          <select id="edit-course-category" th:field="*{category.id}" required>
+            <option value="">-- Chọn danh mục --</option>
+            <option th:each="cat : ${categories}"
+                    th:value="${cat.id}"
+                    th:text="${cat.tenDanhMuc}">
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-price">Giá (VND)</label>
+          <input type="number" id="edit-course-price" th:field="*{gia_tien}" min="1000" required>
+        </div>
+
+        <div class="form-group">
+          <label>Ảnh đại diện</label>
+          <div class="avatar-container">
+            <div class="current-avatar">
+              <img th:src="@{/upload/{img}(img=${course.anh_dai_dien})}" alt="Ảnh hiện tại" style="max-height: 100px;">
+            </div>
+            <input type="hidden" name="oldImage" th:value="${course.anh_dai_dien}">
+            <input type="file" id="avatar-file" name="imageFile" accept="image/*">
+            <label for="avatar-file" class="upload-btn">Chọn ảnh mới</label>
           </div>
-          <div class="form-group">
-            <label for="edit-course-category">Danh mục</label>
-            <select id="edit-course-category" required>
-              <option value="">Chọn danh mục</option>
-              <option value="finance">Tài chính</option>
-              <option value="technology">Công nghệ</option>
-              <option value="business">Kinh doanh</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="edit-course-price">Giá (VND)</label>
-            <input type="number" id="edit-course-price" placeholder="Nhập giá khóa học" required>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="cancel-btn" onclick="closeModal('edit-course-modal')">Hủy</button>
-        <button class="save-btn" onclick="updateCourse()">Lưu</button>
-      </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-status">Trạng thái</label>
+          <select id="edit-course-status" th:field="*{status}" required>
+            <option th:value="true" th:selected="${course.status} == true">Hoạt động</option>
+            <option th:value="false" th:selected="${course.status} == false">Không hoạt động</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button class="cancel-btn" type="button" onclick="closeModal('edit-course-modal')">Hủy</button>
+          <button class="save-btn" type="submit">Lưu</button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 
-  <!-- Delete Confirmation Modal -->
-  <div class="modal" id="delete-course-modal">
-    <div class="delete-modal-content">
+
+  <!-- Modal xác nhận xóa -->
+<div class="modal" id="delete-course-modal">
+  <div class="delete-modal-content">
+    <form id="deleteCourseForm" method="get">
       <p>Xóa khóa học này sẽ không thể khôi phục. Bạn có chắc chắn?</p>
       <div class="modal-footer">
-        <button class="cancel-btn" onclick="closeModal('delete-course-modal')">Hủy</button>
-        <button class="delete-btn">Xóa</button>
+        <button type="button" class="cancel-btn" onclick="closeModal('delete-course-modal')">Hủy</button>
+        <button type="submit" class="delete-btn">Xóa</button>
       </div>
-    </div>
+    </form>
   </div>
+</div>
+
   
   <!-- JavaScript for Modal -->
   <script>
+ /* function openDeleteModal(courseId) {
+	  const id = button.getAttribute('data-id');
+	  document.getElementById('edit-course-id').value = id;
+	  openModal('delete-course-modal');
+	  }*/
     function openModal(modalId) {
       document.getElementById(modalId).style.display = 'flex';
     }
+    function openDeleteModal(button) {
+        const id = button.getAttribute('data-id');
+        const form = document.getElementById('deleteCourseForm');
+        form.action = `/Crud_Course/delete/${id}`;
+        openModal('delete-course-modal');
+      }
+   /*function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
-    }
+  modal.style.display = 'flex'; // dùng flex để hiển thị modal trung tâm dễ hơn
+
+  if (!document.querySelector('.modal-backdrop')) {
+    const backdrop = document.createElement('div');
+    backdrop.classList.add('modal-backdrop', 'show');
+    document.body.appendChild(backdrop);
+  }
+}*/
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.style.display = 'none';
+
+  const backdrop = document.querySelector('.modal-backdrop');
+  if (backdrop) backdrop.remove();
+}
+
+
+
+    //function closeModal(modalId) {
+//      document.getElementById(modalId).style.display = 'none';
+  //  }
 
     // Close modal when clicking outside
     window.onclick = function(event) {
@@ -431,9 +650,7 @@
 
     // Function to handle adding new course
     function addCourse() {
-      const courseName = document.getElementById('add-course-name').value;
-      const courseCategory = document.getElementById('add-course-category').value;
-      const coursePrice = document.getElementById('add-course-price').value;
+
       
       if (courseName && courseCategory && coursePrice) {
         // TODO: Call backend API to add course
@@ -453,12 +670,44 @@
         alert('Vui lòng điền đầy đủ thông tin!');
       }
     }
+    function openEditCourseModal(button) {
+        const id = button.getAttribute('data-id');
+        const title = button.getAttribute('data-title');
+        const category = button.getAttribute('data-category');
+        const price = button.getAttribute('data-price');
+        const point = button.getAttribute('data-point');
+        const description = button.getAttribute('data-description');
+        const status = button.getAttribute('data-status');
+        const anhDaiDien = button.getAttribute('data-anh_dai_dien'); // thêm thuộc tính ảnh
+
+        document.getElementById('edit-course-id').value = id;
+        document.getElementById('edit-course-name').value = title;
+        document.getElementById('edit-course-description').value = description;
+        document.getElementById('edit-course-point').value = point;
+        document.getElementById('edit-course-category').value = category;
+        document.getElementById('edit-course-price').value = price;
+        document.getElementById('edit-course-status').value = status;
+
+        // Set ảnh đại diện (nếu có)
+        const avatarImg = document.querySelector("#edit-course-modal .current-avatar img");
+        if (anhDaiDien && anhDaiDien.trim() !== "") {
+            avatarImg.src = "/upload/" + anhDaiDien;
+        } else {
+            avatarImg.src = "/upload/default.png"; // hoặc ảnh mặc định
+        }
+
+        // Set oldImage hidden input
+        const oldImageInput = document.querySelector("#edit-course-modal input[name='oldImage']");
+        if(oldImageInput){
+            oldImageInput.value = anhDaiDien || "";
+        }
+
+        openModal('edit-course-modal');
+    }
+
 
     // Function to handle updating course
     function updateCourse() {
-      const courseName = document.getElementById('edit-course-name').value;
-      const courseCategory = document.getElementById('edit-course-category').value;
-      const coursePrice = document.getElementById('edit-course-price').value;
       
       if (courseName && courseCategory && coursePrice) {
         // TODO: Call backend API to update course
