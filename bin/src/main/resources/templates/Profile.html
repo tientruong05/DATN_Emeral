@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Cá Nhân</title>
+    <style>
+        /* Reset và font cơ bản */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+    
+        body {
+            background-color: #f5f7fa;
+            /*display: flex;*/
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+    
+        /* Container chính */
+        .profile-container {
+            width: 900px;
+            max-width: 95%;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+    
+        /* Header */
+        .profile-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+    
+        .profile-header h1 {
+            color: #1a3b5d;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+    
+        .required-note {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    
+        /* Layout chính */
+        .profile-content {
+            display: flex;
+            gap: 3rem;
+            align-items: flex-start;
+        }
+    
+        /* Phần avatar */
+        .profile-avatar {
+            flex: 1;
+        }
+    
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+    
+        .avatar-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #e6eaf0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    
+        .user-icon {
+            font-size: 4rem;
+            color: #95a5a6;
+        }
+    
+        .avatar-upload {
+            width: 100%;
+            text-align: center;
+        }
+    
+        .upload-btn {
+            background-color: #f8f9fa;
+            color: #1a3b5d;
+            border: 1px solid #e6eaf0;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+    
+        .upload-btn:hover {
+            background-color: #e6eaf0;
+        }
+    
+        .avatar-status {
+            position: absolute;
+            bottom: 30px;
+            right: 50px;
+            width: 15px;
+            height: 15px;
+            background-color: #3498db;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    
+        /* Phần form */
+        .profile-info {
+            flex: 2;
+        }
+    
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+    
+        .form-group {
+            flex: 1;
+            position: relative;
+        }
+    
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #34495e;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+    
+        .form-group label .required {
+            color: #e74c3c;
+            margin-left: 2px;
+        }
+    
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #e6eaf0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+    
+        .form-group input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background-color: white;
+        }
+    
+        .form-group input::placeholder {
+            color: #b2b9c1;
+        }
+    
+        /* Nút */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+    
+        .save-btn, .cancel-btn {
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+    
+        .save-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+    
+        .save-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+    
+        .cancel-btn {
+            background-color: transparent;
+            color: #7f8c8d;
+            border: 1px solid #e6eaf0;
+        }
+    
+        .cancel-btn:hover {
+            background-color: #f8f9fa;
+            color: #34495e;
+        }
+    
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .profile-container {
+                width: 95%;
+                padding: 2rem;
+            }
+        }
+    
+        @media (max-width: 768px) {
+            .profile-content {
+                flex-direction: column;
+            }
+    
+            .profile-avatar {
+                margin-bottom: 2rem;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+    
+            .avatar-container {
+                width: 200px;
+            }
+    
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    
+        @media (max-width: 576px) {
+            .profile-container {
+                padding: 1.5rem;
+            }
+    
+            .profile-header h1 {
+                font-size: 1.8rem;
+            }
+    
+            .form-actions {
+                flex-direction: column;
+            }
+    
+            .save-btn, .cancel-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>Thay đổi thông tin cá nhân</h1>
+            <span class="required-note">(* Thông tin bắt buộc)</span>
+        </div>
+    
+        <div class="profile-content">
+            <div class="profile-avatar">
+                <div class="avatar-container">
+                    <div class="avatar-icon">
+                        <i class="user-icon">👤</i>
+                    </div>
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-file" accept="image/*" style="display: none;">
+                        <label for="avatar-file" class="upload-btn">Chọn ảnh</label>
+                    </div>
+                    <span class="avatar-status"></span>
+                </div>
+            </div>
+            
+            <div class="profile-info">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="last-name">Họ <span class="required">*</span></label>
+                            <input type="text" id="last-name" placeholder="Nhập họ" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="first-name">Tên <span class="required">*</span></label>
+                            <input type="text" id="first-name" placeholder="Nhập tên" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" id="phone" placeholder="Nhập số điện thoại" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" placeholder="Nhập email" value="tientmABCXYZ@gmail.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="birth-date">Ngày sinh <span class="required">*</span></label>
+                            <input type="date" id="birth-date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn">Hủy bỏ</button>
+                        <button type="submit" class="save-btn">Lưu thông tin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        // Xử lý upload ảnh
+        document.getElementById('avatar-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarIcon = document.querySelector('.avatar-icon');
+                    avatarIcon.innerHTML = `<img src="${e.target.result}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Xử lý form submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thông tin đã được lưu thành công!');
+        });
+
+        // Xử lý nút hủy
+        document.querySelector('.cancel-btn').addEventListener('click', function() {
+            if (confirm('Bạn có chắc muốn hủy bỏ các thay đổi?')) {
+                document.querySelector('form').reset();
+                // Reset avatar về mặc định
+                document.querySelector('.avatar-icon').innerHTML = '<i class="user-icon">👤</i>';
+            }
+        });
+    </script>
+</body>
+</html>

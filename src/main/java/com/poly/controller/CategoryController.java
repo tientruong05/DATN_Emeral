@@ -4,6 +4,8 @@ import com.poly.entity.Category;
 import com.poly.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page; // <- thêm dòng này
+import org.springframework.data.domain.PageRequest; // <- thêm dòng này
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,16 +18,22 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("/Crud_Categories")
-    public String showCategoryManagement(Model model) {
-        model.addAttribute("categories", categoryService.getAllCategories());
+    public String showCategoryManagement(Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Category> categoryPage = categoryService.getAllCategories(PageRequest.of(page, size));
+        model.addAttribute("categoryPage", categoryPage);
         model.addAttribute("category", new Category());
         return "Crud_Categories";
     }
 
     @PostMapping("/Crud_Categories/add")
-    public String addCategory(@Valid @ModelAttribute("category") Category category, BindingResult result, Model model) {
+    public String addCategory(@Valid @ModelAttribute("category") Category category, BindingResult result, Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         if (result.hasErrors()) {
-            model.addAttribute("categories", categoryService.getAllCategories());
+            Page<Category> categoryPage = categoryService.getAllCategories(PageRequest.of(page, size));
+            model.addAttribute("categoryPage", categoryPage);
             model.addAttribute("showAddModal", true);
             return "Crud_Categories";
         }
@@ -33,7 +41,8 @@ public class CategoryController {
             categoryService.createCategory(category);
         } catch (RuntimeException e) {
             model.addAttribute("tenDanhMucError", e.getMessage());
-            model.addAttribute("categories", categoryService.getAllCategories());
+            Page<Category> categoryPage = categoryService.getAllCategories(PageRequest.of(page, size));
+            model.addAttribute("categoryPage", categoryPage);
             model.addAttribute("showAddModal", true);
             return "Crud_Categories";
         }
@@ -41,9 +50,13 @@ public class CategoryController {
     }
 
     @PostMapping("/Crud_Categories/update/{id}")
-    public String updateCategory(@PathVariable Integer id, @Valid @ModelAttribute("category") Category category, BindingResult result, Model model) {
+    public String updateCategory(@PathVariable Integer id, @Valid @ModelAttribute("category") Category category,
+            BindingResult result, Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         if (result.hasErrors()) {
-            model.addAttribute("categories", categoryService.getAllCategories());
+            Page<Category> categoryPage = categoryService.getAllCategories(PageRequest.of(page, size));
+            model.addAttribute("categoryPage", categoryPage);
             model.addAttribute("showEditModal", true);
             return "Crud_Categories";
         }
@@ -55,7 +68,8 @@ public class CategoryController {
             } else {
                 model.addAttribute("error", e.getMessage());
             }
-            model.addAttribute("categories", categoryService.getAllCategories());
+            Page<Category> categoryPage = categoryService.getAllCategories(PageRequest.of(page, size));
+            model.addAttribute("categoryPage", categoryPage);
             model.addAttribute("showEditModal", true);
             return "Crud_Categories";
         }
