@@ -24,7 +24,7 @@ public class Discount {
     private Double discount_value;
     private LocalDate start_date;
     private LocalDate end_date;
-    private String status;
+    private Boolean status;
 
     @OneToMany(mappedBy = "discount")
     private List<DiscountDetail> discountDetails;
