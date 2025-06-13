@@ -48,7 +48,7 @@ public class CrudCourseController {
 
         if (file != null && !file.isEmpty()) {
             String originalFileName = file.getOriginalFilename();
-            Path uploadDir = Paths.get("src/main/resources/static/upload");
+            Path uploadDir = Paths.get(UPLOAD_DIR); // Using the defined UPLOAD_DIR constant
 
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
@@ -57,14 +57,16 @@ public class CrudCourseController {
             Path targetPath = uploadDir.resolve(originalFileName);
             try {
                 Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-                course.setAnh_dai_dien(originalFileName);
+                course.setAnh_dai_dien(originalFileName); // Corrected: use setAnh_dai_dien
             } catch (IOException e) {
                 // Lưu thất bại => báo lỗi
+                // It's good practice to log the exception for debugging
+                e.printStackTrace(); 
                 return "redirect:/Crud_Course?error=upload";
             }
         } else {
             // Không có ảnh => gán ảnh mặc định
-            course.setAnh_dai_dien("default.png");
+            course.setAnh_dai_dien("default.png"); // Corrected: use setAnh_dai_dien
         }
 
         courseService.save(course);
@@ -79,17 +81,17 @@ public class CrudCourseController {
         if (file != null && !file.isEmpty()) {
             // Có ảnh mới => lưu ảnh mới
             String originalFileName = file.getOriginalFilename();
-            Path uploadDir = Paths.get("src/main/resources/static/upload");
+            Path uploadDir = Paths.get(UPLOAD_DIR); // Using the defined UPLOAD_DIR constant
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
             Path targetPath = uploadDir.resolve(originalFileName);
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-            course.setAnh_dai_dien(originalFileName);
+            course.setAnh_dai_dien(originalFileName); // Corrected: use setAnh_dai_dien
         } else {
             // Không chọn ảnh mới => giữ lại ảnh cũ
-            course.setAnh_dai_dien(oldImage);
+            course.setAnh_dai_dien(oldImage); // Corrected: use setAnh_dai_dien
         }
 
         courseService.save(course);

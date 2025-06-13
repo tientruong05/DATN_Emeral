@@ -136,7 +136,7 @@
       justify-content: center;
     }
     
-    .modal-content {
+    /* .modal-content {
       background-color: white;
       padding: 0;
       border-radius: 12px;
@@ -152,7 +152,53 @@
       padding: 1.5rem;
       border-bottom: 1px solid #eee;
     }
-    
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+     */
+     .modal-content {
+    background-color: white;
+    padding: 0; /* Giữ nguyên padding 0 để body của modal quản lý padding */
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+
+    /* --- Bắt đầu phần thêm/sửa --- */
+    max-height: 90vh; /* Giới hạn chiều cao tối đa của modal, ví dụ 90% chiều cao viewport */
+    display: flex; /* Sử dụng flexbox để cấu trúc header, body, footer */
+    flex-direction: column; /* Xếp các phần tử theo cột */
+    overflow: hidden; /* Ẩn overflow ở cấp độ modal-content để modal-body có thể cuộn */
+    /* --- Kết thúc phần thêm/sửa --- */
+}
+
+.modal-body {
+    padding: 1.5rem;
+    /* --- Bắt đầu phần thêm/sửa --- */
+    flex-grow: 1; /* Cho phép modal-body mở rộng để lấp đầy không gian còn lại */
+    overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung tràn */
+    /* --- Kết thúc phần thêm/sửa --- */
+}
+
+/* Giữ nguyên các style khác của modal-header và modal-footer */
+.modal-header {
+    flex-shrink: 0; /* Ngăn header co lại */
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-footer {
+    flex-shrink: 0; /* Ngăn footer co lại */
+    padding: 1.5rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
     .modal-header h2 {
       color: #002855;
       margin: 0;
@@ -211,13 +257,7 @@
       border-color: #002855;
     }
     
-    .modal-footer {
-      padding: 1.5rem;
-      border-top: 1px solid #eee;
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-    }
+    
     
     .cancel-btn, .save-btn {
       padding: 0.75rem 1.5rem;
@@ -381,11 +421,11 @@
         </button>
 
         <!-- Nút nội dung khóa học -->
-        <a th:href="@{'/course-content/' + ${course.ID_khoa_hoc}}" 
-           class="btn-action content-btn" 
-           title="Nội dung">
-          <i class="fas fa-book"></i>
-        </a>
+        <a th:href="@{'/course-content/' + ${course.ID_khoa_hoc}}"
+		   class="btn-action content-btn"
+		   title="Nội dung">
+		  <i class="fas fa-book"></i>
+		</a>
 
         <!-- Nút xóa -->
         <!-- Nút mở modal xác nhận xóa -->
