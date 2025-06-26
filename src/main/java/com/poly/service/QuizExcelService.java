@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,43 +40,39 @@ public class QuizExcelService {
     // ... (exportQuestionsToExcel giữ nguyên hoặc điều chỉnh để xuất ID nếu muốn)
     // Để giữ cho việc nhập/xuất đơn giản, chúng ta vẫn không xuất ID trong export
     public byte[] exportQuestionsToExcel(List<Question> questions) throws IOException {
-        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Sheet sheet = workbook.createSheet("Quiz Questions");
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("Questions");
 
-            // Tạo hàng tiêu đề - Vẫn không xuất ID để template nhập không bị rối
-            Row headerRow = sheet.createRow(0);
-            String[] headers = {
-                "Nội Dung Câu Hỏi", "Đáp Án A", "Đáp Án B", "Đáp Án C", "Đáp Án D", "Đáp Án Đúng"
-            };
-            for (int i = 0; i < headers.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-            }
+    // Header
+    Row header = sheet.createRow(0);
+    header.createCell(0).setCellValue("ID câu hỏi");
+    header.createCell(1).setCellValue("Nội dung câu hỏi");
+    header.createCell(2).setCellValue("Đáp án A");
+    header.createCell(3).setCellValue("Đáp án B");
+    header.createCell(4).setCellValue("Đáp án C");
+    header.createCell(5).setCellValue("Đáp án D");
+    header.createCell(6).setCellValue("Đáp án đúng");
 
-            // Điền dữ liệu vào các hàng
-            int rowNum = 1;
-            for (Question question : questions) {
-                Row row = sheet.createRow(rowNum++);
-                // Không xuất ID vào đây, ID sẽ được tự động tạo hoặc bạn cần thêm cột ID vào đây nếu muốn xuất ra để người dùng chỉnh sửa rồi nhập lại.
-                // Nếu muốn xuất ID, uncomment dòng dưới và thêm "ID Câu Hỏi" vào mảng `headers`
-                // row.createCell(COL_QUESTION_ID).setCellValue(question.getID_cau_hoi() != null ? question.getID_cau_hoi() : 0); // Ví dụ: ghi 0 nếu ID null
-                row.createCell(COL_QUESTION_CONTENT - 1).setCellValue(question.getNoi_dung_cau_hoi()); // Giảm index nếu bỏ cột ID ở đây
-                row.createCell(COL_OPTION_A - 1).setCellValue(question.getDap_an_a());
-                row.createCell(COL_OPTION_B - 1).setCellValue(question.getDap_an_b());
-                row.createCell(COL_OPTION_C - 1).setCellValue(question.getDap_an_c());
-                row.createCell(COL_OPTION_D - 1).setCellValue(question.getDap_an_d());
-                row.createCell(COL_CORRECT_ANSWER - 1).setCellValue(question.getDap_an_dung());
-            }
-
-            // Tự động điều chỉnh độ rộng cột
-            for (int i = 0; i < headers.length; i++) {
-                sheet.autoSizeColumn(i);
-            }
-
-            workbook.write(out);
-            return out.toByteArray();
-        }
+    // Data
+    int rowIdx = 1;
+    for (Question q : questions) {
+        Row row = sheet.createRow(rowIdx++);
+        row.createCell(0).setCellValue(q.getID_cau_hoi() != null ? q.getID_cau_hoi().toString() : "");
+        row.createCell(1).setCellValue(q.getNoi_dung_cau_hoi());
+        row.createCell(2).setCellValue(q.getDap_an_a());
+        row.createCell(3).setCellValue(q.getDap_an_b());
+        row.createCell(4).setCellValue(q.getDap_an_c());
+        row.createCell(5).setCellValue(q.getDap_an_d());
+        row.createCell(6).setCellValue(q.getDap_an_dung());
     }
+
+    // Ghi workbook ra ByteArrayOutputStream
+    try (java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream()) {
+        workbook.write(bos);
+        workbook.close();
+        return bos.toByteArray();
+    }
+}
 
 
     /**
