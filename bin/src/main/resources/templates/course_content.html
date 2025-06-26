@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Nội Dung Khóa Học - EDU102</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Reset CSS */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      color: #333;
+      line-height: 1.6;
+      background-color: #f7f9fc;
+    }
+
+    /* Main Content Styles */
+    .course-content-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    .course-content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .course-content-header h1 {
+      color: #002855;
+      font-size: 2rem;
+    }
+
+    .back-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ddd;
+      margin-bottom: 1rem;
+    }
+
+    .tab {
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.3s ease;
+      border: none;
+      background: none;
+    }
+
+    .tab.active {
+      color: #002855;
+      border-bottom: 3px solid #002855;
+      font-weight: 600;
+    }
+
+    .tab:hover {
+      color: #002855;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 1rem;
+      overflow: hidden;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .tab-content-header h2 {
+      color: #002855;
+      font-size: 1.5rem;
+    }
+
+    .add-btn {
+      background-color: #002855;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .add-btn:hover {
+      background-color: #001f42;
+    }
+
+    /* Table Styles - Matching Crud_Course.html */
+    .video-table,
+    .quiz-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    .video-table th,
+    .video-table td,
+    .quiz-table th,
+    .quiz-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* Căn chỉnh cột hành động về giữa */
+    .video-table th:last-child,
+    .video-table td:last-child,
+    .quiz-table th:last-child,
+    .quiz-table td:last-child {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .video-table th,
+    .quiz-table th {
+      background-color: #002855;
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .video-table tr:last-child td,
+    .quiz-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .video-name,
+    .quiz-question {
+      font-weight: 500;
+      color: #002855;
+    }
+
+    .video-url a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .video-url a:hover {
+      text-decoration: underline;
+    }
+
+    /* Action Buttons - Đã chỉnh sửa để căn chỉnh chính giữa */
+    .action-buttons {
+      display: inline-flex;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn-action {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .edit-btn {
+      background-color: #ff6b00;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background-color: #e65c00;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h2 {
+      color: #002855;
+      font-size: 1.5rem;
+    }
+
+    .close-btn {
+      font-size: 1.5rem;
+      color: #666;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: #333;
+    }
+
+    .modal-body form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #002855;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+    }
+
+    .cancel-btn,
+    .save-btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .cancel-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .cancel-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .save-btn {
+      background-color: #002855;
+      color: white;
+    }
+
+    .save-btn:hover {
+      background-color: #001f42;
+    }
+
+    /* Delete Confirmation Modal */
+    .delete-modal-content {
+      background-color: white;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .delete-modal-content p {
+      margin-bottom: 1.5rem;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .delete-modal-content .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .delete-modal-content .delete-btn:hover {
+      background-color: #c82333;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .course-content-container {
+        padding: 0.5rem;
+      }
+
+      .video-table th,
+      .video-table td,
+      .quiz-table th,
+      .quiz-table td {
+        padding: 0.8rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .course-content-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .course-content-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .back-btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      .video-table,
+      .quiz-table {
+        font-size: 0.9rem;
+      }
+
+      .video-table th,
+      .video-table td,
+      .quiz-table th,
+      .quiz-table td {
+        padding: 0.5rem;
+      }
+
+      .action-buttons {
+        flex-direction: row;
+        gap: 0.3rem;
+      }
+
+      .btn-action {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+      }
+
+      .tabs {
+        flex-direction: column;
+      }
+
+      .tab {
+        padding: 0.8rem;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .tab.active {
+        border-bottom: 1px solid #ddd;
+        border-left: 3px solid #002855;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .video-table,
+      .quiz-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .modal-content,
+      .delete-modal-content {
+        width: 95%;
+        padding: 1rem;
+      }
+
+      .modal-header h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="course-content-page">
+    <!-- Main Content -->
+    <div class="course-content-container">
+      <div class="course-content-header">
+        <h1>Quản lý nội dung khóa học: Quản lý tài chính cá nhân</h1>
+        <!--<a href="Crud_Course.html" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Quay lại-->
+        </a>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="openTab('video-tab')">
+          <i class="fas fa-video"></i> Video
+        </button>
+        <button class="tab" onclick="openTab('quiz-tab')">
+          <i class="fas fa-question-circle"></i> Quiz
+        </button>
+      </div>
+
+      <!-- Video Tab -->
+      <div class="tab-content active" id="video-tab">
+        <div class="tab-content-header">
+          <h2><i class="fas fa-video"></i> Danh sách video</h2>
+          <button class="add-btn" onclick="openModal('add-video-modal')">
+            <i class="fas fa-plus"></i> Thêm video
+          </button>
+        </div>
+        <table class="video-table">
+          <thead>
+            <tr>
+              <th>Tên video</th>
+              <th>URL</th>
+              <th>Thời lượng</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="video-name">Giới thiệu về tài chính cá nhân</td>
+              <td class="video-url"><a href="https://example.com/video1" target="_blank">Link</a></td>
+              <td>10:30</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-action edit-btn" onclick="openModal('add-video-modal')" title="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action delete-btn" onclick="openModal('delete-video-modal')" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="video-name">Lập kế hoạch ngân sách</td>
+              <td class="video-url"><a href="https://example.com/video2" target="_blank">Link</a></td>
+              <td>15:45</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-action edit-btn" onclick="openModal('add-video-modal')" title="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action delete-btn" onclick="openModal('delete-video-modal')" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="video-name">Đầu tư thông minh</td>
+              <td class="video-url"><a href="https://example.com/video3" target="_blank">Link</a></td>
+              <td>20:15</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-action edit-btn" onclick="openModal('add-video-modal')" title="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action delete-btn" onclick="openModal('delete-video-modal')" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Quiz Tab -->
+      <div class="tab-content" id="quiz-tab">
+        <div class="tab-content-header">
+          <h2><i class="fas fa-question-circle"></i> Danh sách câu hỏi</h2>
+          <button class="add-btn" onclick="openModal('add-quiz-modal')">
+            <i class="fas fa-plus"></i> Thêm câu hỏi
+          </button>
+        </div>
+        <table class="quiz-table">
+          <thead>
+            <tr>
+              <th>Câu hỏi</th>
+              <th>Đáp án đúng</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="quiz-question">Ngân sách cá nhân là gì?</td>
+              <td>Kế hoạch chi tiêu hàng tháng</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-action edit-btn" onclick="openModal('add-quiz-modal')" title="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action delete-btn" onclick="openModal('delete-quiz-modal')" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="quiz-question">Bước đầu tiên trong quản lý tài chính là gì?</td>
+              <td>Xác định mục tiêu tài chính</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-action edit-btn" onclick="openModal('add-quiz-modal')" title="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action delete-btn" onclick="openModal('delete-quiz-modal')" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="quiz-question">Tỷ lệ tiết kiệm lý tưởng là bao nhiêu phần trăm thu nhập?</td>
+              <td>20% thu nhập</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-action edit-btn" onclick="openModal('add-quiz-modal')" title="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action delete-btn" onclick="openModal('delete-quiz-modal')" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add/Edit Video Modal -->
+    <div class="modal" id="add-video-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-video"></i> Thêm video mới</h2>
+          <button class="close-btn" onclick="closeModal('add-video-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="video-name"><i class="fas fa-file-video"></i> Tên video</label>
+              <input type="text" id="video-name" placeholder="Nhập tên video" required>
+            </div>
+            <div class="form-group">
+              <label for="video-url"><i class="fas fa-link"></i> URL</label>
+              <input type="url" id="video-url" placeholder="Nhập URL video" required>
+            </div>
+            <div class="form-group">
+              <label for="video-duration"><i class="fas fa-clock"></i> Thời lượng (mm:ss)</label>
+              <input type="text" id="video-duration" placeholder="Ví dụ: 10:30" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" onclick="closeModal('add-video-modal')">
+            <i class="fas fa-times"></i> Hủy
+          </button>
+          <button class="save-btn">
+            <i class="fas fa-save"></i> Lưu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Quiz Modal -->
+    <div class="modal" id="add-quiz-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-question-circle"></i> Thêm câu hỏi mới</h2>
+          <button class="close-btn" onclick="closeModal('add-quiz-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="quiz-question"><i class="fas fa-question"></i> Câu hỏi</label>
+              <textarea id="quiz-question" placeholder="Nhập câu hỏi" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="quiz-option1"><i class="fas fa-check-circle"></i> Đáp án 1</label>
+              <input type="text" id="quiz-option1" placeholder="Nhập đáp án 1" required>
+            </div>
+            <div class="form-group">
+              <label for="quiz-option2"><i class="fas fa-check-circle"></i> Đáp án 2</label>
+              <input type="text" id="quiz-option2" placeholder="Nhập đáp án 2" required>
+            </div>
+            <div class="form-group">
+              <label for="quiz-option3"><i class="fas fa-check-circle"></i> Đáp án 3</label>
+              <input type="text" id="quiz-option3" placeholder="Nhập đáp án 3" required>
+            </div>
+            <div class="form-group">
+              <label for="quiz-option4"><i class="fas fa-check-circle"></i> Đáp án 4</label>
+              <input type="text" id="quiz-option4" placeholder="Nhập đáp án 4" required>
+            </div>
+            <div class="form-group">
+              <label for="quiz-correct"><i class="fas fa-star"></i> Đáp án đúng</label>
+              <select id="quiz-correct" required>
+                <option value="">Chọn đáp án đúng</option>
+                <option value="1">Đáp án 1</option>
+                <option value="2">Đáp án 2</option>
+                <option value="3">Đáp án 3</option>
+                <option value="4">Đáp án 4</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" onclick="closeModal('add-quiz-modal')">
+            <i class="fas fa-times"></i> Hủy
+          </button>
+          <button class="save-btn">
+            <i class="fas fa-save"></i> Lưu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modals -->
+    <div class="modal" id="delete-video-modal">
+      <div class="delete-modal-content">
+        <p><i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 2rem; margin-bottom: 1rem;"></i><br>
+        Bạn có muốn xóa video này vĩnh viễn? Hành động này không thể hoàn tác!</p>
+        <div class="modal-footer">
+          <button class="cancel-btn" onclick="closeModal('delete-video-modal')">
+            <i class="fas fa-times"></i> Hủy
+          </button>
+          <button class="delete-btn">
+            <i class="fas fa-trash"></i> Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="delete-quiz-modal">
+      <div class="delete-modal-content">
+        <p><i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 2rem; margin-bottom: 1rem;"></i><br>
+        Xóa câu hỏi này sẽ không thể khôi phục. Bạn có chắc chắn?</p>
+        <div class="modal-footer">
+          <button class="cancel-btn" onclick="closeModal('delete-quiz-modal')">
+            <i class="fas fa-times"></i> Hủy
+          </button>
+          <button class="delete-btn">
+            <i class="fas fa-trash"></i> Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript for Tabs and Modals -->
+  <script>
+    function openTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      // Show selected tab content and set active tab
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'flex';
+      
+      // Update modal title for edit mode
+      if (modalId === 'add-video-modal') {
+        const modalTitle = document.querySelector('#add-video-modal .modal-header h2');
+        if (event.currentTarget.classList.contains('edit-btn')) {
+          modalTitle.innerHTML = '<i class="fas fa-edit"></i> Chỉnh sửa video';
+        } else {
+          modalTitle.innerHTML = '<i class="fas fa-video"></i> Thêm video mới';
+        }
+      }
+      
+      if (modalId === 'add-quiz-modal') {
+        const modalTitle = document.querySelector('#add-quiz-modal .modal-header h2');
+        if (event.currentTarget.classList.contains('edit-btn')) {
+          modalTitle.innerHTML = '<i class="fas fa-edit"></i> Chỉnh sửa câu hỏi';
+        } else {
+          modalTitle.innerHTML = '<i class="fas fa-question-circle"></i> Thêm câu hỏi mới';
+        }
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      
+      // Reset form when closing modal
+      const form = document.querySelector(`#${modalId} form`);
+      if (form) {
+        form.reset();
+      }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modals = ['add-video-modal', 'add-quiz-modal', 'delete-video-modal', 'delete-quiz-modal'];
+      modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+          modal.style.display = 'none';
+          
+          // Reset form when closing
+          const form = document.querySelector(`#${modalId} form`);
+          if (form) {
+            form.reset();
+          }
+        }
+      });
+    };
+
+    // Add some interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add hover effects to table rows
+      const tableRows = document.querySelectorAll('.video-table tbody tr, .quiz-table tbody tr');
+      tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+          this.style.backgroundColor = '#f8f9fa';
+        });
+        row.addEventListener('mouseleave', function() {
+          this.style.backgroundColor = '';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

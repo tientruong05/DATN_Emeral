@@ -190,4 +190,4 @@ public class DiscountController {
     public List<DiscountDTO> getActiveDiscounts() {
         return discountService.getActiveDiscounts();
     }
-} 
+}

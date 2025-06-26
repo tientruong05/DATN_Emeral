@@ -2,11 +2,13 @@ package com.poly.service;
 
 import com.poly.entity.User;
 import com.poly.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Optional;
 import java.util.Optional;
 
 @Service
@@ -14,6 +16,11 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    // Thêm phương thức này vào UserService
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -29,11 +36,11 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email đã tồn tại, vui lòng nhập email khác");
         }
-        // Gán giá trị duy nhất ngắn cho so_dien_thoai nếu null
-        if (user.getSoDienThoai() == null) {
-            long timestamp = new Date().getTime();
-            user.setSoDienThoai("USER_" + (timestamp % 1000000)); // Lấy 6 chữ số cuối
+        // Gán giá trị mặc định cho tenNguoiDung nếu null
+        if (user.getTenNguoiDung() == null) {
+            user.setTenNguoiDung(user.getEmail().split("@")[0]); // Lấy phần trước @ của email
         }
+        // Không gán giá trị cho so_dien_thoai, giữ NULL nếu không được cung cấp
         return userRepository.save(user);
     }
 
@@ -43,11 +50,11 @@ public class UserService {
         if (!user.getEmail().equals(userDetails.getEmail()) && userRepository.existsByEmail(userDetails.getEmail())) {
             throw new RuntimeException("Email đã tồn tại, vui lòng nhập email khác");
         }
-        // Gán giá trị duy nhất ngắn cho so_dien_thoai nếu null
-        if (userDetails.getSoDienThoai() == null) {
-            long timestamp = new Date().getTime();
-            userDetails.setSoDienThoai("USER_" + (timestamp % 1000000)); // Lấy 6 chữ số cuối
+        // Gán giá trị mặc định cho tenNguoiDung nếu null
+        if (userDetails.getTenNguoiDung() == null) {
+            userDetails.setTenNguoiDung(userDetails.getEmail().split("@")[0]);
         }
+        // Không gán giá trị cho so_dien_thoai, giữ NULL nếu không được cung cấp
         user.setTenNguoiDung(userDetails.getTenNguoiDung());
         user.setHoTen(userDetails.getHoTen());
         user.setEmail(userDetails.getEmail());
@@ -61,8 +68,12 @@ public class UserService {
         User user = getUserById(id);
         userRepository.delete(user);
     }
-    
-    public Optional<User> getUserByEmail (String email) {
-    	return userRepository.findByEmail(email);
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByTenNguoiDung(username);
     }
 }

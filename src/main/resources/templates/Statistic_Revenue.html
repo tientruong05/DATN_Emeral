@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê Doanh thu</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+<style>
+    /* Reset CSS */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        color: #333;
+        line-height: 1.6;
+        background-color: #f7f9fc;
+    }
+
+    /* Main Content Styles */
+    .page-wrapper {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+
+    .statistics-container {
+        width: 100%;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+    }
+
+    .page-header h1 {
+        color: #002855;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+	#revenueChart {
+	    min-height: 300px !important;
+	    height: 400px !important;
+	    display: block !important;
+	}
+	.chart-container {
+	    min-height: 350px !important;
+	    display: block !important;
+	}
+    .page-header h1 i {
+        margin-right: 1rem;
+        color: #ff6b00;
+    }
+
+    .page-subtitle {
+        color: #666;
+        font-size: 1.1rem;
+        font-weight: 300;
+    }
+
+    /* Card Styles */
+    .stats-card, .chart-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stats-card:hover, .chart-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #002855 0%, #001f42 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-header h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .card-header i {
+        font-size: 1.1rem;
+    }
+
+    /* Summary Statistics */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .summary-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff6b00, #e65c00);
+    }
+
+    .summary-card.revenue::before {
+        background: linear-gradient(90deg, #28a745, #20c997);
+    }
+
+    .summary-card.orders::before {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+    }
+
+    .summary-card.growth::before {
+        background: linear-gradient(90deg, #ff6b00, #e65c00);
+    }
+
+    .summary-card.avg::before {
+        background: linear-gradient(90deg, #6f42c1, #5a2d91);
+    }
+
+    .summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .summary-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .summary-card.revenue .summary-icon {
+        background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+    .summary-card.orders .summary-icon {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+    }
+
+    .summary-card.growth .summary-icon {
+        background: linear-gradient(135deg, #ff6b00, #e65c00);
+    }
+
+    .summary-card.avg .summary-icon {
+        background: linear-gradient(135deg, #6f42c1, #5a2d91);
+    }
+
+    .summary-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #002855;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-label {
+        color: #666;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+    }
+
+    .summary-change {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .summary-change.positive {
+        color: #28a745;
+    }
+
+    .summary-change.negative {
+        color: #dc3545;
+    }
+
+    /* Chart Container */
+    .chart-container {
+        padding: 2rem;
+        position: relative;
+        height: 400px;
+    }
+
+    .chart-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-group label {
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        background-color: #fafbfc;
+        color: #333;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #002855;
+        box-shadow: 0 0 0 3px rgba(0, 40, 85, 0.1);
+    }
+
+    /* Table Styles */
+    .revenue-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+    }
+
+    .revenue-table th,
+    .revenue-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+        vertical-align: middle;
+    }
+
+    .revenue-table th {
+        background-color: #f8f9fa;
+        color: #002855;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .revenue-table th i {
+        margin-right: 0.5rem;
+        color: #ff6b00;
+    }
+
+    .revenue-table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .revenue-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .course-name {
+        font-weight: 600;
+        color: #002855;
+    }
+
+    .revenue-amount {
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .revenue-positive {
+        color: #28a745;
+    }
+
+    .revenue-negative {
+        color: #dc3545;
+    }
+
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-high {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        border: 1px solid #28a745;
+    }
+
+    .status-medium {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        color: #856404;
+        border: 1px solid #ffc107;
+    }
+
+    .status-low {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+        border: 1px solid #dc3545;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .page-wrapper {
+            padding: 0.5rem;
+        }
+
+        .summary-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .chart-container {
+            height: 350px;
+            padding: 1.5rem;
+        }
+
+        .chart-filters {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-card {
+            padding: 1.5rem;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+        }
+
+        .chart-container {
+            height: 300px;
+            padding: 1rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .revenue-table th,
+        .revenue-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .page-header h1 {
+            font-size: 1.75rem;
+        }
+
+        .summary-value {
+            font-size: 1.6rem;
+        }
+
+        .chart-container {
+            height: 250px;
+            padding: 0.75rem;
+        }
+
+        .revenue-table {
+            font-size: 0.8rem;
+        }
+
+        .revenue-table th,
+        .revenue-table td {
+            padding: 0.5rem 0.25rem;
+        }
+    }
+
+    /* Loading Animation */
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #002855;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Export buttons */
+    .export-buttons {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .export-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ff6b00 0%, #e65c00 100%);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.4);
+    }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="statistics-container">
+        <div class="page-header">
+            <h1><i class="fas fa-chart-line"></i> Thống kê Doanh thu</h1>
+            <p class="page-subtitle">Theo dõi và phân tích doanh thu từ các khóa học</p>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="summary-grid">
+            <div class="summary-card revenue">
+                <div class="summary-header">
+                    <div class="summary-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="summary-value">2,450,000,000 ₫</div>
+                <div class="summary-label">Tổng doanh thu tháng này</div>
+                <div class="summary-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+15.3% so với tháng trước</span>
+                </div>
+            </div>
+
+            <div class="summary-card orders">
+                <div class="summary-header">
+                    <div class="summary-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>
+                <div class="summary-value">1,247</div>
+                <div class="summary-label">Tổng số đơn hàng</div>
+                <div class="summary-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+8.7% so với tháng trước</span>
+                </div>
+            </div>
+
+            <div class="summary-card growth">
+                <div class="summary-header">
+                    <div class="summary-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="summary-value">+23.5%</div>
+                <div class="summary-label">Tăng trưởng doanh thu</div>
+                <div class="summary-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Tăng 5.2% so với quý trước</span>
+                </div>
+            </div>
+
+            <div class="summary-card avg">
+                <div class="summary-header">
+                    <div class="summary-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                </div>
+                <div class="summary-value">1,965,000 ₫</div>
+                <div class="summary-label">Doanh thu trung bình/đơn</div>
+                <div class="summary-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+6.1% so với tháng trước</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="chart-card">
+            <div class="card-header">
+                <h2><i class="fas fa-chart-area"></i> Biểu đồ doanh thu theo thời gian</h2>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportChart('png')">
+                        <i class="fas fa-download"></i> Xuất PNG
+                    </button>
+                    <button class="export-btn" onclick="exportChart('pdf')">
+                        <i class="fas fa-file-pdf"></i> Xuất PDF
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-filters">
+                    <div class="filter-group">
+                        <label>Khoảng thời gian:</label>
+                        <select class="filter-select" id="timeRange" onchange="updateChart()">
+                            <option value="7days">7 ngày qua</option>
+                            <option value="30days" selected>30 ngày qua</option>
+                            <option value="3months">3 tháng qua</option>
+                            <option value="6months">6 tháng qua</option>
+                            <option value="1year">1 năm qua</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Loại biểu đồ:</label>
+                        <select class="filter-select" id="chartType" onchange="updateChart()">
+                            <option value="line">Đường</option>
+                            <option value="bar" selected>Cột</option>
+                            <option value="area">Vùng</option>
+                        </select>
+                    </div>
+                </div>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Revenue Courses Table -->
+        <div class="chart-card">
+            <div class="card-header">
+                <h2><i class="fas fa-trophy"></i> Top khóa học có doanh thu cao nhất</h2>
+            </div>
+            <div style="padding: 2rem;">
+                <table class="revenue-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> Xếp hạng</th>
+                            <th><i class="fas fa-graduation-cap"></i> Tên khóa học</th>
+                            <th><i class="fas fa-users"></i> Số học viên</th>
+                            <th><i class="fas fa-dollar-sign"></i> Doanh thu</th>
+                            <th><i class="fas fa-percentage"></i> Tỷ lệ</th>
+                            <th><i class="fas fa-chart-line"></i> Xu hướng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td class="course-name">React JS từ cơ bản đến nâng cao</td>
+                            <td>324</td>
+                            <td class="revenue-amount revenue-positive">485,000,000 ₫</td>
+                            <td>19.8%</td>
+                            <td><span class="status-badge status-high">Cao</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td class="course-name">Node.js Backend Development</td>
+                            <td>287</td>
+                            <td class="revenue-amount revenue-positive">420,000,000 ₫</td>
+                            <td>17.1%</td>
+                            <td><span class="status-badge status-high">Cao</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td class="course-name">Python cho Data Science</td>
+                            <td>256</td>
+                            <td class="revenue-amount revenue-positive">380,000,000 ₫</td>
+                            <td>15.5%</td>
+                            <td><span class="status-badge status-medium">Trung bình</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td class="course-name">Flutter Mobile Development</td>
+                            <td>198</td>
+                            <td class="revenue-amount revenue-positive">295,000,000 ₫</td>
+                            <td>12.0%</td>
+                            <td><span class="status-badge status-medium">Trung bình</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td class="course-name">UI/UX Design Master Class</td>
+                            <td>145</td>
+                            <td class="revenue-amount revenue-positive">220,000,000 ₫</td>
+                            <td>9.0%</td>
+                            <td><span class="status-badge status-low">Thấp</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let revenueChart;
+
+// Dữ liệu mẫu cho biểu đồ doanh thu
+const revenueData = {
+    '7days': {
+        labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+        data: [45000000, 52000000, 48000000, 61000000, 55000000, 67000000, 58000000]
+    },
+    '30days': {
+        labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+        data: [180000000, 220000000, 195000000, 245000000]
+    },
+    '3months': {
+        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3'],
+        data: [780000000, 890000000, 950000000]
+    },
+    '6months': {
+        labels: ['T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+        data: [650000000, 720000000, 780000000, 890000000, 950000000, 1200000000]
+    },
+    '1year': {
+        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+        data: [2100000000, 2450000000, 2780000000, 3200000000]
+    }
+};
+
+// Khởi tạo biểu đồ
+function initChart() {
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const timeRange = document.getElementById('timeRange').value;
+    const chartType = document.getElementById('chartType').value;
+    
+    const data = revenueData[timeRange];
+    
+    // Destroy existing chart if it exists
+    if (revenueChart) {
+        revenueChart.destroy();
+    }
+    
+    revenueChart = new Chart(ctx, {
+        type: chartType === 'area' ? 'line' : chartType,
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Doanh thu (VNĐ)',
+                data: data.data,
+                backgroundColor: chartType === 'area' ? 'rgba(0, 40, 85, 0.1)' : 'rgba(0, 40, 85, 0.8)',
+                borderColor: '#002855',
+                borderWidth: 3,
+                fill: chartType === 'area',
+                tension: 0.4,
+                pointBackgroundColor: '#ff6b00',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: {
+                            size: 14,
+                            weight: '600'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 40, 85, 0.9)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    borderColor: '#ff6b00',
+                    borderWidth: 2,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Doanh thu: ' + context.parsed.y.toLocaleString('vi-VN') + ' ₫';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return (value / 1000000).toFixed(0) + 'M ₫';
+                        },
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+}
+
+// Cập nhật biểu đồ khi thay đổi filter
+function updateChart() {
+    initChart();
+}
+
+// Xuất biểu đồ
+function exportChart(format) {
+    if (!revenueChart) return;
+    
+    const link = document.createElement('a');
+    link.download = `doanh-thu-${new Date().toISOString().split('T')[0]}.${format}`;
+    
+    if (format === 'png') {
+        link.href = revenueChart.toBase64Image();
+    } else if (format === 'pdf') {
+        // Trong thực tế, bạn sẽ cần thư viện như jsPDF để xuất PDF
+        alert('Chức năng xuất PDF đang được phát triển!');
+        return;
+    }
+    
+    link.click();
+}
+
+// Hiệu ứng đếm số
+function animateNumbers() {
+    const summaryValues = document.querySelectorAll('.summary-value');
+    
+    summaryValues.forEach(element => {
+        const target = element.textContent;
+        const numericValue = target.replace(/[^\d]/g, '');
+        
+        if (numericValue) {
+            let current = 0;
+            const increment = parseInt(numericValue) / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= parseInt(numericValue)) {
+                    current = parseInt(numericValue);
+                    clearInterval(timer);
+                }
+                
+                if (target.includes('₫')) {
+                    element.textContent = Math.floor(current).toLocaleString('vi-VN') + ' ₫';
+                } else if (target.includes('%')) {
+                    element.textContent = '+' + (current / 1000000).toFixed(1) + '%';
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString('vi-VN');
+                }
+            }, 20);
+        }
+    });
+}
+
+// Khởi tạo khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    initChart();
+    setTimeout(animateNumbers, 500);
+    
+    console.log('✅ Trang thống kê doanh thu đã được khởi tạo thành công!');
+});
+</script>
+</body>
+</html>
