@@ -123,6 +123,31 @@
     .add-btn:hover {
       background-color: #001f42;
     }
+        /* Excel Buttons Container */
+        .excel-actions {
+      display: flex;
+      gap: 0.8rem;
+      margin-left: auto; /* Push to the right */
+    }
+
+    .excel-btn {
+      background-color: #28a745; /* Green for import/export */
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none; /* For export link */
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .excel-btn:hover {
+      background-color: #218838;
+    }
 
     /* Table Styles - Matching Crud_Course.html */
     .video-table,
@@ -547,9 +572,17 @@
       <div class="tab-content" id="quiz-tab">
         <div class="tab-content-header">
           <h2><i class="fas fa-question-circle"></i> Danh sách câu hỏi</h2>
-          <button class="add-btn" onclick="openQuizModal('add-quiz-modal', 'add')" data-course-id="${course.ID_khoa_hoc}">
-            <i class="fas fa-plus"></i> Thêm câu hỏi
-          </button>
+          <div class="excel-actions">
+            <button class="excel-btn" onclick="openModal('import-quiz-modal')">
+              <i class="fas fa-file-excel"></i> Nhập Excel
+            </button>
+            <a th:href="@{/course-content/{courseId}/questions/export(courseId=${course.ID_khoa_hoc})}" class="excel-btn">
+              <i class="fas fa-download"></i> Xuất Excel
+            </a>
+            <button class="add-btn" onclick="openQuizModal('add-quiz-modal', 'add')" data-course-id="${course.ID_khoa_hoc}">
+              <i class="fas fa-plus"></i> Thêm câu hỏi
+            </button>
+          </div>
         </div>
         <table class="quiz-table">
           <thead>
@@ -679,6 +712,36 @@
       </div>
     </div>
 
+    <div class="modal" id="import-quiz-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-excel"></i> Nhập câu hỏi từ Excel</h2>
+                <button class="close-btn" onclick="closeModal('import-quiz-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/course-content/{courseId}/questions/import(courseId=${course.ID_khoa_hoc})}"
+                      method="post" enctype="multipart/form-data" id="import-quiz-form">
+                    <div class="form-group">
+                        <label for="excel-file"><i class="fas fa-upload"></i> Chọn file Excel</label>
+                        <input type="file" id="excel-file" name="file" accept=".xls, .xlsx" required>
+                    </div>
+                    <p style="font-size: 0.9em; color: #666;">
+                        <i class="fas fa-info-circle"></i> Định dạng file Excel mẫu:
+                        Cột A: Câu hỏi, Cột B: Đáp án A, Cột C: Đáp án B, Cột D: Đáp án C, Cột E: Đáp án D, Cột F: Đáp án đúng.
+                    </p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeModal('import-quiz-modal')">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button class="save-btn" type="submit" form="import-quiz-form">
+                    <i class="fas fa-upload"></i> Tải lên
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="delete-video-modal">
       <div class="delete-modal-content">
         <p><i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 2rem; margin-bottom: 1rem;"></i><br>
@@ -781,6 +844,7 @@
 
         correctAnswerField.innerHTML = '<option value="">Chọn đáp án đúng</option>';
 
+        // Only add options if they have a value
         if (optionAValue) {
             correctAnswerField.add(new Option(optionAValue, optionAValue));
         }
@@ -837,11 +901,17 @@
             correctAnswerField.value = button.getAttribute('data-correct-answer');
         }
 
+        // Remove existing listeners to prevent multiple bindings
+        optionAField.removeEventListener('input', updateCorrectAnswerOptions);
+        optionBField.removeEventListener('input', updateCorrectAnswerOptions);
+        optionCField.removeEventListener('input', updateCorrectAnswerOptions);
+        optionDField.removeEventListener('input', updateCorrectAnswerOptions);
+
         // Add event listeners to update correct answer options dynamically
-        optionAField.oninput = updateCorrectAnswerOptions;
-        optionBField.oninput = updateCorrectAnswerOptions;
-        optionCField.oninput = updateCorrectAnswerOptions;
-        optionDField.oninput = updateCorrectAnswerOptions;
+        optionAField.addEventListener('input', updateCorrectAnswerOptions);
+        optionBField.addEventListener('input', updateCorrectAnswerOptions);
+        optionCField.addEventListener('input', updateCorrectAnswerOptions);
+        optionDField.addEventListener('input', updateCorrectAnswerOptions);
     }
 
     // Delete Video Modal
@@ -864,7 +934,7 @@
 
     // Close modal when clicking outside
     window.onclick = function(event) {
-      const modals = ['add-video-modal', 'add-quiz-modal', 'delete-video-modal', 'delete-quiz-modal'];
+      const modals = ['add-video-modal', 'add-quiz-modal', 'import-quiz-modal', 'delete-video-modal', 'delete-quiz-modal'];
       modals.forEach(modalId => {
         const modal = document.getElementById(modalId);
         if (event.target === modal) {

@@ -33,10 +33,27 @@ public class QuestionServiceImp implements QuestionService {
     public void delete(Long id) {
         questionRepository.deleteById(id);
     }
-
+    @Override
+    public void deleteByCourseId(Long courseId) {
+        questionRepository.deleteByCourseId(courseId);
+    }
+    @Override
+    public void saveAll(List<Question> questions) {
+        questionRepository.saveAll(questions);
+    }
     @Override
     public List<Question> findByCourseID_khoa_hoc(Long courseId) {
         // CALL THE CORRECTED REPOSITORY METHOD HERE
         return questionRepository.findQuestionsByCourseId(courseId);
+    }
+
+    @Transactional
+    public void deleteOldQuestions(Long courseId) {
+        questionRepository.deleteByCourseId(courseId);
+    }
+
+    @Transactional
+    public void saveNewQuestions(List<Question> questions) {
+        questionRepository.saveAll(questions);
     }
 }

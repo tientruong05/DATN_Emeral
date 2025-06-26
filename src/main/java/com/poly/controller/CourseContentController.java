@@ -2,13 +2,15 @@ package com.poly.controller;
 
 import com.poly.entity.Course;
 import com.poly.entity.Video; // Import Video entity
+import com.poly.repository.QuestionRepository;
 import com.poly.entity.Question; // Import Question entity
-import com.poly.repository.CategoryRepository;
 import com.poly.service.CourseService;
 import com.poly.service.VideoService; // Import VideoService
 import com.poly.service.QuestionService; // Import QuestionService
+import com.poly.service.QuizExcelService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,13 @@ import org.springframework.web.bind.annotation.ModelAttribute; // For @ModelAttr
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping; // For @PostMapping
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // For RedirectAttributes
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType; // Import MediaType
 
+import java.io.IOException;
 import java.util.List; // For List type if not already imported
 
 @Controller
@@ -32,6 +39,11 @@ public class CourseContentController {
 
     @Autowired
     private QuestionService questionService; // Autowire QuestionService
+
+    @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
+    private QuizExcelService quizExcelService;
 
 
     // --- Course Content Page Display ---
@@ -204,5 +216,65 @@ public class CourseContentController {
         questionService.delete(questionId);
         redirectAttributes.addFlashAttribute("successMessage", "Question deleted successfully!");
         return "redirect:/course-content/" + courseId + "#quiz-tab"; // Redirect back to quiz tab
+    }
+    //  Excel Import/Export for Quiz Questions
+
+    @PostMapping("/{courseId}/questions/import")
+public String importQuizQuestions(@PathVariable Long courseId,
+                                  @RequestParam("file") MultipartFile file,
+                                  RedirectAttributes redirectAttributes) {
+    if (file.isEmpty()) {
+        redirectAttributes.addFlashAttribute("error", "Vui lòng chọn một file Excel để tải lên.");
+        return "redirect:/course-content/" + courseId + "#quiz-tab";
+    }
+    try {
+        // Import questions from Excel
+        List<Question> importedQuestions = quizExcelService.importQuestionsFromExcel(file.getInputStream(), courseId);
+
+        // Check if importedQuestions is valid
+        if (importedQuestions == null || importedQuestions.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Không có câu hỏi nào được import từ file Excel.");
+            return "redirect:/course-content/" + courseId + "#quiz-tab";
+        }
+
+        // Delete old questions and save new ones
+        // questionService.deleteOldQuestions(courseId);
+        questionService.saveNewQuestions(importedQuestions);
+
+        redirectAttributes.addFlashAttribute("message", "Đã nhập " + importedQuestions.size() + " câu hỏi từ Excel thành công!");
+    } catch (IOException e) {
+        redirectAttributes.addFlashAttribute("error", "Lỗi khi đọc file Excel: " + e.getMessage());
+    } catch (IllegalArgumentException e) {
+        redirectAttributes.addFlashAttribute("error", "Lỗi dữ liệu: " + e.getMessage());
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi nhập câu hỏi: " + e.getMessage());
+        e.printStackTrace(); // Log lỗi để debug
+    }
+    return "redirect:/course-content/" + courseId + "#quiz-tab";
+}
+
+    @GetMapping("/{courseId}/questions/export")
+    public ResponseEntity<byte[]> exportQuizQuestions(@PathVariable Long courseId) {
+        List<Question> questions = questionRepository.findQuestionsByCourseId(courseId);
+        // LOẠI BỎ DÒNG NÀY: model.addAttribute("questions", questions);
+        // Vì đây là phương thức trả về file, không phải view.
+
+        try {
+            byte[] excelBytes = quizExcelService.exportQuestionsToExcel(questions);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            String filename = "cau_hoi_quiz_khoa_hoc_" + courseId + ".xlsx";
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelBytes);
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Luôn log lỗi trong môi trường thực tế
+            return ResponseEntity.status(500).body(null); // Trả về lỗi 500 nếu có vấn đề
+        }
     }
 }
