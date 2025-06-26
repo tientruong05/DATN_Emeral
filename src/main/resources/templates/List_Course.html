@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tất cả khóa học - EDU102</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+            color: white;
+            padding: 4rem 0 2rem 0;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Search and Filter Section */
+        .search-filter-section {
+            background: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            z-index: 100;
+        }
+
+        .search-bar {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #002855;
+            box-shadow: 0 0 0 3px rgba(0, 40, 85, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .course-filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-button {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1.2rem;
+            background-color: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-button:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .filter-button.active {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .filter-button i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .filter-button span {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-left: 0.5rem;
+        }
+
+        .sort-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Courses Section */
+        .courses-section {
+            padding: 3rem 0;
+        }
+
+        .courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .courses-count {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn.active {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            /* Đặt chiều cao cố định cho tất cả card */
+            height: 380px;
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .course-image {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .course-card:hover .course-image img {
+            transform: scale(1.05);
+        }
+
+        
+
+        .wishlist-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .wishlist-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .wishlist-btn.wishlist-active {
+            color: #dc3545;
+            background: white;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            /* Chiếm hết không gian còn lại */
+            flex: 1;
+            /* Đặt chiều cao cố định cho phần content */
+            height: 200px;
+            position: relative;
+        }
+
+        .course-category {
+            color: #002855;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .course-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            line-height: 1.4;
+            flex-shrink: 0;
+            /* Giới hạn chiều cao và cắt text nếu quá dài */
+            height: 2.8rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .course-instructor {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Đặt footer ở cuối card */
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .course-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .current-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #002855;
+        }
+
+        .original-price {
+            font-size: 0.9rem;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .free-price {
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        .enroll-btn {
+            background-color: #002855;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .enroll-btn:hover {
+            background-color: #001f42;
+            transform: translateY(-2px);
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .page-btn {
+            padding: 0.6rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .page-btn.active {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #002855;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .course-filters {
+                justify-content: center;
+            }
+            
+            .courses-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .courses-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .course-card {
+                height: 360px;
+            }
+
+            .course-content {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .course-card {
+                height: 340px;
+            }
+
+            .course-content {
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Tất cả khóa học lập trình</h1>
+            <p>Khám phá hơn 200+ khóa học lập trình chất lượng cao từ cơ bản đến nâng cao, được giảng dạy bởi các chuyên gia hàng đầu trong ngành</p>
+        </div>
+    </section>
+
+    <!-- Search and Filter Section -->
+    <section class="search-filter-section">
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <i class="search-icon">🔍</i>
+                <input type="text" class="search-input" placeholder="Tìm kiếm khóa học..." id="searchInput">
+            </div>
+
+            <!-- Course Filters -->
+            <div class="course-filters">
+                <div class="filter-button active" data-filter="all">
+                    <i>📚</i> Tất cả <span>200+</span>
+                </div>
+                <div class="filter-button" data-filter="web">
+                    <i>🌐</i> Web Development <span>80+</span>
+                </div>
+                <div class="filter-button" data-filter="mobile">
+                    <i>📱</i> Mobile App <span>45+</span>
+                </div>
+                <div class="filter-button" data-filter="ai">
+                    <i>🤖</i> AI & Machine Learning <span>35+</span>
+                </div>
+                <div class="filter-button" data-filter="backend">
+                    <i>⚙️</i> Backend <span>40+</span>
+                </div>
+            </div>
+
+            <!-- Sort Controls -->
+            <div class="sort-controls">
+                <span>Sắp xếp theo:</span>
+                <select class="sort-select" id="sortSelect">
+                    <option value="popular">Phổ biến nhất</option>
+                    <option value="newest">Mới nhất</option>
+                    <option value="price-low">Giá thấp đến cao</option>
+                    <option value="price-high">Giá cao đến thấp</option>
+                    
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="courses-section">
+        <div class="container">
+            <!-- Courses Header -->
+            <div class="courses-header">
+                <div class="courses-count" id="coursesCount">
+                    Hiển thị 12 trong số 200+ khóa học
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Courses Grid -->
+            <div class="courses-grid" id="coursesGrid">
+                <!-- Courses will be dynamically loaded here -->
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Đang tải khóa học...</p>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Data
+        let currentPage = 1;
+        const coursesPerPage = 12;
+        let activeFilter = 'all';
+        let currentSort = 'popular';
+        let searchQuery = '';
+        let allCourses = [];
+
+        // Sample course data
+        const courseData = [
+            {
+                id: 1,
+                title: 'JavaScript Fundamentals - Từ Zero đến Hero',
+                category: 'Web Development',
+                reviews: 1250,
+                price: 599000,
+                originalPrice: 999000,
+                image: 'https://via.placeholder.com/300x180/4A90E2/FFFFFF?text=JavaScript',
+                type: 'web',
+                students: 3500,
+                isWishlisted: false,
+                createdAt: '2024-01-15'
+            },
+            {
+                id: 2,
+                title: 'React Native - Xây dựng App di động',
+                category: 'Mobile Development',
+                reviews: 980,
+                price: 799000,
+                originalPrice: 1299000,
+                image: 'https://via.placeholder.com/300x180/28A745/FFFFFF?text=React+Native',
+                type: 'mobile',
+                students: 2100,
+                isWishlisted: false,
+                createdAt: '2024-02-20'
+            },
+            {
+                id: 3,
+                title: 'Python Machine Learning cơ bản',
+                category: 'AI & Machine Learning',
+                reviews: 1500,
+                price: 0,
+                originalPrice: 0,
+                image: 'https://via.placeholder.com/300x180/FF6B00/FFFFFF?text=Python+ML',
+                type: 'ai',
+                students: 5200,
+                isWishlisted: false,
+                createdAt: '2024-01-10'
+            },
+            {
+                id: 4,
+                title: 'Node.js Backend Development',
+                category: 'Backend Development',
+                reviews: 750,
+                price: 699000,
+                originalPrice: 1199000,
+                image: 'https://via.placeholder.com/300x180/DC3545/FFFFFF?text=Node.js',
+                type: 'backend',
+                students: 1800,
+                isWishlisted: false,
+                createdAt: '2024-03-05'
+            },
+            {
+                id: 5,
+                title: 'HTML CSS từ cơ bản đến nâng cao',
+                category: 'Web Development',
+                reviews: 2100,
+                price: 399000,
+                originalPrice: 699000,
+                image: 'https://via.placeholder.com/300x180/6F42C1/FFFFFF?text=HTML+CSS',
+                type: 'web',
+                students: 4200,
+                isWishlisted: false,
+                createdAt: '2024-01-01'
+            },
+            {
+                id: 6,
+                title: 'Flutter - Phát triển ứng dụng đa nền tảng',
+                category: 'Mobile Development',
+                reviews: 650,
+                price: 899000,
+                originalPrice: 1499000,
+                image: 'https://via.placeholder.com/300x180/17A2B8/FFFFFF?text=Flutter',
+                type: 'mobile',
+                students: 1500,
+                isWishlisted: false,
+                createdAt: '2024-02-15'
+            },
+            {
+                id: 7,
+                title: 'Deep Learning với TensorFlow',
+                category: 'AI & Machine Learning',
+                reviews: 890,
+                price: 1299000,
+                originalPrice: 1899000,
+                image: 'https://via.placeholder.com/300x180/FFC107/FFFFFF?text=TensorFlow',
+                type: 'ai',
+                students: 1200,
+                isWishlisted: false,
+                createdAt: '2024-03-01'
+            },
+            {
+                id: 8,
+                title: 'ExpressJS API Development',
+                category: 'Backend Development',
+                reviews: 520,
+                price: 599000,
+                originalPrice: 999000,
+                image: 'https://via.placeholder.com/300x180/28A745/FFFFFF?text=Express',
+                type: 'backend',
+                students: 980,
+                isWishlisted: false,
+                createdAt: '2024-02-10'
+            },
+            {
+                id: 9,
+                title: 'Vue.js Progressive Web App',
+                category: 'Web Development',
+                reviews: 780,
+                price: 699000,
+                originalPrice: 1199000,
+                image: 'https://via.placeholder.com/300x180/4CAF50/FFFFFF?text=Vue.js',
+                type: 'web',
+                students: 1650,
+                isWishlisted: false,
+                createdAt: '2024-01-25'
+            },
+            {
+                id: 10,
+                title: 'Swift iOS Development',
+                category: 'Mobile Development',
+                reviews: 420,
+                price: 999000,
+                originalPrice: 1699000,
+                image: 'https://via.placeholder.com/300x180/007AFF/FFFFFF?text=Swift+iOS',
+                type: 'mobile',
+                students: 850,
+                isWishlisted: false,
+                createdAt: '2024-03-10'
+            },
+            {
+                id: 11,
+                title: 'Computer Vision với OpenCV',
+                category: 'AI & Machine Learning',
+                reviews: 680,
+                price: 899000,
+                originalPrice: 1399000,
+                image: 'https://via.placeholder.com/300x180/E91E63/FFFFFF?text=OpenCV',
+                type: 'ai',
+                students: 720,
+                isWishlisted: false,
+                createdAt: '2024-02-28'
+            },
+            {
+                id: 12,
+                title: 'Django Web Framework',
+                category: 'Backend Development',
+                reviews: 950,
+                price: 799000,
+                originalPrice: 1299000,
+                image: 'https://via.placeholder.com/300x180/092E20/FFFFFF?text=Django',
+                type: 'backend',
+                students: 1350,
+                isWishlisted: false,
+                createdAt: '2024-01-20'
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate more courses for demonstration
+            allCourses = generateMoreCourses(courseData);
+            
+            // Initial render
+            renderCourses();
+            renderPagination();
+            
+            // Event listeners
+            setupEventListeners();
+        });
+
+        function generateMoreCourses(baseCourses) {
+            const courses = [...baseCourses];
+            const titles = [
+                'Advanced React Hooks', 'MongoDB Database Design', 'GraphQL API Development',
+                'Kubernetes for Developers', 'Docker Containerization', 'AWS Cloud Computing',
+                'TypeScript Complete Guide', 'Next.js Full Stack', 'Laravel PHP Framework',
+                'Angular Enterprise Apps', 'Spring Boot Java', 'Go Programming Language',
+                'Rust Systems Programming', 'DevOps with Jenkins', 'Microservices Architecture'
+            ];
+            
+            // Generate additional courses
+            for (let i = 0; i < 150; i++) {
+                const baseIndex = i % baseCourses.length;
+                const base = baseCourses[baseIndex];
+                const titleIndex = i % titles.length;
+                
+                courses.push({
+                    ...base,
+                    id: baseCourses.length + i + 1,
+                    title: titles[titleIndex] + ` - Khóa ${i + 1}`,
+                    //rating: (Math.random() * 1.5 + 3.5).toFixed(1),
+                    reviews: Math.floor(Math.random() * 2000) + 100,
+                    price: Math.floor(Math.random() * 1000000) + 299000,
+                    students: Math.floor(Math.random() * 5000) + 200,
+                    createdAt: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0]
+                });
+            }
+            
+            return courses;
+        }
+
+        function setupEventListeners() {
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchQuery = e.target.value.toLowerCase();
+                currentPage = 1;
+                renderCourses();
+                renderPagination();
+            });
+
+            // Filter buttons
+            document.querySelectorAll('.filter-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    setFilter(filter, this);
+                });
+            });
+
+            // Sort select
+            document.getElementById('sortSelect').addEventListener('change', function(e) {
+                currentSort = e.target.value;
+                currentPage = 1;
+                renderCourses();
+                renderPagination();
+            });
+
+            // View toggle
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const view = this.getAttribute('data-view');
+                    setView(view, this);
+                });
+            });
+        }
+
+        function getFilteredAndSortedCourses() {
+            let filtered = allCourses;
+
+            // Apply search filter
+            if (searchQuery) {
+                filtered = filtered.filter(course => 
+                    course.title.toLowerCase().includes(searchQuery) ||
+                    course.category.toLowerCase().includes(searchQuery) 
+                    
+                );
+            }
+
+            // Apply category filter
+            if (activeFilter !== 'all') {
+                filtered = filtered.filter(course => course.type === activeFilter);
+            }
+
+            // Apply sorting
+            filtered.sort((a, b) => {
+                switch (currentSort) {
+                    case 'newest':
+                        return new Date(b.createdAt) - new Date(a.createdAt);
+                    case 'price-low':
+                        return a.price - b.price;
+                    case 'price-high':
+                        return b.price - a.price;
+                    
+                    case 'popular':
+                    default:
+                        return b.students - a.students;
+                }
+            });
+
+            return filtered;
+        }
+
+        function renderCourses() {
+            const coursesGrid = document.getElementById('coursesGrid');
+            const filtered = getFilteredAndSortedCourses();
+            
+            // Pagination
+            const startIndex = (currentPage - 1) * coursesPerPage;
+            const endIndex = startIndex + coursesPerPage;
+            const coursesToShow = filtered.slice(startIndex, endIndex);
+            
+            // Update courses count
+            document.getElementById('coursesCount').textContent = 
+                `Hiển thị ${startIndex + 1}-${Math.min(endIndex, filtered.length)} trong số ${filtered.length} khóa học`;
+            
+            // Render courses
+            coursesGrid.innerHTML = '';
+            
+            coursesToShow.forEach(course => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+                courseCard.innerHTML = `
+                    <div class="course-image">
+                        <img src="${course.image}" alt="${course.title}">
+                        <div class="course-level">${course.level}</div>
+                        <div class="wishlist-btn ${course.isWishlisted ? 'wishlist-active' : ''}" onclick="toggleWishlist(${course.id})">
+                            ❤
+                        </div>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">${course.category}</div>
+                        <h3 class="course-title">${course.title}</h3>
+                        
+                        
+                        <div class="course-footer">
+                            <div class="course-price">
+                                ${course.price === 0 ? 
+                                    '<div class="current-price free-price">Miễn phí</div>' :
+                                    `<div class="current-price">${course.price.toLocaleString('vi-VN')} VND</div>
+                                     ${course.originalPrice > course.price ? `<div class="original-price">${course.originalPrice.toLocaleString('vi-VN')} VND</div>` : ''}`
+                                }
+                            </div>
+                            <button class="enroll-btn" onclick="enrollCourse(${course.id})">
+                                ${course.price === 0 ? 'Học ngay' : 'Mua ngay'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                coursesGrid.appendChild(courseCard);
+            });
+        }
+
+        function renderPagination() {
+            const filtered = getFilteredAndSortedCourses();
+            const totalPages = Math.ceil(filtered.length / coursesPerPage);
+            const paginationContainer = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="bi bi-chevron-left"></i> Trước
+                </button>
+            `;
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="page-btn" style="border:none;cursor:default;">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="page-btn" style="border:none;cursor:default;">...</span>`;
+                }
+                paginationHTML += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            // Next button
+            paginationHTML += `
+                <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    Sau <i class="bi bi-chevron-right"></i>
+                </button>
+            `;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+
+        function setFilter(filterType, buttonElement) {
+            activeFilter = filterType;
+            currentPage = 1;
+            
+            // Update active button
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+            
+            // Re-render
+            renderCourses();
+            renderPagination();
+        }
+
+        function setView(viewType, buttonElement) {
+            // Update active button
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+            
+            const coursesGrid = document.getElementById('coursesGrid');
+            
+            if (viewType === 'list') {
+                coursesGrid.style.display = 'flex';
+                coursesGrid.style.flexDirection = 'column';
+                coursesGrid.style.gap = '1rem';
+                
+                // Modify course cards for list view
+                document.querySelectorAll('.course-card').forEach(card => {
+                    card.style.flexDirection = 'row';
+                    card.style.height = 'auto';
+                    card.style.maxHeight = '200px';
+                    
+                    const image = card.querySelector('.course-image');
+                    if (image) {
+                        image.style.width = '250px';
+                        image.style.flexShrink = '0';
+                    }
+                    
+                    const content = card.querySelector('.course-content');
+                    if (content) {
+                        content.style.flex = '1';
+                        content.style.padding = '1rem 1.5rem';
+                    }
+                });
+            } else {
+                // Reset to grid view
+                coursesGrid.style.display = 'grid';
+                coursesGrid.style.flexDirection = '';
+                coursesGrid.style.gap = '2rem';
+                
+                document.querySelectorAll('.course-card').forEach(card => {
+                    card.style.flexDirection = 'column';
+                    card.style.height = '400px';
+                    card.style.maxHeight = '';
+                    
+                    const image = card.querySelector('.course-image');
+                    if (image) {
+                        image.style.width = '';
+                        image.style.flexShrink = '';
+                    }
+                    
+                    const content = card.querySelector('.course-content');
+                    if (content) {
+                        content.style.flex = '';
+                        content.style.padding = '1.5rem';
+                    }
+                });
+            }
+        }
+
+        function changePage(page) {
+            const filtered = getFilteredAndSortedCourses();
+            const totalPages = Math.ceil(filtered.length / coursesPerPage);
+            
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('coursesGrid').style.opacity = '0.5';
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                renderCourses();
+                renderPagination();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('coursesGrid').style.opacity = '1';
+                
+                // Scroll to top of courses section
+                document.querySelector('.search-filter-section').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            }, 500);
+        }
+
+        function toggleWishlist(courseId) {
+            const course = allCourses.find(c => c.id === courseId);
+            if (course) {
+                course.isWishlisted = !course.isWishlisted;
+                renderCourses();
+                
+                // Show notification
+                const message = course.isWishlisted ? 
+                    `Đã thêm "${course.title}" vào danh sách yêu thích!` :
+                    `Đã xóa "${course.title}" khỏi danh sách yêu thích!`;
+                showNotification(message);
+            }
+        }
+
+        function enrollCourse(courseId) {
+            const course = allCourses.find(c => c.id === courseId);
+            if (course) {
+                const message = course.price === 0 ? 
+                    `Bạn đã đăng ký khóa học "${course.title}" thành công!` :
+                    `Đã thêm khóa học "${course.title}" vào giỏ hàng!`;
+                showNotification(message);
+            }
+        }
+
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+            
+            // Add animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                    document.head.removeChild(style);
+                }, 300);
+            }, 3000);
+        }
+
+        // Quick filter functions for easy access
+        function filterByCategory(category) {
+            const filterButton = document.querySelector(`[data-filter="${category}"]`);
+            if (filterButton) {
+                setFilter(category, filterButton);
+            }
+        }
+
+        function searchCourses(query) {
+            document.getElementById('searchInput').value = query;
+            searchQuery = query.toLowerCase();
+            currentPage = 1;
+            renderCourses();
+            renderPagination();
+        }
+
+        // Export functions for external use
+        window.filterByCategory = filterByCategory;
+        window.searchCourses = searchCourses;
+    </script>
+</body>
+</html>
