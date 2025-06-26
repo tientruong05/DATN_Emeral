@@ -238,7 +238,10 @@ public String importQuizQuestions(@PathVariable Long courseId,
         }
 
         // Delete old questions and save new ones
-        // questionService.deleteOldQuestions(courseId);
+        questionService.deleteOldQuestions(courseId);
+        for (Question q : importedQuestions) {
+    q.setID_cau_hoi(null);
+}
         questionService.saveNewQuestions(importedQuestions);
 
         redirectAttributes.addFlashAttribute("message", "Đã nhập " + importedQuestions.size() + " câu hỏi từ Excel thành công!");
