@@ -416,7 +416,7 @@
                         <p th:text="${course.mo_ta}">Mô tả khóa học</p>
                         <p th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</p>
 						<form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
-						                 <button type="submit" class="btn btn-primary">Mua ngay</button>
+						                 <button type="submit" class="btn btn-primary">Thêm giỏ hàng</button>
 						             </form>
                     </div>
                 </div>

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DiscountDetailRepository extends JpaRepository<DiscountDetail, Long> {
-    
+
     @Query("SELECT dd FROM DiscountDetail dd WHERE dd.discount.id = :discountId")
     List<DiscountDetail> findAllByDiscountId(@Param("discountId") Long discountId);
 }
