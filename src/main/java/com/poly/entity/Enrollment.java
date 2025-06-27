@@ -1,12 +1,9 @@
 package com.poly.entity;
 
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,21 +13,29 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Enrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
+    @Column(name = "price", nullable = false)
     private Double price;
-    private LocalDate enrollment_date;
-    private LocalDate finish_date;
+
+    @Column(name = "enrollment_date", nullable = false)
+    @CreationTimestamp
+    private LocalDateTime enrollmentDate;
+
+    @Column(name = "finish_date")
+    private LocalDate finishDate;
+
+    @Column(name = "diem")
+    private Double diem; // Trường lưu điểm quiz
 }
