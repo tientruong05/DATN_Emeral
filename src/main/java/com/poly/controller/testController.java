@@ -90,4 +90,20 @@ public class testController {
 	public String Statistic_Certificate() {
 		return "Statistic_Certificate";
 	}
+	@RequestMapping("CourseInProgess")
+	public String CourseInProgess() {
+		return "CourseInProgess";
+	}
+	@RequestMapping("history-payment")
+	public String History_Payment() {
+		return "History_Payment";
+	}
+	@RequestMapping("Video_Learning")
+	public String Video_Learning() {
+		return "Video_Learning";
+	}
+	@RequestMapping("Quiz")
+	public String Quiz() {
+		return "Quiz";
+	}
 }

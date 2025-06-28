@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Giỏ hàng của bạn</title>
-   
     <style>
         /* Reset CSS */
         * {
@@ -44,6 +43,24 @@
             color: #4b5563;
             font-size: 1.125rem;
             font-weight: 500;
+        }
+
+        /* Select All Checkbox */
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 0;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1e3a8a;
+        }
+
+        .select-all input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #1e3a8a;
         }
 
         /* Cart Items */
@@ -182,7 +199,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            flex-shrink: 0; /* Ngăn nút co lại */
+            flex-shrink: 0;
         }
 
         .cart-total button:hover {
@@ -377,14 +394,18 @@
     <div class="cart-container">
         <div class="cart-header">
             <h1>Giỏ hàng của bạn</h1>
-         <h3 th:text="${cartItems != null} ? ${cartItems.size()} + ' khóa học trong giỏ hàng' : '0 khóa học trong giỏ hàng'">0 khóa học trong giỏ hàng</h3>
+            <h3 th:text="${cartItems != null} ? ${cartItems.size()} + ' khóa học trong giỏ hàng' : '0 khóa học trong giỏ hàng'">0 khóa học trong giỏ hàng</h3>
         </div>
         <div class="cart-items">
+            <div class="select-all">
+                <input type="checkbox" id="select-all" onchange="toggleSelectAll()">
+                <label for="select-all">Chọn tất cả</label>
+            </div>
             <div th:each="item, iter : ${cartItems}" class="cart-item">
                 <div class="item-checkbox">
-                    <input type="checkbox" th:id="'checkbox' + ${iter.index}" th:name="'selectedItems'" th:value="${item.course.ten_khoa_hoc}" checked>
+                    <input type="checkbox" th:id="'checkbox' + ${iter.index}" th:name="'selectedItems'" th:value="${item.course.ten_khoa_hoc}" class="cart-item-checkbox" onchange="updateTotal()">
                 </div>
-               <img class="rounded-2xl" th:src="'/upload/' + ${item.course.anh_dai_dien}" alt="Course thumbnail" width="100" height="100" />
+                <img class="rounded-2xl" th:src="'/upload/' + ${item.course.anh_dai_dien}" alt="Course thumbnail" width="100" height="100" />
                 <div class="cart-item-details">
                     <h3 th:text="${item.course.ten_khoa_hoc}">Tên khóa học</h3>
                     <p th:text="${item.course.mo_ta}">Mô tả khóa học</p>
@@ -399,7 +420,7 @@
         </div>
         <div class="cart-total">
             <div class="total-row">
-                <p>Thành tiền: <span id="totalPrice" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span></p>
+                <p>Thành tiền: <span id="totalPrice">0 VND</span></p>
                 <form th:action="@{/cart/checkout}" method="post">
                     <button type="submit">Thanh toán ngay</button>
                 </form>
@@ -410,14 +431,14 @@
             <div class="course-list">
                 <div th:each="course : ${suggestedCourses}" class="course-item">
                     <div class="course-favorite">❤</div>
-					<img class="rounded-2xl" th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'" alt="Course thumbnail" width="100" height="100" />
+                    <img class="rounded-2xl" th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'" alt="Course thumbnail" width="100" height="100" />
                     <div class="course-details">
                         <h3 th:text="${course.ten_khoa_hoc}">Tên khóa học</h3>
                         <p th:text="${course.mo_ta}">Mô tả khóa học</p>
                         <p th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</p>
-						<form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
-						                 <button type="submit" class="btn btn-primary">Thêm giỏ hàng</button>
-						             </form>
+                        <form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
+                            <button type="submit" class="btn btn-primary">Thêm giỏ hàng</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -425,9 +446,17 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"][name="selectedItems"]');
+            const selectAllCheckbox = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.cart-item-checkbox');
             const totalPriceElement = document.getElementById('totalPrice');
             const cartItems = document.querySelectorAll('.cart-item');
+
+            function toggleSelectAll() {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+                updateTotal();
+            }
 
             function updateTotal() {
                 let total = 0;
@@ -436,12 +465,11 @@
                     if (checkbox.checked) {
                         const item = cartItems[index];
                         const priceText = item.querySelector('.cart-item-price p').textContent;
-                        const price = parseInt(priceText.replace(/[^0-9]/g, '')) || 0; // Lấy số từ giá
+                        const price = parseInt(priceText.replace(/[^0-9]/g, '')) || 0;
                         total += price;
                     }
                 });
 
-                // Cập nhật thành tiền
                 totalPriceElement.textContent = total.toLocaleString() + ' VND';
             }
 
@@ -450,8 +478,16 @@
 
             // Lắng nghe sự kiện thay đổi checkbox
             checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateTotal);
+                checkbox.addEventListener('change', () => {
+                    // Kiểm tra nếu tất cả checkbox được chọn
+                    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                    selectAllCheckbox.checked = allChecked;
+                    updateTotal();
+                });
             });
+
+            // Lắng nghe sự kiện thay đổi của checkbox "Chọn tất cả"
+            selectAllCheckbox.addEventListener('change', toggleSelectAll);
         });
     </script>
 </body>

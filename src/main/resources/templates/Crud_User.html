@@ -36,19 +36,38 @@
 			font-size: 2rem;
 		}
 
-		.add-user-btn {
-			background-color: #002855;
-			color: white;
-			padding: 0.6rem 1.2rem;
-			border: none;
-			border-radius: 6px;
-			font-weight: bold;
-			cursor: pointer;
-		}
+	
+		.add-user-btn, .import-excel-btn, .export-excel-btn {
+		          background-color: #002855;
+		          color: white;
+		          padding: 0.6rem 1.2rem;
+		          border: none;
+		          border-radius: 6px;
+		          font-weight: bold;
+		          cursor: pointer;
+		          text-decoration: none;
+		      }
 
-		.add-user-btn:hover {
-			background-color: #001f42;
-		}
+		      .add-user-btn:hover, .import-excel-btn:hover, .export-excel-btn:hover {
+		          background-color: #001f42;
+		      }
+
+		      .import-excel-btn {
+		          background-color: #17a2b8;
+		      }
+
+		      .import-excel-btn:hover {
+		          background-color: #138496;
+		      }
+
+		      .export-excel-btn {
+		          background-color: #28a745;
+		      }
+
+		      .export-excel-btn:hover {
+		          background-color: #218838;
+		      }
+
 
 		.users-table {
 			width: 100%;
@@ -256,7 +275,6 @@
 		.pagination {
 			margin-top: 1rem;
 			text-align: center;
-			/* Canh giữa */
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -272,6 +290,22 @@
 		.pagination span {
 			margin: 0 8px;
 		}
+		.import-excel-btn {
+		          background-color: #17a2b8;
+		      }
+
+		      .import-excel-btn:hover {
+		          background-color: #138496;
+		      }
+
+		      .export-excel-btn {
+		          background-color: #28a745;
+		      }
+
+		      .export-excel-btn:hover {
+		          background-color: #218838;
+		      }
+
 	</style>
 </head>
 
@@ -286,7 +320,11 @@
 	<div class="manage-users-container">
 		<div class="manage-users-header">
 			<h1>Quản lý người dùng</h1>
-			<button class="add-user-btn" onclick="openModal('add-user-modal')">Thêm người dùng</button>
+			<div>
+				<button class="add-user-btn" onclick="openModal('add-user-modal')">Thêm người dùng</button>
+				<button class="import-excel-btn" onclick="openModal('import-excel-modal')">Nhập Excel</button>
+				<a th:href="@{/Crud_User/export}" class="export-excel-btn">Xuất Excel</a>
+			</div>
 		</div>
 
 		<!-- Hiển thị thông báo lỗi nếu có -->
@@ -317,7 +355,7 @@
 	                                            data-email=${user.email}, 
 	                                            data-vaitro=${user.vaiTroAsString}, 
 	                                            data-status=${user.statusAsString}, 
-												 data-matkhau=${user.matKhau}" onclick="openEditModal(this)">
+	                                            data-matkhau=${user.matKhau}" onclick="openEditModal(this)">
 								<i class="fas fa-edit"></i>
 							</button>
 							<button class="btn-action delete-btn" th:attr="data-id=${user.idNguoiDung}"
@@ -328,16 +366,17 @@
 					</td>
 				</tr>
 			</tbody>
-
 		</table>
+
 		<div class="pagination">
 			<a th:if="${userPage.hasPrevious()}"
-				th:href="@{/Crud_User(page=${userPage.number - 1}, size=${userPage.size})}">&laquo; Trước</a>
+				th:href="@{/Crud_User(page=${userPage.number - 1}, size=${userPage.size})}">« Trước</a>
 			<span>Trang <span th:text="${userPage.number + 1}"></span> / <span
 					th:text="${userPage.totalPages}"></span></span>
 			<a th:if="${userPage.hasNext()}"
-				th:href="@{/Crud_User(page=${userPage.number + 1}, size=${userPage.size})}">Sau &raquo;</a>
+				th:href="@{/Crud_User(page=${userPage.number + 1}, size=${userPage.size})}">Sau »</a>
 		</div>
+
 		<!-- Add User Modal -->
 		<div class="modal" id="add-user-modal">
 			<div class="modal-content">
@@ -350,7 +389,7 @@
 						<div class="form-group">
 							<label for="add-user-name">Tên</label>
 							<input type="text" id="add-user-name" th:field="*{tenNguoiDung}"
-								placeholder="Nhập họ và tên" required>
+								placeholder="Nhập tên người dùng" required>
 							<div class="error" th:errors="*{tenNguoiDung}"></div>
 						</div>
 						<div class="form-group">
@@ -374,16 +413,14 @@
 						<div class="form-group">
 							<label for="add-user-role">Vai trò</label>
 							<select id="add-user-role" th:field="*{vaiTroAsString}" required>
-								<option value="">Chọn vai trò</option>
-								<option value="Học viên">Học viên</option>
+								<option value="Học viên" selected>Học viên</option>
 								<option value="Quản trị viên">Quản trị viên</option>
 							</select>
 						</div>
 						<div class="form-group">
 							<label for="add-user-status">Trạng thái</label>
 							<select id="add-user-status" th:field="*{statusAsString}" required>
-								<option value="">Chọn trạng thái</option>
-								<option value="Hoạt động">Hoạt động</option>
+								<option value="Hoạt động" selected>Hoạt động</option>
 								<option value="Không hoạt động">Không hoạt động</option>
 							</select>
 						</div>
@@ -408,8 +445,8 @@
 					<form id="edit-user-form" method="post">
 						<input type="hidden" id="edit-user-id" name="idNguoiDung">
 						<div class="form-group">
-							<label for="edit-user-name">Họ và tên</label>
-							<input type="text" id="edit-user-name" name="tenNguoiDung" placeholder="Nhập họ và tên"
+							<label for="edit-user-name">Tên</label>
+							<input type="text" id="edit-user-name" name="tenNguoiDung" placeholder="Nhập tên người dùng"
 								required>
 							<div class="field-error" id="error-tenNguoiDung"></div>
 						</div>
@@ -426,13 +463,12 @@
 						<div class="form-group">
 							<label for="edit-user-password">Mật khẩu</label>
 							<input type="password" id="edit-user-password" name="matKhau"
-								placeholder="Nhập mật khẩu mới" readonly>
+								placeholder="Nhập mật khẩu mới">
 							<div class="field-error" id="error-matKhau"></div>
 						</div>
 						<div class="form-group">
 							<label for="edit-user-role">Vai trò</label>
 							<select id="edit-user-role" name="vaiTroAsString" required>
-								<option value="">Chọn vai trò</option>
 								<option value="Học viên">Học viên</option>
 								<option value="Quản trị viên">Quản trị viên</option>
 							</select>
@@ -440,7 +476,6 @@
 						<div class="form-group">
 							<label for="edit-user-status">Trạng thái</label>
 							<select id="edit-user-status" name="statusAsString" required>
-								<option value="">Chọn trạng thái</option>
 								<option value="Hoạt động">Hoạt động</option>
 								<option value="Không hoạt động">Không hoạt động</option>
 							</select>
@@ -465,6 +500,29 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Import Excel Modal -->
+		<div class="modal" id="import-excel-modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2>Nhập Excel</h2>
+					<button class="close-btn" onclick="closeModal('import-excel-modal')">✕</button>
+				</div>
+				<div class="modal-body">
+					<form th:action="@{/Crud_User/import}" method="post" enctype="multipart/form-data">
+						<div class="form-group">
+							<label for="import-file">Chọn file Excel</label>
+							<input type="file" id="import-file" name="file" accept=".xlsx" required>
+							<div class="error" id="error-import-file"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="cancel-btn" onclick="closeModal('import-excel-modal')">Hủy</button>
+							<button type="submit" class="save-btn">Nhập</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<!-- JavaScript for Modal -->
@@ -486,17 +544,17 @@
 			const ten = button.getAttribute('data-ten');
 			const hoten = button.getAttribute('data-hoten');
 			const email = button.getAttribute('data-email');
-			const vaitro = button.getAttribute('data-vaitro');
-			const status = button.getAttribute('data-status');
+			const vaitro = button.getAttribute('data-vaitro') || 'Học viên';
+			const status = button.getAttribute('data-status') || 'Hoạt động';
 			const matkhau = button.getAttribute('data-matkhau');
 
 			document.getElementById('edit-user-id').value = id;
-			document.getElementById('edit-user-name').value = ten;
-			document.getElementById('edit-user-hoten').value = hoten;
-			document.getElementById('edit-user-email').value = email;
+			document.getElementById('edit-user-name').value = ten || '';
+			document.getElementById('edit-user-hoten').value = hoten || '';
+			document.getElementById('edit-user-email').value = email || '';
 			document.getElementById('edit-user-role').value = vaitro;
 			document.getElementById('edit-user-status').value = status;
-			document.getElementById('edit-user-password').value = matkhau; // Đặt lại thành sáu dấu chấm
+			document.getElementById('edit-user-password').value = matkhau || '';
 			document.getElementById('edit-user-form').action = '/Crud_User/update/' + id;
 
 			openModal('edit-user-modal');
@@ -516,6 +574,7 @@
 			const addModal = document.getElementById('add-user-modal');
 			const editModal = document.getElementById('edit-user-modal');
 			const deleteModal = document.getElementById('delete-user-modal');
+			const importModal = document.getElementById('import-excel-modal');
 
 			if (event.target === addModal) {
 				addModal.style.display = 'none';
@@ -527,6 +586,9 @@
 			}
 			if (event.target === deleteModal) {
 				deleteModal.style.display = 'none';
+			}
+			if (event.target === importModal) {
+				importModal.style.display = 'none';
 			}
 		};
 

@@ -3,13 +3,22 @@ package com.poly.controller;
 import com.poly.entity.Category;
 import com.poly.service.CategoryService;
 import jakarta.validation.Valid;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page; // <- thêm dòng này
-import org.springframework.data.domain.PageRequest; // <- thêm dòng này
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class CategoryController {
@@ -79,6 +88,35 @@ public class CategoryController {
     @GetMapping("/Crud_Categories/delete/{id}")
     public String deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
+        return "redirect:/Crud_Categories";
+    }
+
+    // Thêm endpoint xuất Excel
+    @GetMapping("/Crud_Categories/export")
+    public ResponseEntity<InputStreamResource> exportCategories() throws IOException {
+        ByteArrayInputStream in = categoryService.exportCategoriesToExcel();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=categories.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
+    }
+
+    // Thêm endpoint nhập Excel
+    @PostMapping("/Crud_Categories/import")
+    public String importCategories(@RequestParam("file") MultipartFile file, Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            categoryService.importCategoriesFromExcel(file);
+        } catch (IOException e) {
+            model.addAttribute("error", "Lỗi khi nhập file Excel: " + e.getMessage());
+            Page<Category> categoryPage = categoryService.getAllCategories(PageRequest.of(page, size));
+            model.addAttribute("categoryPage", categoryPage);
+            model.addAttribute("category", new Category());
+            return "Crud_Categories";
+        }
         return "redirect:/Crud_Categories";
     }
 }

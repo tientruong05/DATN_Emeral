@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học tập - Android App Development với Kotlin</title>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            background-color: #f7f9fc;
+        }
+
+        /* Header Navigation */
+        .header-nav {
+            background: linear-gradient(135deg, #002855 0%, #001f42 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b00, #ffab00);
+            width: 30%;
+            transition: width 0.3s ease;
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            height: calc(100vh - 80px);
+            background: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Video Player Area */
+        .video-section {
+            background: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-player {
+            flex: 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .play-button {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b00 0%, #e65c00 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .play-button i {
+            font-size: 2rem;
+            margin-left: 4px;
+        }
+
+        .video-info {
+            padding: 1.5rem;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .video-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #002855;
+            margin-bottom: 1rem;
+        }
+
+        .video-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #002855;
+            background: white;
+            color: #002855;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .control-btn:hover {
+            background: #002855;
+            color: white;
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, #002855 0%, #001f42 100%);
+            color: white;
+        }
+
+        .control-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 40, 85, 0.3);
+        }
+
+        .control-btn.qa {
+            background: linear-gradient(135deg, #ff6b00 0%, #e65c00 100%);
+            color: white;
+        }
+
+        .control-btn.qa:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+
+        /* Course Content Sidebar */
+        .course-content {
+            background: white;
+            border-left: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, #002855 0%, #001f42 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .content-list {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #002855 #f1f1f1;
+        }
+
+        .content-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .content-list::-webkit-scrollbar-thumb {
+            background: #002855;
+            border-radius: 3px;
+        }
+
+        /* Lesson Items */
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .lesson-item:hover {
+            background: #f8f9fa;
+        }
+
+        .lesson-item.active {
+            background: rgba(255, 107, 0, 0.1);
+            border-left: 4px solid #ff6b00;
+        }
+
+        .lesson-item.completed {
+            background: rgba(40, 167, 69, 0.05);
+        }
+
+        .lesson-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            border-radius: 50%;
+        }
+
+        .lesson-icon.video {
+            background: linear-gradient(135deg, #002855 0%, #001f42 100%);
+            color: white;
+        }
+
+        .lesson-icon.quiz {
+            background: linear-gradient(135deg, #ff6b00 0%, #e65c00 100%);
+            color: white;
+        }
+
+        .lesson-icon.completed {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .lesson-details {
+            flex: 1;
+        }
+
+        .lesson-title {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .lesson-number {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .lesson-status {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: #666;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            background: rgba(255, 107, 0, 0.1);
+        }
+
+        /* Quiz Item Special Styling */
+        .quiz-item {
+            background: linear-gradient(135deg, #fff8f5 0%, #fffaf7 100%);
+            border-left: 4px solid #ff6b00;
+            margin: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255, 107, 0, 0.1);
+        }
+
+        .quiz-item .lesson-title {
+            color: #002855;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                height: auto;
+            }
+
+            .course-content {
+                border-left: none;
+                border-top: 1px solid #e9ecef;
+                max-height: 400px;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .course-title {
+                text-align: center;
+            }
+
+            .video-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 0.5rem;
+            }
+
+            .video-info {
+                padding: 1rem;
+            }
+
+            .video-title {
+                font-size: 1.2rem;
+            }
+
+            .lesson-item {
+                padding: 0.75rem 1rem;
+            }
+
+            .play-button {
+                width: 60px;
+                height: 60px;
+            }
+
+            .play-button i {
+                font-size: 1.5rem;
+            }
+
+            .video-controls {
+                flex-wrap: wrap;
+            }
+
+            .control-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+
+        /* Completion checkmark animation */
+        .lesson-icon.completed {
+            animation: checkmark 0.5s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="#" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại
+                </a>
+                <div class="course-title">Android App Development với Kotlin | Từ cơ bản đến nâng cao</div>
+            </div>
+            <div class="nav-right">
+                <div class="progress-info">
+                    <span>3/11 bài học</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <span>30%</span>
+                </div>
+                <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Video Section -->
+        <div class="video-section">
+            <div class="video-player">
+                <div class="video-placeholder" onclick="playVideo()">
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <p style="color: #ccc; font-size: 1.1rem;">Bấm để phát video</p>
+                </div>
+            </div>
+            
+            <div class="video-info">
+                <h2 class="video-title">Bài 3: Variables và Data Types trong Kotlin</h2>
+                
+                <div class="video-controls">
+                    <button class="control-btn" onclick="previousLesson()">
+                        <i class="fas fa-backward"></i>
+                        Bài trước
+                    </button>
+                    <button class="control-btn qa" onclick="openQA()">
+                        <i class="fas fa-comments"></i>
+                        Hỏi đáp
+                    </button>
+                    <button class="control-btn primary" onclick="nextLesson()">
+                        Bài tiếp theo
+                        <i class="fas fa-forward"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Content Sidebar -->
+        <div class="course-content">
+            <div class="content-header">
+                <h3><i class="fas fa-list"></i> Danh sách bài học</h3>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="content-list">
+                <!-- Lesson 1 -->
+                <div class="lesson-item completed" onclick="selectLesson(1)">
+                    <div class="lesson-icon completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 1</div>
+                        <div class="lesson-title">Giới thiệu về Kotlin và Android Development</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 2 -->
+                <div class="lesson-item completed" onclick="selectLesson(2)">
+                    <div class="lesson-icon completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 2</div>
+                        <div class="lesson-title">Cài đặt và cấu hình Android Studio</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 3 - Currently active -->
+                <div class="lesson-item active" onclick="selectLesson(3)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 3</div>
+                        <div class="lesson-title">Variables và Data Types trong Kotlin</div>
+                    </div>
+                    <div class="lesson-status">Đang học</div>
+                </div>
+
+                <!-- Lesson 4 -->
+                <div class="lesson-item" onclick="selectLesson(4)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 4</div>
+                        <div class="lesson-title">Functions và Methods trong Kotlin</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 5 -->
+                <div class="lesson-item" onclick="selectLesson(5)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 5</div>
+                        <div class="lesson-title">Control Flow và Conditional Statements</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 6 -->
+                <div class="lesson-item" onclick="selectLesson(6)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 6</div>
+                        <div class="lesson-title">Loops và Iterations trong Kotlin</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 7 -->
+                <div class="lesson-item" onclick="selectLesson(7)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 7</div>
+                        <div class="lesson-title">Arrays và Collections</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 8 -->
+                <div class="lesson-item" onclick="selectLesson(8)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 8</div>
+                        <div class="lesson-title">Classes và Objects trong Kotlin</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 9 -->
+                <div class="lesson-item" onclick="selectLesson(9)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 9</div>
+                        <div class="lesson-title">Inheritance và Polymorphism</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 10 -->
+                <div class="lesson-item" onclick="selectLesson(10)">
+                    <div class="lesson-icon video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Bài 10</div>
+                        <div class="lesson-title">Exception Handling và Null Safety</div>
+                    </div>
+                </div>
+
+                <!-- Final Quiz -->
+                <div class="lesson-item quiz-item" onclick="selectLesson(11)">
+                    <div class="lesson-icon quiz">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="lesson-details">
+                        <div class="lesson-number">Kiểm tra</div>
+                        <div class="lesson-title">Bài kiểm tra tổng hợp Kotlin cơ bản</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current lesson tracking
+        let currentLesson = 3;
+        const totalLessons = 11;
+        
+        // Lesson data
+        const lessons = {
+            1: {
+                title: "Giới thiệu về Kotlin và Android Development",
+                completed: true
+            },
+            2: {
+                title: "Cài đặt và cấu hình Android Studio", 
+                completed: true
+            },
+            3: {
+                title: "Variables và Data Types trong Kotlin",
+                completed: false
+            },
+            4: {
+                title: "Functions và Methods trong Kotlin",
+                completed: false
+            },
+            5: {
+                title: "Control Flow và Conditional Statements",
+                completed: false
+            },
+            6: {
+                title: "Loops và Iterations trong Kotlin",
+                completed: false
+            },
+            7: {
+                title: "Arrays và Collections",
+                completed: false
+            },
+            8: {
+                title: "Classes và Objects trong Kotlin",
+                completed: false
+            },
+            9: {
+                title: "Inheritance và Polymorphism", 
+                completed: false
+            },
+            10: {
+                title: "Exception Handling và Null Safety",
+                completed: false
+            },
+            11: {
+                title: "Bài kiểm tra tổng hợp Kotlin cơ bản",
+                completed: false
+            }
+        };
+
+        // Play video function
+        function playVideo() {
+            const placeholder = document.querySelector('.video-placeholder');
+            placeholder.innerHTML = `
+                <video controls autoplay style="width: 100%; height: 100%;">
+                    <source src="#" type="video/mp4">
+                    <p style="color: white;">Trình duyệt của bạn không hỗ trợ video HTML5.</p>
+                </video>
+            `;
+        }
+
+        // Select lesson function
+        function selectLesson(lessonNumber) {
+            if (lessonNumber > currentLesson + 1 && !lessons[lessonNumber].completed) {
+                alert('Bạn cần hoàn thành bài học trước đó để mở khóa bài này!');
+                return;
+            }
+            
+            // Update UI
+            document.querySelectorAll('.lesson-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const selectedItem = document.querySelector(`.lesson-item:nth-child(${lessonNumber})`);
+            if (selectedItem && !selectedItem.classList.contains('quiz-item')) {
+                selectedItem.classList.add('active');
+            }
+            
+            // Update video title
+            document.querySelector('.video-title').textContent = 
+                lessonNumber === 11 ? lessons[lessonNumber].title : `Bài ${lessonNumber}: ${lessons[lessonNumber].title}`;
+            
+            // Reset video player
+            document.querySelector('.video-placeholder').innerHTML = `
+                <div class="play-button" onclick="playVideo()">
+                    <i class="fas fa-play"></i>
+                </div>
+                <p style="color: #ccc; font-size: 1.1rem;">Bấm để phát video</p>
+            `;
+            
+            currentLesson = lessonNumber;
+            updateProgress();
+        }
+
+        // Navigation functions
+        function previousLesson() {
+            if (currentLesson > 1) {
+                selectLesson(currentLesson - 1);
+            }
+        }
+
+        function nextLesson() {
+            if (currentLesson < totalLessons) {
+                // Mark current lesson as completed
+                lessons[currentLesson].completed = true;
+                updateLessonStatus(currentLesson);
+                selectLesson(currentLesson + 1);
+            }
+        }
+
+        // Update lesson status in UI
+        function updateLessonStatus(lessonNum) {
+            const lessonItem = document.querySelector(`.lesson-item:nth-child(${lessonNum})`);
+            if (lessonItem && !lessonItem.classList.contains('quiz-item')) {
+                lessonItem.classList.add('completed');
+                lessonItem.classList.remove('active');
+                
+                const icon = lessonItem.querySelector('.lesson-icon');
+                icon.className = 'lesson-icon completed';
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const completedLessons = Object.values(lessons).filter(lesson => lesson.completed).length;
+            const progressPercentage = Math.round((completedLessons / totalLessons) * 100);
+            
+            document.querySelector('.progress-fill').style.width = `${progressPercentage}%`;
+            document.querySelector('.progress-info span').textContent = `${completedLessons}/${totalLessons} bài học`;
+            document.querySelector('.progress-info span:last-child').textContent = `${progressPercentage}%`;
+        }
+
+        // Toggle sidebar (for mobile)
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.course-content');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        // Open Q&A function
+        function openQA() {
+            // Create modal for Q&A
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+                        <h3 style="color: #002855; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-comments"></i>
+                            Hỏi đáp về bài học
+                        </h3>
+                        <p style="margin-bottom: 1.5rem; color: #666;">
+                            Bạn có thắc mắc gì về bài học "${lessons[currentLesson].title}"? 
+                            Hãy để lại câu hỏi và chúng tôi sẽ trả lời sớm nhất!
+                        </p>
+                        <textarea placeholder="Nhập câu hỏi của bạn..." style="width: 100%; height: 100px; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; margin-bottom: 1rem; font-family: inherit;"></textarea>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button onclick="this.closest('div').closest('div').remove()" style="padding: 0.5rem 1rem; border: 2px solid #ccc; background: white; border-radius: 8px; cursor: pointer;">Hủy</button>
+                            <button onclick="submitQuestion()" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #ff6b00 0%, #e65c00 100%); color: white; border: none; border-radius: 8px; cursor: pointer;">Gửi câu hỏi</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Submit question function
+        function submitQuestion() {
+            alert('Câu hỏi của bạn đã được gửi! Chúng tôi sẽ trả lời trong thời gian sớm nhất.');
+            document.querySelector('div[style*="position: fixed"]').remove();
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
