@@ -4,6 +4,8 @@ import com.poly.entity.Category;
 import com.poly.entity.Course;
 import com.poly.repository.CategoryRepository;
 import com.poly.repository.CourseRepository;
+import com.poly.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,9 @@ import java.util.List;
 
 @Service
 public class CourseService {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -40,5 +45,24 @@ public class CourseService {
 
     public List<Course> getRandomCourses(int limit) {
         return courseRepository.findTopNByStatusTrue(limit);
+    }
+
+    public List<Course> getCoursesByType(String type) {
+        if (type == null || type.equals("all")) {
+            return courseRepository.findTopNByStatusTrue(8);
+        }
+        return courseRepository.findByCategoryTenDanhMucAndStatusTrue(type);
+    }
+
+    public long getTotalStudents() {
+        return courseRepository.countDistinctStudents();
+    }
+
+    public long getTotalCourses() {
+        return courseRepository.countByStatusTrue();
+    }
+
+    public long getTotalInstructors() {
+        return userRepository.countByVaiTroAndStatusTrue(true); // Đếm chuyên gia (vai_tro = true)
     }
 }
