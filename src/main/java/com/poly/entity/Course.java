@@ -17,6 +17,7 @@ import java.util.List;
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID_khoa_hoc")
     private Long ID_khoa_hoc;
 
     private String ten_khoa_hoc;

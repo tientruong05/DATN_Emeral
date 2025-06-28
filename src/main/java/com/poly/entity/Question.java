@@ -16,16 +16,29 @@ import java.time.LocalDateTime;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID_cau_hoi")
     private Long ID_cau_hoi;
 
+    @Column(name = "noi_dung_cau_hoi")
     private String noi_dung_cau_hoi;
+
+    @Column(name = "dap_an_dung")
     private String dap_an_dung;
+
+    @Column(name = "dap_an_a")
     private String dap_an_a;
+
+    @Column(name = "dap_an_b")
     private String dap_an_b;
+
+    @Column(name = "dap_an_c")
     private String dap_an_c;
+
+    @Column(name = "dap_an_d")
     private String dap_an_d;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
+
 }
