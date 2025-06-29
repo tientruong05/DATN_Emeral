@@ -1,14 +1,14 @@
 package com.poly.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record DiscountDTO(
     Long id,
     String discountName,
     Double discountValue,
-    LocalDate startDate,
-    LocalDate endDate,
+    LocalDateTime startDate,
+    LocalDateTime endDate,
     Boolean status,
     List<Long> categoryIds,
     List<Long> courseIds
