@@ -1,7 +1,10 @@
+
 package com.poly.service;
 
 import com.poly.dto.DiscountDTO;
 import com.poly.entity.Discount;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,4 +20,7 @@ public interface DiscountService {
     void deleteDiscount(Long id);
     
     List<DiscountDTO> getActiveDiscounts();
-} 
+    
+    Workbook exportDiscountsToExcel();
+    List<DiscountDTO> importDiscountsFromExcel(MultipartFile file) throws Exception;
+}
