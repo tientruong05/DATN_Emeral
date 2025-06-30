@@ -28,4 +28,15 @@ public class Discount {
 
     @OneToMany(mappedBy = "discount")
     private List<DiscountDetail> discountDetails;
+    
+    public boolean isActive() {
+        return Boolean.TRUE.equals(this.status);
+    }
+
+    public boolean isValidNow() {
+        LocalDate today = LocalDate.now();
+        return (start_date != null && end_date != null
+                && !today.isBefore(start_date)
+                && !today.isAfter(end_date));
+    }
 }

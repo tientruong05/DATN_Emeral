@@ -40,6 +40,39 @@
       font-weight: bold;
       cursor: pointer;
     }
+    
+    .import-excel-btn, .export-excel-btn {
+            background-color: #002855;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .import-excel-btn:hover, .export-excel-btn:hover {
+            background-color: #001f42;
+        }
+
+        .import-excel-btn {
+            background-color: #17a2b8;
+        }
+
+        .import-excel-btn:hover {
+            background-color: #138496;
+        }
+
+        .export-excel-btn {
+            background-color: #28a745;
+        }
+
+        .export-excel-btn:hover {
+            background-color: #218838;
+        }
+    
+    
     .add-course-btn:hover {
       background-color: #001f42;
     }
@@ -136,7 +169,7 @@
       justify-content: center;
     }
     
-    /* .modal-content {
+    /* */.modal-content {
       background-color: white;
       padding: 0;
       border-radius: 12px;
@@ -159,7 +192,7 @@
       justify-content: flex-end;
       gap: 1rem;
     }
-     */
+     
      .modal-content {
     background-color: white;
     padding: 0; /* Giữ nguyên padding 0 để body của modal quản lý padding */
@@ -352,13 +385,37 @@
         .upload-btn:hover {
             background-color: #e6eaf0;
         }
+        
+        .pagination {
+            margin-top: 1rem;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pagination a {
+            margin: 0 8px;
+            text-decoration: none;
+            color: #002855;
+            font-weight: bold;
+        }
+
+        .pagination span {
+            margin: 0 8px;
+        }
   </style>
 </head>
 <body>
   <div class="manage-courses-container">
     <div class="manage-courses-header">
       <h1>Quản lý khóa học</h1>
-      <button class="add-course-btn" onclick="openModal('add-course-modal')">Thêm khóa học</button>
+      <div class="button-group">
+		<button class="add-course-btn" onclick="openModal('add-course-modal')">Thêm khóa học</button>
+        <button class="import-excel-btn" onclick="openModal('import-course-modal')">Nhập Excel</button>
+        <a th:href="@{/Crud_Course/export}" class="export-excel-btn">Xuất Excel</a>
+      </div>
+      
     </div>
 
     <table class="courses-table">
@@ -368,6 +425,8 @@
           <th>Tên khóa học</th>
           <th>Điểm đạt</th>
           <th>Danh mục</th>
+          
+          <th>Phần trăm giảm</th>
           <th>Giá</th>
           <th>Số lượng bài học</th>
           <th>Ảnh đại diện</th>
@@ -381,7 +440,25 @@
     <td class="course-name" th:text="${course.ten_khoa_hoc}"></td>
     <td th:text="${course.diem_dat}"></td>
     <td th:text="${course.category.tenDanhMuc}"></td>
-    <td th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT') + ' VND'}"></td>
+    
+   <td th:text="${course.discountPercentage != null ? course.discountPercentage + '%' : ''}"></td>
+   <!-- <td th:text="${#numbers.formatDecimal(course.getDiscountedPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}"></td> -->
+   
+   <td>
+    <span th:if="${course.discounted}" style="color: red; font-weight: bold;">
+        
+        
+        <span style="text-decoration: line-through; color: gray;"
+              th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+        </span>
+        <br>
+        <span th:text="${#numbers.formatDecimal(course.discountedPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+    </span>
+    <span th:if="${!course.discounted}">
+        <span th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+    </span>
+</td>
+   
     <!-- 
     <td th:text="${course.gia_tien != null ? #numbers.formatDecimal(course.gia_tien, 0, 'COMMA', '.', '') + ' VND' : '0 VND'}"></td>
     
@@ -458,6 +535,16 @@
         </tr>
       </tbody> -->
     </table>
+    <!-- --><div class="pagination">
+            <a th:if="${courses.hasPrevious()}"
+                th:href="@{/Crud_Course(page=${courses.number - 1}, size=${courses.size})}">«
+                Trước</a>
+            <span>Trang <span th:text="${courses.number + 1}"></span> / <span
+                    th:text="${courses.totalPages}"></span></span>
+            <a th:if="${courses.hasNext()}"
+                th:href="@{/Crud_Course(page=${courses.number + 1}, size=${course.size})}">Sau
+                »</a>
+        </div>
   </div>
   
   <!-- Add Course Modal -->
@@ -626,7 +713,28 @@
     </form>
   </div>
 </div>
-
+<!-- Import Excel Modal -->
+        <div class="modal" id="import-course-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Nhập danh mục từ Excel</h2>
+                    <button class="close-btn" onclick="closeModal('import-course-modal')">✕</button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/Crud_Course/import}" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="import-file">Chọn file Excel</label>
+                            <input type="file" id="import-file" name="file" accept=".xlsx,.xls" required>
+                            <div class="error" id="error-import-file"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="cancel-btn" onclick="closeModal('import-course-modal')">Hủy</button>
+                            <button type="submit" class="save-btn">Nhập</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
   
   <!-- JavaScript for Modal -->
   <script>

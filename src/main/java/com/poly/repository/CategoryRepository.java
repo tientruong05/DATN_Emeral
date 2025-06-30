@@ -17,5 +17,8 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     @Query("SELECT c FROM Category c WHERE c.status = true AND (LOWER(c.tenDanhMuc) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(c.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     List<Category> findByTenDanhMucOrDescriptionContainingIgnoreCaseAndStatusTrue(@Param("keyword") String keyword);
+    
+    Optional<Category> findByTenDanhMuc(String tenDanhMuc);
+
 
 }
