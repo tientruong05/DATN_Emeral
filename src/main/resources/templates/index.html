@@ -7,7 +7,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EDU102 - Nền tảng học tập tài chính & công nghệ</title>
+    <title>DEVNEST LEARNING - Nền tảng học tập tài chính & công nghệ</title>
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -582,8 +582,9 @@
       <div class="hero-content">
         <h1>Học tập cùng các chuyên gia hàng đầu</h1>
         <p>
-          EDU102 cung cấp các khóa học chất lượng với giá cả phải chăng, giúp
-          bạn tiếp cận kiến thức thực tiễn về tài chính và công nghệ.
+          DEVNEST LEARNING cung cấp các khóa học chất lượng với giá cả phải
+          chăng, giúp bạn tiếp cận kiến thức thực tiễn về tài chính và công
+          nghệ.
         </p>
         <div class="hero-buttons">
           <a th:href="@{/courses}" class="btn primary-btn">Khám phá ngay</a>
@@ -629,18 +630,25 @@
       <div class="courses-grid" th:unless="${courses.isEmpty()}">
         <div th:each="course : ${courses}" class="course-card">
           <div class="course-image">
-            <img
-              th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
-              alt="Course thumbnail"
-            />
+            <a th:href="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}">
+              <img
+                th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
+                alt="Course thumbnail"
+              />
+            </a>
             <div class="wishlist-btn">
               <i class="fas fa-heart"></i>
             </div>
           </div>
           <div class="course-content">
             <div class="course-info-section">
-              <h3 class="course-title" th:text="${course.ten_khoa_hoc}"></h3>
-              <p class="course-info" th:text="${course.mo_ta}"></p>
+              <a
+                th:href="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}"
+                style="text-decoration: none; color: inherit"
+              >
+                <h3 class="course-title" th:text="${course.ten_khoa_hoc}"></h3>
+                <p class="course-info" th:text="${course.mo_ta}"></p>
+              </a>
             </div>
             <div class="course-price">
               <span
@@ -652,12 +660,7 @@
               <div
                 th:if="${enrolledCourses != null && enrolledCourses.contains(course)}"
               >
-                <a
-                  th:href="@{/Video_Learning/{id}(id=${course.ID_khoa_hoc})}"
-                  class="btn btn-success"
-                >
-                  Đã mua
-                </a>
+                <span class="btn btn-success">Đã mua</span>
               </div>
               <div
                 th:unless="${enrolledCourses != null && enrolledCourses.contains(course)}"
@@ -784,7 +787,7 @@
 
     <!-- Why Choose Us Section -->
     <section class="why-choose">
-      <h2 class="section-title">Vì sao bạn nên học trên EDU102</h2>
+      <h2 class="section-title">Vì sao bạn nên học trên DEVNEST LEARNING</h2>
       <div class="benefits">
         <div class="benefit-item">
           <div class="benefit-icon">

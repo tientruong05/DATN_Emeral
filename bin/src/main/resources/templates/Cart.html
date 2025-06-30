@@ -1,505 +1,543 @@
 <!DOCTYPE html>
-<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Giỏ Hàng - EDU102</title>
-  <style>
-    /* Reset CSS */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      color: #333;
-      line-height: 1.6;
-      background-color: #f7f9fc;
-    }
-
-    /* Cart Page Specific Styles */
-    .cart-container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    .cart-header {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .cart-header h1 {
-      color: #002855;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .cart-header p {
-      color: #666;
-    }
-
-    .cart-items {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 1.5rem;
-    }
-
-    .cart-item {
-      display: grid;
-      grid-template-columns: 40px 120px 1fr auto;
-      gap: 1.5rem;
-      padding: 1.5rem 0;
-      border-bottom: 1px solid #eee;
-      align-items: center;
-    }
-
-    .cart-item:last-child {
-      border-bottom: none;
-    }
-
-    .item-checkbox {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .item-checkbox input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-    }
-
-    .item-image {
-      width: 120px;
-      height: 80px;
-      overflow: hidden;
-      border-radius: 4px;
-    }
-
-    .item-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .item-details h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-      color: #002855;
-    }
-
-    .item-description {
-      color: #666;
-      font-size: 0.9rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .item-actions {
-      text-align: right;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .item-price {
-      font-weight: bold;
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-    }
-
-    .item-price.free {
-      color: #28a745;
-    }
-
-    .remove-btn {
-      padding: 0.5rem;
-      margin-bottom: 0.5rem;
-      border: none;
-      background: none;
-      color: #666;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      cursor: pointer;
-      transition: color 0.3s ease;
-    }
-
-    .remove-btn:hover {
-      color: #dc3545;
-    }
-
-    .remove-btn i {
-      margin-right: 0.3rem;
-    }
-
-    /* Cart Total and Checkout Button */
-    .cart-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .cart-total .total {
-      font-weight: bold;
-      color: #002855;
-      font-size: 1.2rem;
-    }
-
-    .cart-total .total span:last-child {
-      margin-left: 0.5rem;
-    }
-
-    .checkout-btn {
-      background-color: #002855;
-      color: white;
-      border: none;
-      padding: 0.8rem 2rem;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-    }
-
-    .checkout-btn:hover {
-      background-color: #001f42;
-    }
-
-    /* Recommended Courses */
-    .recommended-courses {
-      margin-top: 3rem;
-    }
-
-    .recommended-courses h2 {
-      color: #002855;
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      position: relative;
-    }
-
-    .recommended-courses h2::after {
-      content: '';
-      position: absolute;
-      height: 3px;
-      width: 50px;
-      background-color: #002855;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .courses-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-
-    .course-card {
-      background-color: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease;
-    }
-
-    .course-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .course-image {
-      position: relative;
-      height: 150px;
-      overflow: hidden;
-    }
-
-    .course-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .wishlist-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: white;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .wishlist-btn.wishlist-active {
-      color: red;
-    }
-
-    .course-content {
-      padding: 1rem;
-    }
-
-    .course-title {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #002855;
-    }
-
-    .course-info {
-      font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 0.8rem;
-    }
-
-    .course-price {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .price {
-      font-weight: bold;
-    }
-
-    .price.free {
-      color: #28a745;
-    }
-
-    .buy-btn {
-      background-color: #002855;
-      color: white;
-      padding: 0.3rem 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-    }
-
-    .buy-btn:hover {
-      background-color: #001f42;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-      .courses-grid {
-        grid-template-columns: repeat(3, 1fr);
+<html
+  th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}"
+  lang="vi"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giỏ Hàng - DEVNEST LEARNING</title>
+    <style>
+      /* Reset CSS */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
-    }
 
-    @media (max-width: 900px) {
-      .cart-content {
-        grid-template-columns: 1fr;
+      body {
+        color: #333;
+        line-height: 1.6;
+        background-color: #f7f9fc;
       }
-    }
 
-    @media (max-width: 768px) {
-      .cart-item {
-        grid-template-columns: 40px 100px 1fr;
+      /* Cart Page Specific Styles */
+      .cart-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
       }
-      
-      .item-actions {
-        grid-column: span 3;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 1rem;
-      }
-      
-      .item-price {
-        margin-bottom: 0;
-      }
-      
-      .courses-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .cart-total {
-        flex-direction: column;
-        gap: 1rem;
-      }
-      
-      .checkout-btn {
-        width: 100%;
+
+      .cart-header {
+        margin-bottom: 2rem;
         text-align: center;
       }
-    }
 
-    @media (max-width: 576px) {
-      .courses-grid {
-        grid-template-columns: 1fr;
+      .cart-header h1 {
+        color: #002855;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
       }
-      
+
+      .cart-header p {
+        color: #666;
+      }
+
+      .cart-items {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+      }
+
       .cart-item {
-        grid-template-columns: 40px 1fr;
+        display: grid;
+        grid-template-columns: 40px 120px 1fr auto;
+        gap: 1.5rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #eee;
+        align-items: center;
       }
-      
+
+      .cart-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-checkbox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .item-checkbox input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
       .item-image {
+        width: 120px;
+        height: 80px;
+        overflow: hidden;
+        border-radius: 4px;
+      }
+
+      .item-image img {
         width: 100%;
-        height: 150px;
+        height: 100%;
+        object-fit: cover;
       }
-      
+
+      .item-details h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: #002855;
+      }
+
+      .item-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+
       .item-actions {
-        grid-column: span 2;
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="cart-page">
-    <!-- Cart Container -->
-    <div class="cart-container">
-      <div class="cart-header">
-        <h1>Giỏ hàng của bạn</h1>
-        <p>3 khóa học trong giỏ hàng</p>
-      </div>
 
-      <div class="cart-content">
-        <div class="cart-items">
-          <!-- Cart Item 1 -->
-          <div class="cart-item">
-            <div class="item-checkbox">
-              <input type="checkbox" checked>
+      .item-price {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .item-price.free {
+        color: #28a745;
+      }
+
+      .remove-btn {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        border: none;
+        background: none;
+        color: #666;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+
+      .remove-btn:hover {
+        color: #dc3545;
+      }
+
+      .remove-btn i {
+        margin-right: 0.3rem;
+      }
+
+      /* Cart Total and Checkout Button */
+      .cart-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .cart-total .total {
+        font-weight: bold;
+        color: #002855;
+        font-size: 1.2rem;
+      }
+
+      .cart-total .total span:last-child {
+        margin-left: 0.5rem;
+      }
+
+      .checkout-btn {
+        background-color: #002855;
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+      }
+
+      .checkout-btn:hover {
+        background-color: #001f42;
+      }
+
+      /* Recommended Courses */
+      .recommended-courses {
+        margin-top: 3rem;
+      }
+
+      .recommended-courses h2 {
+        color: #002855;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        position: relative;
+      }
+
+      .recommended-courses h2::after {
+        content: "";
+        position: absolute;
+        height: 3px;
+        width: 50px;
+        background-color: #002855;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .course-card {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+      }
+
+      .course-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .course-image {
+        position: relative;
+        height: 150px;
+        overflow: hidden;
+      }
+
+      .course-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .wishlist-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .wishlist-btn.wishlist-active {
+        color: red;
+      }
+
+      .course-content {
+        padding: 1rem;
+      }
+
+      .course-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #002855;
+      }
+
+      .course-info {
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 0.8rem;
+      }
+
+      .course-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .price {
+        font-weight: bold;
+      }
+
+      .price.free {
+        color: #28a745;
+      }
+
+      .buy-btn {
+        background-color: #002855;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+      }
+
+      .buy-btn:hover {
+        background-color: #001f42;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .courses-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .cart-content {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .cart-item {
+          grid-template-columns: 40px 100px 1fr;
+        }
+
+        .item-actions {
+          grid-column: span 3;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 1rem;
+        }
+
+        .item-price {
+          margin-bottom: 0;
+        }
+
+        .courses-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cart-total {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .checkout-btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .courses-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .cart-item {
+          grid-template-columns: 40px 1fr;
+        }
+
+        .item-image {
+          width: 100%;
+          height: 150px;
+        }
+
+        .item-actions {
+          grid-column: span 2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cart-page">
+      <!-- Cart Container -->
+      <div class="cart-container">
+        <div class="cart-header">
+          <h1>Giỏ hàng của bạn</h1>
+          <p>3 khóa học trong giỏ hàng</p>
+        </div>
+
+        <div class="cart-content">
+          <div class="cart-items">
+            <!-- Cart Item 1 -->
+            <div class="cart-item">
+              <div class="item-checkbox">
+                <input type="checkbox" checked />
+              </div>
+              <div class="item-image">
+                <img
+                  src="https://via.placeholder.com/300x150"
+                  alt="Quản lý tài chính cá nhân"
+                />
+              </div>
+              <div class="item-details">
+                <h3>Quản lý tài chính cá nhân</h3>
+                <p class="item-description">
+                  Khóa học quản lý tài chính cá nhân
+                </p>
+              </div>
+              <div class="item-actions">
+                <div class="item-price">5,000 VND</div>
+                <button class="remove-btn"><i>🗑️</i> Xóa</button>
+              </div>
             </div>
-            <div class="item-image">
-              <img src="https://via.placeholder.com/300x150" alt="Quản lý tài chính cá nhân">
+            <!-- Cart Item 2 -->
+            <div class="cart-item">
+              <div class="item-checkbox">
+                <input type="checkbox" checked />
+              </div>
+              <div class="item-image">
+                <img
+                  src="https://via.placeholder.com/300x150"
+                  alt="Lập trình JavaScript cơ bản"
+                />
+              </div>
+              <div class="item-details">
+                <h3>Lập trình JavaScript cơ bản</h3>
+                <p class="item-description">
+                  Khóa học lập trình web front-end cơ bản với JavaScript
+                </p>
+              </div>
+              <div class="item-actions">
+                <div class="item-price">5,000 VND</div>
+                <button class="remove-btn"><i>🗑️</i> Xóa</button>
+              </div>
             </div>
-            <div class="item-details">
-              <h3>Quản lý tài chính cá nhân</h3>
-              <p class="item-description">Khóa học quản lý tài chính cá nhân</p>
-            </div>
-            <div class="item-actions">
-              <div class="item-price">5,000 VND</div>
-              <button class="remove-btn"><i>🗑️</i> Xóa</button>
+            <!-- Cart Item 3 -->
+            <div class="cart-item">
+              <div class="item-checkbox">
+                <input type="checkbox" checked />
+              </div>
+              <div class="item-image">
+                <img
+                  src="https://via.placeholder.com/300x150"
+                  alt="Quản lý tài chính cá nhân (Free)"
+                />
+              </div>
+              <div class="item-details">
+                <h3>Quản lý tài chính cá nhân (Free)</h3>
+                <p class="item-description">
+                  Khóa học quản lý tài chính cá nhân cơ bản
+                </p>
+              </div>
+              <div class="item-actions">
+                <div class="item-price free">0 VND</div>
+                <button class="remove-btn"><i>🗑️</i> Xóa</button>
+              </div>
             </div>
           </div>
-          <!-- Cart Item 2 -->
-          <div class="cart-item">
-            <div class="item-checkbox">
-              <input type="checkbox" checked>
+
+          <!-- Cart Total and Checkout Button -->
+          <div class="cart-total">
+            <div class="total">
+              <span>Thành tiền:</span>
+              <span>10,000 VND</span>
             </div>
-            <div class="item-image">
-              <img src="https://via.placeholder.com/300x150" alt="Lập trình JavaScript cơ bản">
-            </div>
-            <div class="item-details">
-              <h3>Lập trình JavaScript cơ bản</h3>
-              <p class="item-description">Khóa học lập trình web front-end cơ bản với JavaScript</p>
-            </div>
-            <div class="item-actions">
-              <div class="item-price">5,000 VND</div>
-              <button class="remove-btn"><i>🗑️</i> Xóa</button>
-            </div>
-          </div>
-          <!-- Cart Item 3 -->
-          <div class="cart-item">
-            <div class="item-checkbox">
-              <input type="checkbox" checked>
-            </div>
-            <div class="item-image">
-              <img src="https://via.placeholder.com/300x150" alt="Quản lý tài chính cá nhân (Free)">
-            </div>
-            <div class="item-details">
-              <h3>Quản lý tài chính cá nhân (Free)</h3>
-              <p class="item-description">Khóa học quản lý tài chính cá nhân cơ bản</p>
-            </div>
-            <div class="item-actions">
-              <div class="item-price free">0 VND</div>
-              <button class="remove-btn"><i>🗑️</i> Xóa</button>
-            </div>
+            <a href="/payment" class="checkout-btn">Thanh toán ngay</a>
           </div>
         </div>
 
-        <!-- Cart Total and Checkout Button -->
-        <div class="cart-total">
-          <div class="total">
-            <span>Thành tiền:</span>
-            <span>10,000 VND</span>
-          </div>
-          <a href="/payment" class="checkout-btn">Thanh toán ngay</a>
-        </div>
-      </div>
-
-      <!-- Recommended Courses -->
-      <div class="recommended-courses">
-        <h2>Có thể bạn quan tâm</h2>
-        <div class="courses-grid">
-          <!-- Course 1 -->
-          <div class="course-card">
-            <div class="course-image">
-              <img src="https://via.placeholder.com/300x150" alt="Phân tích dữ liệu với Python">
-              <div class="wishlist-btn">❤</div>
-            </div>
-            <div class="course-content">
-              <h3 class="course-title">Phân tích dữ liệu với Python</h3>
-              <p class="course-info">Học cách phân tích và trực quan hóa dữ liệu sử dụng Python</p>
-              <div class="course-price">
-                <div class="price">7,000 VND</div>
-                <div class="buy-btn">Mua ngay</div>
+        <!-- Recommended Courses -->
+        <div class="recommended-courses">
+          <h2>Có thể bạn quan tâm</h2>
+          <div class="courses-grid">
+            <!-- Course 1 -->
+            <div class="course-card">
+              <div class="course-image">
+                <img
+                  src="https://via.placeholder.com/300x150"
+                  alt="Phân tích dữ liệu với Python"
+                />
+                <div class="wishlist-btn">❤</div>
+              </div>
+              <div class="course-content">
+                <h3 class="course-title">Phân tích dữ liệu với Python</h3>
+                <p class="course-info">
+                  Học cách phân tích và trực quan hóa dữ liệu sử dụng Python
+                </p>
+                <div class="course-price">
+                  <div class="price">7,000 VND</div>
+                  <div class="buy-btn">Mua ngay</div>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- Course 2 -->
-          <div class="course-card">
-            <div class="course-image">
-              <img src="https://via.placeholder.com/300x150" alt="Đầu tư chứng khoán cơ bản">
-              <div class="wishlist-btn">❤</div>
-            </div>
-            <div class="course-content">
-              <h3 class="course-title">Đầu tư chứng khoán cơ bản</h3>
-              <p class="course-info">Tìm hiểu các phương pháp đầu tư chứng khoán hiệu quả</p>
-              <div class="course-price">
-                <div class="price">6,000 VND</div>
-                <div class="buy-btn">Mua ngay</div>
+            <!-- Course 2 -->
+            <div class="course-card">
+              <div class="course-image">
+                <img
+                  src="https://via.placeholder.com/300x150"
+                  alt="Đầu tư chứng khoán cơ bản"
+                />
+                <div class="wishlist-btn">❤</div>
+              </div>
+              <div class="course-content">
+                <h3 class="course-title">Đầu tư chứng khoán cơ bản</h3>
+                <p class="course-info">
+                  Tìm hiểu các phương pháp đầu tư chứng khoán hiệu quả
+                </p>
+                <div class="course-price">
+                  <div class="price">6,000 VND</div>
+                  <div class="buy-btn">Mua ngay</div>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- Course 3 -->
-          <div class="course-card">
-            <div class="course-image">
-              <img src="https://via.placeholder.com/300x150" alt="React.js cho người mới bắt đầu">
-              <div class="wishlist-btn">❤</div>
-            </div>
-            <div class="course-content">
-              <h3 class="course-title">React.js cho người mới bắt đầu</h3>
-              <p class="course-info">Khóa học xây dựng ứng dụng web với React</p>
-              <div class="course-price">
-                <div class="price">8,000 VND</div>
-                <div class="buy-btn">Mua ngay</div>
+            <!-- Course 3 -->
+            <div class="course-card">
+              <div class="course-image">
+                <img
+                  src="https://via.placeholder.com/300x150"
+                  alt="React.js cho người mới bắt đầu"
+                />
+                <div class="wishlist-btn">❤</div>
+              </div>
+              <div class="course-content">
+                <h3 class="course-title">React.js cho người mới bắt đầu</h3>
+                <p class="course-info">
+                  Khóa học xây dựng ứng dụng web với React
+                </p>
+                <div class="course-price">
+                  <div class="price">8,000 VND</div>
+                  <div class="buy-btn">Mua ngay</div>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- Course 4 -->
-          <div class="course-card">
-            <div class="course-image">
-              <img src="https://via.placeholder.com/300x150" alt="Excel cho phân tích tài chính">
-              <div class="wishlist-btn">❤</div>
-            </div>
-            <div class="course-content">
-              <h3 class="course-title">Excel cho phân tích tài chính</h3>
-              <p class="course-info">Sử dụng Excel để phân tích và lập kế hoạch tài chính</p>
-              <div class="course-price">
-                <div class="price">5,500 VND</div>
-                <div class="buy-btn">Mua ngay</div>
+            <!-- Course 4 -->
+            <div class="course-card">
+              <div class="course-image">
+                <img
+                  src="https://via.placeholder.com/300x150"
+                  alt="Excel cho phân tích tài chính"
+                />
+                <div class="wishlist-btn">❤</div>
+              </div>
+              <div class="course-content">
+                <h3 class="course-title">Excel cho phân tích tài chính</h3>
+                <p class="course-info">
+                  Sử dụng Excel để phân tích và lập kế hoạch tài chính
+                </p>
+                <div class="course-price">
+                  <div class="price">5,500 VND</div>
+                  <div class="buy-btn">Mua ngay</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
