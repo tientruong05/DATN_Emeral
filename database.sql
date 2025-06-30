@@ -48,6 +48,8 @@ CREATE TABLE Enrollments (
     enrollment_date DATETIME NOT NULL DEFAULT GETDATE(),
     finish_date DATE NULL,
     diem FLOAT,
+    order_code BIGINT,
+    status BIT,
     FOREIGN KEY (user_id) REFERENCES [User](ID_nguoi_dung),
     FOREIGN KEY (course_id) REFERENCES Course(ID_khoa_hoc),
     CONSTRAINT UQ_user_course UNIQUE(user_id, course_id)

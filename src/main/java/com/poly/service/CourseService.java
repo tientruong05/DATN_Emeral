@@ -7,12 +7,17 @@ import com.poly.repository.CourseRepository;
 import com.poly.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CourseService {
+
+    private static final int PAGE_SIZE = 8;
 
     @Autowired
     private UserRepository userRepository;
@@ -52,6 +57,32 @@ public class CourseService {
             return courseRepository.findTopNByStatusTrue(8);
         }
         return courseRepository.findByCategoryTenDanhMucAndStatusTrue(type);
+    }
+    
+    public List<Course> getCoursesByType(String type, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Course> coursePage;
+        
+        if (type == null || type.equals("all")) {
+            coursePage = courseRepository.findByStatusTrue(pageable);
+        } else {
+            coursePage = courseRepository.findByCategoryTenDanhMucAndStatusTrue(type, pageable);
+        }
+        
+        return coursePage.getContent();
+    }
+    
+    public int getTotalPages(String type) {
+        Pageable pageable = PageRequest.of(0, PAGE_SIZE);
+        Page<Course> coursePage;
+        
+        if (type == null || type.equals("all")) {
+            coursePage = courseRepository.findByStatusTrue(pageable);
+        } else {
+            coursePage = courseRepository.findByCategoryTenDanhMucAndStatusTrue(type, pageable);
+        }
+        
+        return coursePage.getTotalPages();
     }
 
     public long getTotalStudents() {

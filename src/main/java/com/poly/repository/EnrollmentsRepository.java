@@ -1,5 +1,6 @@
 package com.poly.repository;
 
+import com.poly.entity.Course;
 import com.poly.entity.Enrollment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,7 @@ public interface EnrollmentsRepository extends JpaRepository<Enrollment, Long> {
 
     @Query("SELECT e FROM Enrollment e WHERE e.user.id = :userId AND e.course.ID_khoa_hoc = :courseId")
     Enrollment findByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
+    
+    @Query("SELECT e.course FROM Enrollment e WHERE e.user.idNguoiDung = :userId")
+    List<Course> findCoursesByUserId(@Param("userId") Long userId);
 }
