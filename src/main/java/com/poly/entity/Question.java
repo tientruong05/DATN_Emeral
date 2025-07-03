@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.time.LocalDateTime;
 
 
@@ -36,9 +38,9 @@ public class Question {
 
     @Column(name = "dap_an_d")
     private String dap_an_d;
-
     @ManyToOne
     @JoinColumn(name = "course_id")
+    @JsonManagedReference // Đánh dấu tham chiếu "chính"
     private Course course;
 
 }

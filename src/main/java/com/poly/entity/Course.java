@@ -6,6 +6,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,13 +34,15 @@ public class Course {
     private String anh_dai_dien;
     private boolean status;
 
-    @OneToMany(mappedBy = "course")
-    private List<Video> videos;
-
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonBackReference // Ngăn serialize ngược từ Course -> Questions
     private List<Question> questions;
 
     @OneToMany(mappedBy = "course")
-    private List<Enrollment> enrollments;
+    @JsonBackReference
+    private List<Video> videos;
 
+    @OneToMany(mappedBy = "course")
+    @JsonBackReference
+    private List<Enrollment> enrollments;
 }
