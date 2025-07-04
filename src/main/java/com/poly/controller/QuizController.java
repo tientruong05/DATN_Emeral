@@ -51,7 +51,8 @@ public class QuizController {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             log.warn("User not logged in, redirecting to login");
-            return "redirect:/Login_Signin";
+            return "redirect:/Login_Signin"
+            		+ "";
         }
 
         if (courseId == null || courseId <= 0) {
