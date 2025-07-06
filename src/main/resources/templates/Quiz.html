@@ -704,6 +704,7 @@
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const courseId = /*[[${course?.ID_khoa_hoc ?: 0}]]*/ 0;
+        const userId = /*[[${user.idNguoiDung}]]*/ 0;
         let totalQuestions = /*[[${#lists.size(questions)}]]*/ 0;
         const timeLimit = /*[[${#lists.isEmpty(questions) ? 0 : (#lists.size(questions) * 60)}]]*/ 600;
         let timeLeft = timeLimit;
@@ -899,8 +900,8 @@
 		        const passScore = parseFloat(/*[[${course.diem_dat}]]*/ 7.0) * 10;
 		        if (percentage >= passScore) {
 		            showResult(
-		                `Chúc mừng! Bạn đã đạt ${percentage.toFixed(2)}% và được cấp chứng chỉ. <a href="/CourseInProgess">Quay lại</a>`,
-		                `/certificate/${courseId}`
+		                `Chúc mừng! Bạn đã đạt ${percentage.toFixed(2)}% và được cấp chứng chỉ. <a href="/CourseInProgess">Quay lại</a> <a href="/certificate/${courseId}/${userId}">Xem chứng chỉ</a>`,
+		                `/certificate/${courseId}/${userId}`,
 		            );
 		        } else {
 		            showResult(

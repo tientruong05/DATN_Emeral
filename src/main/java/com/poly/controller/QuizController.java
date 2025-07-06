@@ -82,7 +82,9 @@ public class QuizController {
 
         int totalTimeInSeconds = (course.getDiem_dat() != null && course.getDiem_dat() > 0) ? (int) (course.getDiem_dat() * 60) : 600;
         model.addAttribute("totalTimeInSeconds", totalTimeInSeconds);
+        model.addAttribute("user", user);
 
+        
         return "Quiz";
     }
 
