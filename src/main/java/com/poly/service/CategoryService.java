@@ -1,6 +1,7 @@
 package com.poly.service;
 
 import com.poly.entity.Category;
+import com.poly.entity.User;
 import com.poly.repository.CategoryRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -31,6 +32,11 @@ public class CategoryService {
 
     public Category getCategoryById(Integer id) {
         return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thể loại"));
+    }
+    
+    public Category getCateByTen(String ten) {
+        return categoryRepository.findByTenDanhMuc(ten)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thể loại"));
     }
 
