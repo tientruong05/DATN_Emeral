@@ -7,6 +7,7 @@ import com.poly.service.CartService;
 import com.poly.service.CourseService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -43,7 +45,6 @@ public class CartController {
                     .mapToDouble(Cart::getPrice)
                     .sum();
         } else {
-            // Nếu logout, xóa cartCount khỏi session và model
             if ("true".equals(logout)) {
                 session.setAttribute("cartCount", 0);
                 model.addAttribute("cartCount", 0);
@@ -56,12 +57,9 @@ public class CartController {
 
         session.setAttribute("cartCount", cartCount);
         model.addAttribute("cartCount", cartCount);
-
-        List<Course> suggestedCourses = courseService.getRandomCourses(4);
-
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("totalPrice", totalPrice);
-        model.addAttribute("suggestedCourses", suggestedCourses);
+        model.addAttribute("suggestedCourses", courseService.getRandomCourses(4));
 
         System.out.println("ViewCart - Session ID: " + session.getId() + ", User: "
                 + (user != null ? user.getIdNguoiDung() : "null") + ", CartCount: " + cartCount + ", Logout: "
@@ -144,6 +142,17 @@ public class CartController {
             model.addAttribute("error", e.getMessage());
             return "redirect:/cart";
         }
+    }
+
+    @PostMapping("/remove/all")
+    @ResponseBody
+    public ResponseEntity<String> removeAllItemsInCart(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            cartService.clearCartByUser(user.getIdNguoiDung());
+            return ResponseEntity.ok("done");
+        }
+        return ResponseEntity.badRequest().body("no user");
     }
 
     @PostMapping("/checkout")

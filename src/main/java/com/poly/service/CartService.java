@@ -45,9 +45,15 @@ public class CartService {
             Cart cart = new Cart();
             cart.setUser(user);
             cart.setCourse(course);
-            cart.setPrice(course.getGia_tien());
+            // Use discounted price if available, otherwise use original price
+            cart.setPrice(course.isDiscounted() ? course.getDiscountedPrice() : course.getGia_tien());
             cart.setStatus(true);
             save(cart);
         }
     }
+    @Transactional
+    public void clearCartByUser(Long userId) {
+        cartRepository.deleteByUserId(userId);
+    }
+
 }

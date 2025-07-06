@@ -30,5 +30,5 @@ public class DiscountDetail {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    private String status;
+    private Boolean status;
 }
