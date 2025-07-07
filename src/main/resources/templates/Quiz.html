@@ -894,22 +894,28 @@
 		        }
 		        return response.json();
 		    })
-		    .then(data => {
-		        console.log("Phản hồi từ server:", data);
-		        const percentage = data.score;
-		        const passScore = parseFloat(/*[[${course.diem_dat}]]*/ 7.0) * 10;
-		        if (percentage >= passScore) {
-		            showResult(
-		                `Chúc mừng! Bạn đã đạt ${percentage.toFixed(2)}% và được cấp chứng chỉ. <a href="/certificate/${courseId}/${userId}">Xem chứng chỉ</a>`,
-		                `/certificate/${courseId}/${userId}`,
-		            );
-		        } else {
-		            showResult(
-		                `Bạn đạt ${percentage.toFixed(2)}%, không đủ điểm (≥${passScore.toFixed(1)}%). <a href="/quiz/${courseId}">Làm lại</a>`,
-		                `/quiz/${courseId}`
-		            );
-		        }
-		    })
+			.then(data => {
+			    console.log("Phản hồi từ server:", data);
+			    const percentage = data.score;
+			    const passScore = parseFloat(/*[[${course.diem_dat}]]*/ 7.0) * 10;
+			    const score10 = (percentage / 100 * 10).toFixed(1);
+
+			    if (percentage >= passScore) {
+			        showResult(
+			            `Chúc mừng! Điểm của bạn: ${score10}. <a href="/certificate/${courseId}/${userId}">Xem chứng chỉ</a>`,
+			            `/certificate/${courseId}/${userId}`
+			        );
+			    } else {
+			        showResult(
+			            `Bạn không đạt. Điểm của bạn: ${score10}. <a href="/quiz/${courseId}">Làm lại</a>`,
+			            `/quiz/${courseId}`
+			        );
+			    }
+			})
+
+				
+
+		    
 		    .catch(error => {
 		        console.error("Lỗi nộp bài:", error);
 		        showError("Có lỗi khi nộp bài: " + (error.message || "Không xác định"));

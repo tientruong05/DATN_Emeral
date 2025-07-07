@@ -67,9 +67,12 @@ public class CertificateController {
         if (user != null && course != null && enrollment != null && enrollment.getDiem() != null
                 && enrollment.getDiem() >= course.getDiem_dat()) {
             String subject = "Chúc mừng bạn nhận được chứng chỉ khóa học " + course.getTen_khoa_hoc();
-            String content = "Xin chúc mừng " + user.getHoTen() + " đã hoàn thành khóa học \""
-                    + course.getTen_khoa_hoc() + "\" với số điểm " + enrollment.getDiem()
-                    + ".\nBạn có thể tải chứng chỉ tại hệ thống.";
+         // quy đổi điểm thang 10
+            double score10 = enrollment.getDiem() / 10.0;
+
+            String content = "Xin chúc mừng " + user.getHoTen() + " đã hoàn thành khóa học \"" 
+                + course.getTen_khoa_hoc() + "\" với số điểm " + String.format("%.1f", score10)
+                + " trên thang điểm 10.\nBạn có thể tải chứng chỉ tại hệ thống.";
 
             // Tạo PDF để gửi kèm mail
             Context context = new Context(Locale.getDefault());
