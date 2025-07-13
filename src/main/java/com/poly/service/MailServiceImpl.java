@@ -3,7 +3,6 @@ package com.poly.service;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -16,11 +15,17 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendCertificateMail(String to, String subject, String content) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(content);
-        mailSender.send(message);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content, true); // Set true to indicate HTML content
+            mailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send email", e);
+        }
     }
 
     @Override
@@ -31,11 +36,12 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(content);
+            helper.setText(content, true); // Set true to indicate HTML content
             helper.addAttachment(fileName, new ByteArrayResource(pdfBytes));
             mailSender.send(message);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to send email with attachment", e);
         }
     }
 }
