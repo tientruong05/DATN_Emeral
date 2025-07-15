@@ -858,7 +858,7 @@
             <div class="stat-card total-courses">
                 <div class="stat-content">
                     <div class="stat-info">
-                        <h3>12</h3>
+                        <h3 th:text="${totalCourses}">12</h3>
                         <p>Tổng khóa học</p>
                     </div>
                     <div class="stat-icon">
@@ -869,7 +869,7 @@
             <div class="stat-card completed-courses">
                 <div class="stat-content">
                     <div class="stat-info">
-                        <h3>8</h3>
+                        <h3 th:text="${completedCourses}">8</h3>
                         <p>Đã hoàn thành</p>
                     </div>
                     <div class="stat-icon">
@@ -880,7 +880,7 @@
             <div class="stat-card in-progress">
                 <div class="stat-content">
                     <div class="stat-info">
-                        <h3>4</h3>
+                        <h3 th:text="${inProgressCourses}">4</h3>
                         <p>Đang học</p>
                     </div>
                     <div class="stat-icon">
@@ -902,26 +902,79 @@
             <div class="controls-filters">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Tìm kiếm khóa học..." onkeyup="searchCourses(this.value)">
+                    <input type="text" th:value="${query}" placeholder="Tìm kiếm khóa học..." onkeyup="searchCourses(this.value)" id="searchInput">
                 </div>
-                <select class="filter-select" onchange="filterCourses(this.value)">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="in-progress">Đang học</option>
-                    <option value="completed">Đã hoàn thành</option>
-                    <option value="not-started">Chưa bắt đầu</option>
-                </select>
-                <select class="filter-select" onchange="sortCourses(this.value)">
-                    <option value="recent">Gần đây nhất</option>
-                    <option value="progress">Theo tiến độ</option>
-                    <option value="name">Theo tên A-Z</option>
-                    <option value="completion">Gần hoàn thành</option>
-                </select>
+                <select class="filter-select" id="sortSelect" onchange="sortCourses(this.value)">
+    <option value="recent" th:selected="${sort == 'recent'}">Gần đây nhất</option>
+    <option value="progress" th:selected="${sort == 'progress'}">Theo tiến độ</option>
+    <option value="name" th:selected="${sort == 'name'}">Theo tên A-Z</option>
+    <option value="completion" th:selected="${sort == 'completion'}">Gần hoàn thành</option>
+</select>
+
             </div>
         </div>
 
         <!-- Courses Grid View -->
-        <div class="courses-grid active" id="gridView">
-            <!-- Course Card 1 -->
+        <div class="courses-grid active" id="gridView" th:if="${totalItems > 0}">
+    <div th:each="item : ${enrollments}" 
+         class="course-card" 
+         th:attr="data-status=${item.finishDate != null} ? 'completed' : 'in-progress', 
+                  data-name=${item.course.ten_khoa_hoc}">
+                <div class="course-thumbnail">
+    <img th:src="@{${item.course.anh_dai_dien}}" alt="Course Thumbnail" 
+         th:unless="${item.course.anh_dai_dien == null}" />
+    <i th:class="${item.course.category != null} ? 'fab fa-' + ${item.course.category.tenDanhMuc.toLowerCase()} : 'fas fa-book'" 
+       th:if="${item.course.anh_dai_dien == null}"></i>
+    <div class="course-status" 
+         th:classappend="${item.finishDate != null} ? 'status-completed' : 'status-in-progress'"
+         th:text="${item.finishDate != null} ? 'Hoàn thành' : 'Đang học'"></div>
+</div>
+
+<div class="course-content">
+    <h3 class="course-title" th:text="${item.course.ten_khoa_hoc}"></h3>
+
+    <!-- Progress Section -->
+    <div class="progress-section">
+        <div class="progress-header">
+            <span class="progress-text">Tiến độ học tập</span>
+            <span class="progress-percentage" th:text="${item.finishDate != null ? 100 : 0} + '%'"></span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" th:style="'width:' + ${item.finishDate != null ? 100 : 0} + '%'"></div>
+        </div>
+    </div>
+
+    <!-- Course Stats -->
+    <div class="course-stats">
+        <div class="stat-item">
+            <i class="fas fa-play-circle"></i>
+            <span th:text="${item.finishDate != null ? #lists.size(item.course.videos) : 0} + '/' + ${#lists.size(item.course.videos)} + ' bài học'"></span>
+		</div>
+        <div class="stat-item">
+            <i class="fas fa-calendar"></i>
+            <span th:text="${#temporals.format(item.enrollmentDate, 'dd/MM/yyyy')}"></span>
+        </div>
+    </div>
+
+    <!-- Course Actions -->
+    <div class="course-actions">
+        <button th:if="${item.finishDate == null}" 
+                class="continue-btn" 
+                th:onclick="'continueCourse(' + ${item.id} + ')'">
+            <i class="fas fa-play"></i>
+            Tiếp tục học
+        </button>
+        <button th:if="${item.finishDate != null}" 
+                class="review-btn" 
+                th:onclick="'reviewCourse(' + ${item.id} + ')'">
+            <i class="fas fa-redo"></i>
+            Ôn tập lại
+        </button>
+    </div>
+</div>
+
+            </div>
+            <!-- Course Card 1 
             <div class="course-card" data-status="in-progress" data-name="React JS từ cơ bản đến nâng cao">
                 <div class="course-thumbnail">
                     <i class="fab fa-react"></i>
@@ -962,96 +1015,69 @@
                         </button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Course Card 2 -->
-            <div class="course-card" data-status="completed" data-name="HTML & CSS cơ bản">
-                <div class="course-thumbnail">
-                    <i class="fab fa-html5"></i>
-                    <div class="course-status status-completed">Hoàn thành</div>
-                </div>
-                <div class="course-content">
-                    <h3 class="course-title">HTML & CSS cơ bản</h3>
-                    <p class="course-instructor">
-                        <i class="fas fa-user"></i>
-                        Nguyễn Văn An
-                    </p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span class="progress-text">Tiến độ học tập</span>
-                            <span class="progress-percentage">100%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <div class="course-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-play-circle"></i>
-                            <span>20/20 bài học</span>
-                        </div>
-                    
-                        <div class="stat-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>2 tuần trước</span>
-                        </div>
-                    </div>
-                    <div class="course-actions">
-                        <button class="review-btn" onclick="reviewCourse(2)">
-                            <i class="fas fa-redo"></i>
-                            Ôn tập lại
-                        </button>
-                        <button class="more-btn" onclick="showCourseMenu(2)">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course Card 3 -->
-            <div class="course-card" data-status="in-progress" data-name="JavaScript ES6+ và DOM">
-                <div class="course-thumbnail">
-                    <i class="fab fa-js-square"></i>
-                    <div class="course-status status-in-progress">Đang học</div>
-                </div>
-                <div class="course-content">
-                    <h3 class="course-title">JavaScript ES6+ và DOM</h3>
-                    <p class="course-instructor">
-                        <i class="fas fa-user"></i>
-                        Nguyễn Văn An
-                    </p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span class="progress-text">Tiến độ học tập</span>
-                            <span class="progress-percentage">45%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 45%"></div>
-                        </div>
-                    </div>
-                    <div class="course-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-play-circle"></i>
-                            <span>9/20 bài học</span>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>3 ngày trước</span>
-                        </div>
-                    </div>
-                    <div class="course-actions">
-                        <button class="continue-btn" onclick="continueCourse(3)">
-                            <i class="fas fa-play"></i>
-                            Tiếp tục học
-                        </button>
-                        <button class="more-btn" onclick="showCourseMenu(3)">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </div>-->
+        </div>
+        <!-- Empty State -->
+        <div class="empty-state" th:if="${totalItems == 0}">
+            <i class="fas fa-book-open"></i>
+            <h3>Chưa có khóa học nào</h3>
+            <p>Hãy khám phá và đăng ký các khóa học mới để bắt đầu hành trình học tập!</p>
+            <a href="/java5/asm/search?filter=all" class="browse-courses-btn">
+                <i class="fas fa-search"></i>
+                Khám phá khóa học
+            </a>
         </div>
     </div>
 </div>
+<script>
+	function searchCourses(query) {
+	    const sort = document.querySelector('.filter-select').value;
+	    window.location.href = `/CourseInProgess/search?q=${encodeURIComponent(query)}&sort=${sort}`;
+	}
+	
+	
+	function sortCourses(sortValue) {
+	    const query = document.querySelector('.search-box input').value || "";
+	    window.location.href = `/CourseInProgess/search?q=${encodeURIComponent(query)}&sort=${sortValue}`;
+	}
+
+
+    function continueCourse(enrollmentId) {
+        fetch(`/CourseInProgess/continue/${enrollmentId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirectUrl;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Lỗi khi tiếp tục khóa học:', error));
+    }
+
+    function reviewCourse(enrollmentId) {
+        fetch(`/CourseInProgess/review/${enrollmentId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirectUrl;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Lỗi khi ôn tập khóa học:', error));
+    }
+
+</script>
 </body>
 </html>

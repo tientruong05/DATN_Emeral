@@ -123,4 +123,16 @@ public class Course {
         return getDiscountPercentage() != null;
     }
     
+    @Transient
+    public String getShortMo_ta() {
+        if (mo_ta != null) {
+            // Tìm vị trí của dấu chấm đầu tiên
+            int index = mo_ta.indexOf('.');
+            if (index != -1) {
+                return mo_ta.substring(0, index + 1); // Trả về từ đầu đến dấu chấm
+            }
+            return mo_ta; // Nếu không có dấu chấm, trả về toàn bộ mô tả
+        }
+        return ""; // Nếu mô tả null, trả về chuỗi rỗng
+    }
 }

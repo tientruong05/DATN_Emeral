@@ -1,6 +1,10 @@
 package com.poly.repository;
 
 import com.poly.entity.Enrollment;
+import com.poly.entity.User;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +35,17 @@ public interface EnrollmentsRepository extends JpaRepository<Enrollment, Long> {
 
     @Query("SELECT e FROM Enrollment e WHERE e.user.id = :userId AND e.course.ID_khoa_hoc = :courseId")
     Enrollment findByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
+    
+    @Query("SELECT e FROM Enrollment e WHERE e.user = :user")
+    Page<Enrollment> findByUser(@Param("user") User user, Pageable pageable);
+
+    
+    @Query("SELECT e FROM Enrollment e WHERE e.user = :user AND LOWER(e.course.ten_khoa_hoc) LIKE LOWER(CONCAT('%', :query, '%'))")
+    Page<Enrollment> findByUserAndCourse_TenKhoaHocContainingIgnoreCase(
+            @Param("user") User user,
+            @Param("query") String query,
+            Pageable pageable);
+    long countByUser(User user);
+    long countByUserAndFinishDateIsNotNull(User user);
+    long countByUserAndFinishDateIsNull(User user);
 }

@@ -20,5 +20,7 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     
     Optional<Category> findByTenDanhMuc(String tenDanhMuc);
 
+	List<Category> findByStatus(boolean b);
+    
 
 }

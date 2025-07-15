@@ -1,9 +1,6 @@
 package com.poly.controller;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.poly.entity.Course;
 import com.poly.entity.Enrollment;
 import com.poly.entity.User;
@@ -25,11 +23,8 @@ import com.poly.service.CourseService;
 import com.poly.service.EnrollmentService;
 import com.poly.service.MailService;
 
-import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 @Controller
 public class CertificateController {
@@ -50,35 +45,32 @@ public class CertificateController {
     private UserRepository userRepo;
 
     @Autowired
-    private MailService mailService; // Thêm dòng này
+    private MailService mailService;
 
     @GetMapping("/certificate/{courseId}/{userId}")
     public String showCertificate(@PathVariable Long courseId, @PathVariable Long userId, Model model) {
-        // User user = new User();
-        // user.setIdNguoiDung(userId);
         User user = userRepo.findById(userId).orElse(null);
         Course course = courseRepo.findById(courseId).orElse(null);
-        // Course course = courseService.findById(courseId);
         Enrollment enrollment = enrollmentService.findByUserAndCourse(userId, courseId);
 
         model.addAttribute("user", user);
         model.addAttribute("course", course);
         model.addAttribute("enrollment", enrollment);
+
         if (user != null && course != null && enrollment != null && enrollment.getDiem() != null
                 && enrollment.getDiem() >= course.getDiem_dat()) {
+
             String subject = "Chúc mừng bạn nhận được chứng chỉ khóa học " + course.getTen_khoa_hoc();
-         // quy đổi điểm thang 10
             double score10 = enrollment.getDiem() / 10.0;
+            String content = "Xin chúc mừng " + user.getHoTen() + " đã hoàn thành khóa học \""
+                    + course.getTen_khoa_hoc() + "\" với số điểm " + String.format("%.1f", score10)
+                    + " trên thang điểm 10.\nBạn có thể tải chứng chỉ tại hệ thống.";
 
-            String content = "Xin chúc mừng " + user.getHoTen() + " đã hoàn thành khóa học \"" 
-                + course.getTen_khoa_hoc() + "\" với số điểm " + String.format("%.1f", score10)
-                + " trên thang điểm 10.\nBạn có thể tải chứng chỉ tại hệ thống.";
-
-            // Tạo PDF để gửi kèm mail
             Context context = new Context(Locale.getDefault());
             context.setVariable("user", user);
             context.setVariable("course", course);
             context.setVariable("enrollment", enrollment);
+
             String htmlContent = templateEngine.process("CertificatePDF", context);
 
             byte[] pdfBytes = null;
@@ -88,11 +80,13 @@ public class CertificateController {
                 builder.useFont(() -> getClass().getResourceAsStream("/font/Pattaya-Regular.ttf"), "Pattaya");
                 builder.useFont(() -> getClass().getResourceAsStream("/font/MeaCulpa-Regular.ttf"), "Mea Culpa");
                 builder.useFont(() -> getClass().getResourceAsStream("/font/Roboto-Regular.ttf"), "Roboto");
-                builder.useFont(() -> getClass().getResourceAsStream("/font/PlayfairDisplay-VariableFont_wght.ttf"),
-                        "Playfair Display");
-                builder.withHtmlContent(htmlContent, null);
+                builder.useFont(() -> getClass().getResourceAsStream("/font/PlayfairDisplay-VariableFont_wght.ttf"), "Playfair Display");
+
+                // baseURL: nơi chứa hình ảnh "certificate.jpg"
+                builder.withHtmlContent(htmlContent, getClass().getResource("/static/upload/").toString());
                 builder.toStream(outputStream);
                 builder.run();
+
                 pdfBytes = outputStream.toByteArray();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -105,39 +99,38 @@ public class CertificateController {
                 mailService.sendCertificateMail(user.getEmail(), subject, content);
             }
         }
+
         return "Certificate";
     }
 
     @GetMapping("/certificate/download/{courseId}/{userId}")
     public ResponseEntity<ByteArrayResource> downloadCertificate(@PathVariable Long courseId,
             @PathVariable Long userId) {
+
         Course course = courseService.findById(courseId);
         Enrollment enrollment = enrollmentService.findByUserAndCourse(userId, courseId);
         User user = enrollment.getUser();
 
-        // Tạo context cho Thymeleaf
         Context context = new Context(Locale.getDefault());
         context.setVariable("user", user);
         context.setVariable("course", course);
         context.setVariable("enrollment", enrollment);
 
-        // Render HTML
         String htmlContent = templateEngine.process("CertificatePDF", context);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.useFastMode();
 
-            // 👇 Nhúng các font từ resources (nhớ có đúng tên)
-            builder.useFont(() -> getClass().getResourceAsStream("/font/Pattaya-Regular.ttf"), "Pattaya");
+            builder.useFont(() -> getClass().getResourceAsStream("/font/Merriweather-VariableFont_opsz,wdth,wght.ttf"), "Merri");
             builder.useFont(() -> getClass().getResourceAsStream("/font/MeaCulpa-Regular.ttf"), "Mea Culpa");
-            builder.useFont(() -> getClass().getResourceAsStream("/font/Roboto-Regular.ttf"), "Roboto"); // hỗ trợ
-            builder.useFont(() -> getClass().getResourceAsStream("/font/PlayfairDisplay-VariableFont_wght.ttf"),
-                    "Playfair Display"); // Unicode
-            // tiếng Việt
-            // tốt
+            builder.useFont(() -> getClass().getResourceAsStream("/font/Roboto-VariableFont_wdth,wght.ttf"), "Roboto");
+            builder.useFont(() -> getClass().getResourceAsStream("/font/PlayfairDisplay-VariableFont_wght.ttf"), "Playfair Display");
 
-            builder.withHtmlContent(htmlContent, null);
+            String baseUrl = getClass().getResource("/static/upload/").toExternalForm();
+            builder.withHtmlContent(htmlContent, baseUrl);
+            
+//            builder.withHtmlContent(htmlContent, getClass().getResource("/static/upload/").toString());
             builder.toStream(outputStream);
             builder.run();
 

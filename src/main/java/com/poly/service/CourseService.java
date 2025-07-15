@@ -55,6 +55,10 @@ public class CourseService {
     public List<Course> findAll() {
         return courseRepository.findAll();
     }
+    
+    public Page<Course> findSearchAll(String query, Pageable pageable) {
+        return courseRepository.findCoursesByTenKhoaHocAndStatusTrue(query, pageable);
+    }
 
     public Course findById(Long id) {
         return courseRepository.findById(id).orElse(null);

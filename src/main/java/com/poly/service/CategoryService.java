@@ -3,6 +3,7 @@ package com.poly.service;
 import com.poly.entity.Category;
 import com.poly.entity.User;
 import com.poly.repository.CategoryRepository;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,10 @@ public class CategoryService {
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+    
+    public List<Category> getCategoriesByStatus(){
+    	return categoryRepository.findByStatus(true);
     }
 
     public Category getCategoryById(Integer id) {

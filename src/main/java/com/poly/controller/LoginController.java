@@ -52,7 +52,7 @@ public class LoginController {
         }
     }
 
-    @GetMapping("/Login_Sigin")
+    @GetMapping("/Login_Signin")
     public String loginForm(Model model) {
         model.addAttribute("error", null);
         model.addAttribute("cartCount", 0);

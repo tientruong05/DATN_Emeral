@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tất cả khóa học</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+        }
+
+        /* Page Header */
+        .page-header {
+            background-color: #002855;
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        /* Course Section */
+        .all-courses {
+            padding: 3rem 5%;
+        }
+
+        .section-title {
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            height: 3px;
+            width: 50px;
+            background-color: #002855;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .course-filters {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #f0f7ff;
+            color: #333;
+            border-radius: 20px;
+            margin: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .filter-button.active {
+            background-color: #002855;
+            color: white;
+        }
+
+        .filter-button.active span {
+            color: #f0f7ff;
+        }
+
+        .filter-button i {
+            margin-right: 0.5rem;
+            color: #002855;
+        }
+
+        .filter-button.active i {
+            color: white;
+        }
+
+        .filter-button span {
+            color: #666;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .course-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 350px;
+            position: relative;
+            background-color: white;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Discount Badge */
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            z-index: 2;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+        }
+
+        .course-image {
+            position: relative;
+            height: 150px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: none;
+        }
+
+        .wishlist-btn.wishlist-active {
+            color: red;
+        }
+
+        .course-content {
+            padding: 1rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .course-info-section {
+            flex: 1;
+        }
+
+        .course-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.3;
+            height: 2.6rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .course-info {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+            height: 3.36rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .course-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .price-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .original-price {
+            font-size: 0.7rem;
+            color: #999;
+            text-decoration: line-through;
+            margin-bottom: 2px;
+        }
+
+        .price {
+            font-weight: bold;
+        }
+
+        .free {
+            color: #28a745;
+        }
+
+        .discounted-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            background-color: #002855;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .buy-btn:hover {
+            background-color: #001f42;
+        }
+
+        /* Pagination */
+        .pagination-section {
+            display: flex;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .pagination button.active {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button:disabled:hover {
+            background-color: white;
+            color: #333;
+            border-color: #ddd;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .courses-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .courses-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .page-header {
+                padding: 1.5rem 5%;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-filters {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/header.css}" />
+    <link rel="stylesheet" th:href="@{/css/footer.css}" />
+</head>
+<body>
+    <!--<div th:replace="fragments/header :: header">MENU</div>-->
+    
+    <!-- Page Header -->
+    <section class="page-header">
+        <h1>Tất cả khóa học</h1>
+        <p>Khám phá bộ sưu tập đầy đủ các khóa học lập trình chất lượng cao</p>
+    </section>
+
+    <!-- All Courses Section -->
+    <section class="all-courses">
+        <h2 class="section-title">Danh sách khóa học</h2>
+        
+        <div class="courses-grid" id="courses-grid">
+            <!-- Courses will be dynamically loaded here -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination-section">
+            <div class="pagination">
+                <button onclick="changePage('prev')" id="prev-btn">‹ Trước</button>
+                <button onclick="changePage(1)" class="active">1</button>
+                <button onclick="changePage(2)">2</button>
+                <button onclick="changePage(3)">3</button>
+                <button onclick="changePage('next')" id="next-btn">Sau ›</button>
+            </div>
+        </div>
+    </section>
+
+    <!--<div th:replace="fragments/footer :: footer">footer</div>-->
+    
+    <script>
+        // Data
+        let cartItems = 0;
+        let activeFilter = 'all';
+        let currentPage = 1;
+        const coursesPerPage = 12;
+        
+        const courses = [
+            // Frontend courses
+            {
+                title: 'HTML & CSS cơ bản',
+                description: 'Học HTML và CSS từ cơ bản đến nâng cao, xây dựng website responsive đẹp mắt',
+                price: 299000,
+                originalPrice: 499000,
+                discount: 40,
+                image: 'https://via.placeholder.com/300x150/FF6B35/FFFFFF?text=HTML+CSS',
+                isWishlisted: false,
+                type: 'frontend'
+            },
+            {
+                title: 'JavaScript ES6+',
+                description: 'Thành thạo JavaScript hiện đại với ES6, ES7, ES8 và các tính năng mới nhất',
+                price: 399000,
+                originalPrice: 599000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/F7DF1E/000000?text=JavaScript',
+                isWishlisted: false,
+                type: 'frontend'
+            },
+            {
+                title: 'React.js Masterclass',
+                description: 'Xây dựng ứng dụng web hiện đại với React, Redux, và các công nghệ liên quan',
+                price: 799000,
+                originalPrice: 1199000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/61DAFB/000000?text=React.js',
+                isWishlisted: false,
+                type: 'frontend'
+            },
+            {
+                title: 'Vue.js từ A-Z',
+                description: 'Học Vue.js 3 Composition API, Vuex, Vue Router để phát triển SPA chuyên nghiệp',
+                price: 699000,
+                originalPrice: 999000,
+                discount: 30,
+                image: 'https://via.placeholder.com/300x150/4FC08D/FFFFFF?text=Vue.js',
+                isWishlisted: false,
+                type: 'frontend'
+            },
+            
+            // Backend courses
+            {
+                title: 'Node.js & Express',
+                description: 'Phát triển API và ứng dụng web backend với Node.js, Express và MongoDB',
+                price: 599000,
+                originalPrice: 899000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/339933/FFFFFF?text=Node.js',
+                isWishlisted: false,
+                type: 'backend'
+            },
+            {
+                title: 'Python Django',
+                description: 'Xây dựng web application mạnh mẽ với Python Django framework',
+                price: 699000,
+                originalPrice: 1099000,
+                discount: 36,
+                image: 'https://via.placeholder.com/300x150/092E20/FFFFFF?text=Django',
+                isWishlisted: false,
+                type: 'backend'
+            },
+            {
+                title: 'Java Spring Boot',
+                description: 'Phát triển ứng dụng enterprise với Java Spring Boot và microservices',
+                price: 899000,
+                originalPrice: 1299000,
+                discount: 31,
+                image: 'https://via.placeholder.com/300x150/6DB33F/FFFFFF?text=Spring',
+                isWishlisted: false,
+                type: 'backend'
+            },
+            {
+                title: 'PHP Laravel',
+                description: 'Tạo web application hiệu suất cao với PHP Laravel framework',
+                price: 599000,
+                originalPrice: 799000,
+                discount: 25,
+                image: 'https://via.placeholder.com/300x150/FF2D20/FFFFFF?text=Laravel',
+                isWishlisted: false,
+                type: 'backend'
+            },
+            
+            // Mobile courses
+            {
+                title: 'React Native',
+                description: 'Phát triển ứng dụng mobile đa nền tảng với React Native',
+                price: 799000,
+                originalPrice: 1199000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/61DAFB/000000?text=React+Native',
+                isWishlisted: false,
+                type: 'mobile'
+            },
+            {
+                title: 'Flutter & Dart',
+                description: 'Xây dựng ứng dụng mobile đẹp mắt với Flutter framework của Google',
+                price: 699000,
+                originalPrice: 999000,
+                discount: 30,
+                image: 'https://via.placeholder.com/300x150/02569B/FFFFFF?text=Flutter',
+                isWishlisted: false,
+                type: 'mobile'
+            },
+            {
+                title: 'iOS Swift',
+                description: 'Phát triển ứng dụng iOS native với Swift và UIKit',
+                price: 899000,
+                originalPrice: 1299000,
+                discount: 31,
+                image: 'https://via.placeholder.com/300x150/FA7343/FFFFFF?text=Swift',
+                isWishlisted: false,
+                type: 'mobile'
+            },
+            {
+                title: 'Android Kotlin',
+                description: 'Tạo ứng dụng Android hiện đại với Kotlin và Jetpack Compose',
+                price: 799000,
+                originalPrice: 1099000,
+                discount: 27,
+                image: 'https://via.placeholder.com/300x150/7F52FF/FFFFFF?text=Kotlin',
+                isWishlisted: false,
+                type: 'mobile'
+            },
+            
+            // Database courses
+            {
+                title: 'MySQL cơ bản đến nâng cao',
+                description: 'Thành thạo MySQL từ cơ bản đến tối ưu hóa database chuyên nghiệp',
+                price: 399000,
+                originalPrice: 599000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/4479A1/FFFFFF?text=MySQL',
+                isWishlisted: false,
+                type: 'database'
+            },
+            {
+                title: 'MongoDB cho lập trình viên',
+                description: 'Làm chủ NoSQL database MongoDB cho các ứng dụng hiện đại',
+                price: 499000,
+                originalPrice: 699000,
+                discount: 29,
+                image: 'https://via.placeholder.com/300x150/47A248/FFFFFF?text=MongoDB',
+                isWishlisted: false,
+                type: 'database'
+            },
+            {
+                title: 'PostgreSQL Professional',
+                description: 'PostgreSQL từ cơ bản đến nâng cao, tối ưu hiệu suất và bảo mật',
+                price: 599000,
+                originalPrice: 899000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/336791/FFFFFF?text=PostgreSQL',
+                isWishlisted: false,
+                type: 'database'
+            },
+            
+            // AI/ML courses
+            {
+                title: 'Python cho AI & Machine Learning',
+                description: 'Học Python và các thư viện ML như NumPy, Pandas, Scikit-learn',
+                price: 999000,
+                originalPrice: 1499000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/3776AB/FFFFFF?text=Python+AI',
+                isWishlisted: false,
+                type: 'ai'
+            },
+            {
+                title: 'TensorFlow & Deep Learning',
+                description: 'Xây dựng mô hình deep learning với TensorFlow và Keras',
+                price: 1199000,
+                originalPrice: 1799000,
+                discount: 33,
+                image: 'https://via.placeholder.com/300x150/FF6F00/FFFFFF?text=TensorFlow',
+                isWishlisted: false,
+                type: 'ai'
+            },
+            
+            // Free courses
+            {
+                title: 'Git & GitHub cơ bản',
+                description: 'Học cách sử dụng Git và GitHub để quản lý mã nguồn hiệu quả',
+                price: 0,
+                originalPrice: null,
+                discount: null,
+                image: 'https://via.placeholder.com/300x150/F05032/FFFFFF?text=Git+GitHub',
+                isWishlisted: false,
+                type: 'frontend'
+            },
+            {
+                title: 'VS Code Tips & Tricks',
+                description: 'Sử dụng VS Code như một chuyên gia với các tips và tricks hữu ích',
+                price: 0,
+                originalPrice: null,
+                discount: null,
+                image: 'https://via.placeholder.com/300x150/007ACC/FFFFFF?text=VS+Code',
+                isWishlisted: false,
+                type: 'frontend'
+            },
+            {
+                title: 'Linux Command Line',
+                description: 'Thành thạo terminal Linux cho developers và system administrators',
+                price: 0,
+                originalPrice: null,
+                discount: null,
+                image: 'https://via.placeholder.com/300x150/FCC624/000000?text=Linux',
+                isWishlisted: false,
+                type: 'backend'
+            }
+        ];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCourses();
+            
+            // Add event listeners for filter buttons
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    setFilter(filter, this);
+                });
+            });
+        });
+
+        // Functions
+        function renderCourses() {
+            const coursesGrid = document.getElementById('courses-grid');
+            const filteredCourses = getFilteredCourses();
+            const startIndex = (currentPage - 1) * coursesPerPage;
+            const endIndex = startIndex + coursesPerPage;
+            const coursesToShow = filteredCourses.slice(startIndex, endIndex);
+            
+            coursesGrid.innerHTML = '';
+            
+            coursesToShow.forEach((course, index) => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+                
+                const originalIndex = courses.findIndex(c => c === course);
+                
+                // Tạo discount badge nếu có giảm giá
+                const discountBadge = course.discount ? 
+                    `<div class="discount-badge">
+                        <span>${course.discount}%</span>
+                        <br>
+                        <span style="font-size: 0.6rem;">OFF</span>
+                    </div>` : '';
+                
+                // Tạo phần giá
+                const priceSection = course.price === 0 ? 
+                    `<div class="price free">Miễn phí</div>` :
+                    course.discount ? 
+                        `<div class="price-section">
+                            <div class="original-price">${course.originalPrice.toLocaleString()} VND</div>
+                            <div class="price discounted-price">${course.price.toLocaleString()} VND</div>
+                        </div>` :
+                        `<div class="price">${course.price.toLocaleString()} VND</div>`;
+                
+                courseCard.innerHTML = `
+                    ${discountBadge}
+                    <div class="course-image">
+                        <img src="${course.image}" alt="${course.title}">
+                        <button class="wishlist-btn ${course.isWishlisted ? 'wishlist-active' : ''}" onclick="toggleWishlist(${originalIndex})">
+                            ❤
+                        </button>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-info-section">
+                            <h3 class="course-title">${course.title}</h3>
+                            <p class="course-info">${course.description}</p>
+                        </div>
+                        <div class="course-price">
+                            ${priceSection}
+                            <button class="buy-btn" onclick="addToCart('${course.title}')">Thêm giỏ hàng</button>
+                        </div>
+                    </div>
+                `;
+                coursesGrid.appendChild(courseCard);
+            });
+            
+            updatePagination();
+        }
+
+        function getFilteredCourses() {
+            if (activeFilter === 'all') {
+                return courses;
+            }
+            return courses.filter(course => course.type === activeFilter);
+        }
+
+        function setFilter(filterType, buttonElement) {
+            activeFilter = filterType;
+            currentPage = 1; // Reset to first page when filtering
+            
+            // Update active button
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+            
+            // Re-render courses
+            renderCourses();
+        }
+
+        function toggleWishlist(index) {
+            courses[index].isWishlisted = !courses[index].isWishlisted;
+            renderCourses();
+        }
+
+        function addToCart(courseTitle) {
+            cartItems++;
+            updateCartDisplay();
+            
+            // Show notification
+            alert(`Đã thêm "${courseTitle}" vào giỏ hàng!`);
+        }
+
+        function updateCartDisplay() {
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                if (cartItems > 0) {
+                    cartCountElement.textContent = cartItems;
+                    cartCountElement.classList.remove('hidden');
+                } else {
+                    cartCountElement.classList.add('hidden');
+                }
+            }
+        }
+
+        function changePage(page) {
+            const filteredCourses = getFilteredCourses();
+            const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+            
+            if (page === 'prev' && currentPage > 1) {
+                currentPage--;
+            } else if (page === 'next' && currentPage < totalPages) {
+                currentPage++;
+            } else if (typeof page === 'number' && page >= 1 && page <= totalPages) {
+                currentPage = page;
+            }
+            
+            renderCourses();
+        }
+
+        function updatePagination() {
+            const filteredCourses = getFilteredCourses();
+            const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+            const paginationElement = document.querySelector('.pagination');
+            
+            // Update pagination buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            
+            // Update page number buttons
+            const pageButtons = paginationElement.querySelectorAll('button:not(#prev-btn):not(#next-btn)');
+            pageButtons.forEach((btn, index) => {
+                const pageNum = index + 1;
+                btn.classList.toggle('active', pageNum === currentPage);
+                btn.style.display = pageNum <= totalPages ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
