@@ -38,4 +38,10 @@ public class Enrollment {
 
     @Column(name = "diem")
     private Double diem; // Trường lưu điểm quiz
+    
+    @Column(name = "order_code")
+    private Long orderCode; // Mã đơn hàng từ PayOS
+    
+    @Column(name = "status")
+    private Boolean status; // Trạng thái đăng ký (true: đang học, false: đã kết thúc)
 }

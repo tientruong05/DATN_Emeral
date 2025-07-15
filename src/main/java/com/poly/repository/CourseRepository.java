@@ -2,6 +2,8 @@
 package com.poly.repository;
 
 import com.poly.entity.Course;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +17,12 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT c FROM Course c WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc")
     List<Course> findByCategoryTenDanhMucAndStatusTrue(@Param("tenDanhMuc") String tenDanhMuc);
+
+    @Query("SELECT c FROM Course c WHERE c.status = true")
+    Page<Course> findByStatusTrue(Pageable pageable);
+
+    @Query("SELECT c FROM Course c WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc")
+    Page<Course> findByCategoryTenDanhMucAndStatusTrue(@Param("tenDanhMuc") String tenDanhMuc, Pageable pageable);
 
     List<Course> findByStatusTrueAndCategoryTenDanhMuc(String tenDanhMuc);
 
