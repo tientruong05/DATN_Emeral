@@ -242,30 +242,27 @@
         color: inherit;
       }
 
-      /* Suggested Courses */
-      .suggested-courses {
-        margin-top: 4rem;
-      }
-
-      .suggested-courses h2 {
-        color: #1e3a8a;
-        font-size: 1.75rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 2rem;
-        position: relative;
-      }
-
-      .suggested-courses h2::after {
-        content: "";
-        position: absolute;
-        height: 4px;
-        width: 60px;
-        background-color: #1e3a8a;
-        bottom: -12px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
+     .suggested-courses {
+	      margin-top: 4rem;
+	          }
+	   .suggested-courses h2 {
+	      color: #1e3a8a;
+	      font-size: 1.75rem;
+	      font-weight: 700;
+	      text-align: center;
+	      margin-bottom: 2rem;
+	      position: relative;
+	          }
+	    .suggested-courses h2::after {
+	      content: '';
+	      position: absolute;
+	      height: 4px;
+	      width: 60px;
+	      background-color: #1e3a8a;
+	      bottom: -12px;
+	      left: 50%;
+	      transform: translateX(-50%);
+	          }
 
       .course-list {
         display: grid;
@@ -534,38 +531,34 @@
           </form>
         </div>
       </div>
-      <div class="suggested-courses">
-        <h2>Có thể bạn quan tâm</h2>
-        <div class="course-list">
-          <div th:each="course : ${suggestedCourses}" class="course-item">
-            <div class="course-favorite">❤</div>
-            <img
-              class="rounded-2xl"
-              th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
-              alt="Course thumbnail"
-              width="100"
-              height="100"
-            />
-            <div class="course-details">
-              <h3 th:text="${course.ten_khoa_hoc}">Tên khóa học</h3>
-              <p th:text="${course.mo_ta}">Mô tả khóa học</p>
-              <p
-                th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-              >
-                0 VND
-              </p>
-              <form
-                th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}"
-                method="post"
-              >
-                <input type="hidden" name="returnUrl" value="/cart" />
-                <button type="submit" class="btn btn-primary">
-                  Thêm giỏ hàng
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+       <div class="suggested-courses">
+	            <h2>Có thể bạn quan tâm</h2>
+	            <div class="course-list">
+	                <div th:each="course : ${suggestedCourses}" class="course-item">
+	                    <div class="course-image">
+	                        <img th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'" alt="Course thumbnail" />
+	                        <div class="course-favorite">❤</div>
+	                    </div>
+	                    <div class="course-details">
+	                        <div class="discount-badge" th:if="${course.isDiscounted()}">
+	                            <span th:text="${course.getDiscountPercentage()} + '%'"></span>
+	                            <span style="font-size: 0.6rem;">OFF</span>
+	                        </div>
+	                        <h3 th:text="${course.ten_khoa_hoc}">Tên khóa học</h3>
+	                        <p class="original-price" th:if="${course.isDiscounted() and course.gia_tien != null}" 
+	                           th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+	                        <p th:if="${course.gia_tien == null}" class="discounted-price">Miễn phí</p>
+	                        <p th:if="${course.gia_tien != null}" 
+	                           class="discounted-price" 
+	                           th:text="${#numbers.formatDecimal(course.isDiscounted() ? course.getDiscountedPrice() : course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+	                        <form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
+	                           <button type="submit" class="buy-btn">Thêm giỏ hàng</button>
+	                        </form>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
       </div>
     </div>
     <script>
