@@ -552,7 +552,7 @@
 	                           class="discounted-price" 
 	                           th:text="${#numbers.formatDecimal(course.isDiscounted() ? course.getDiscountedPrice() : course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
 	                        <form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
-	                           <button type="submit" class="buy-btn">Thêm giỏ hàng</button>
+	                           <button type="submit" class="btn btn-primary">Thêm giỏ hàng</button>
 	                        </form>
 	                    </div>
 	                </div>
