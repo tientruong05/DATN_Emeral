@@ -209,7 +209,7 @@ public class LoginController {
     }
 
     private void sendResetCodeEmail(String email, String code) {
-        String subject = "Mã Xác Nhận Đặt Lại Mật Khẩu - EDU102";
+        String subject = "Mã Xác Nhận Đặt Lại Mật Khẩu - DEVNEST LEARNING";
         String htmlContent = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>" +
                 "<div style='padding: 20px; background-color: #ffffff; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>"
                 +
@@ -226,13 +226,13 @@ public class LoginController {
                 "<a href='http://localhost:8080/changePass' style='background-color: #1a1a1a; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>ĐẶT LẠI MẬT KHẨU</a>"
                 +
                 "</div>" +
-                "<p style='color: #666666;'>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng liên hệ với chúng tôi qua email: support@edu102.com</p>"
+                "<p style='color: #666666;'>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng liên hệ với chúng tôi qua email: support@DEVNEST LEARNING.com</p>"
                 +
                 "</div>" +
                 "<div style='text-align: center; padding: 20px; color: #666666;'>" +
-                "<p style='margin: 5px 0;'><strong>EDU102</strong></p>" +
+                "<p style='margin: 5px 0;'><strong>DEVNEST LEARNING</strong></p>" +
                 "<p style='margin: 5px 0;'>Hệ thống quản lý học tập</p>" +
-                "<p style='margin: 5px 0;'>Email: support@edu102.com</p>" +
+                "<p style='margin: 5px 0;'>Email: support@DEVNEST LEARNING.com</p>" +
                 "</div>" +
                 "</div>";
 
