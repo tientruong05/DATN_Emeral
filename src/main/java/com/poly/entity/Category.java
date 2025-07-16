@@ -2,6 +2,8 @@ package com.poly.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,6 +25,11 @@ public class Category {
 
     @Column(name = "status", columnDefinition = "BIT DEFAULT 1")
     private Boolean status = true;
+    
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<DiscountDetail> discountDetails;
+
 
     // Constructors
     public Category() {
@@ -35,35 +42,35 @@ public class Category {
     }
 
     // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTenDanhMuc() {
-        return tenDanhMuc;
-    }
-
-    public void setTenDanhMuc(String tenDanhMuc) {
-        this.tenDanhMuc = tenDanhMuc;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
+//    public Integer getId() {
+//        return id;
+//    }
+//
+//    public void setId(Integer id) {
+//        this.id = id;
+//    }
+//
+//    public String getTenDanhMuc() {
+//        return tenDanhMuc;
+//    }
+//
+//    public void setTenDanhMuc(String tenDanhMuc) {
+//        this.tenDanhMuc = tenDanhMuc;
+//    }
+//
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
+//
+//    public Boolean getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(Boolean status) {
+//        this.status = status;
+//    }
 }

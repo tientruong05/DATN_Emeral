@@ -290,6 +290,16 @@
         color: white;
       }
 
+      .control-btn-nav.quiz-btn {
+        border-color: #ff6b00;
+        color: #ff6b00;
+      }
+
+      .control-btn-nav.quiz-btn:hover {
+        background: #ff6b00;
+        color: white;
+      }
+
       .control-btn-nav:disabled {
         opacity: 0.5;
         cursor: not-allowed;
@@ -369,6 +379,29 @@
       .lesson-item .lesson-status {
         color: #002855;
         font-size: 0.9rem;
+      }
+
+      /* Định dạng nút Quiz trong danh sách bài học */
+      .quiz-link-container {
+        margin-top: 15px;
+      }
+      .quiz-link {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        color: #ffd700; /* Màu vàng cho chữ */
+        font-size: 1.1em;
+        font-weight: 500;
+        background-color: #34495e; /* Nền đồng bộ với bài học */
+        text-decoration: none;
+      }
+      .quiz-link:hover {
+        background-color: #3e5c76; /* Hiệu ứng hover đồng bộ */
+      }
+      .quiz-link.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
       }
 
       /* AI Chat section */
@@ -578,14 +611,21 @@
           display: none;
         }
 
-        /* .content-body {
-          max-height: 200px;
-          padding: 0;
-        } */
-
         .ai-chat-body {
           max-height: 200px;
         }
+
+        .quiz-link {
+          margin: 0.5rem 1rem;
+        }
+      }
+      .watched-icon {
+        color: green;
+        margin-left: 5px;
+      }
+      .quiz-link.disabled {
+        pointer-events: none;
+        opacity: 0.5;
       }
     </style>
   </head>
@@ -605,7 +645,6 @@
         </div>
         <div class="nav-right">
           <div class="progress-info">
-            <!-- Video hiện tại / Tổng số video -->
             <span
               th:if="${videos != null && !videos.isEmpty()}"
               th:text="${'Video ' + (videos.indexOf(currentVideo) + 1) + '/' + videos.size()}"
@@ -632,7 +671,6 @@
         </div>
         <div class="content-body">
           <ul class="lesson-list">
-            <!-- Danh sách các video -->
             <li
               th:each="video : ${videos}"
               class="lesson-item"
@@ -653,6 +691,17 @@
               </a>
             </li>
           </ul>
+          <!-- Thêm nút Làm Quiz -->
+          <div class="quiz-link-container">
+            <a
+              th:href="@{'/video-learning/quiz/' + ${course.ID_khoa_hoc}}"
+              th:class="${allVideosWatched} ? 'quiz-link' : 'quiz-link disabled'"
+              th:onclick="${allVideosWatched} ? '' : 'alert(\'Bạn cần xem hết tất cả video trước khi làm bài kiểm tra.\')'"
+              th:text="'Làm bài kiểm tra: ' + ${course.ten_khoa_hoc}"
+            >
+              Làm bài kiểm tra
+            </a>
+          </div>
         </div>
       </aside>
 
@@ -674,32 +723,23 @@
             th:attr="data-video-url=${currentVideo.duong_dan_video}"
           >
             <div class="custom-video-player">
-              <!-- YouTube IFrame -->
               <div id="youtubePlayer"></div>
-
-              <!-- Loading Spinner -->
               <div id="loadingSpinner" class="loading-spinner"></div>
-
-              <!-- Custom Video Controls -->
               <div class="video-controls-overlay">
                 <div class="progress-bar-container" id="progressContainer">
                   <div class="progress-bar" id="progressBar"></div>
                   <div class="progress-handle" id="progressHandle"></div>
                 </div>
-
                 <div class="control-buttons">
                   <button class="control-btn" id="playPauseBtn">
                     <i class="fas fa-play"></i>
                   </button>
-
                   <button class="control-btn" id="rewindBtn">
                     <i class="fas fa-backward"></i>
                   </button>
-
                   <button class="control-btn" id="forwardBtn" disabled>
                     <i class="fas fa-forward"></i>
                   </button>
-
                   <div class="volume-control">
                     <button class="control-btn" id="muteBtn">
                       <i class="fas fa-volume-up"></i>
@@ -708,7 +748,6 @@
                       <div class="volume-fill" id="volumeFill"></div>
                     </div>
                   </div>
-
                   <div class="time-display">
                     <span id="currentTime">0:00</span> /
                     <span id="duration">0:00</span>
@@ -750,13 +789,11 @@
           </div>
         </div>
 
-        <!-- Toggle AI Chat Button -->
         <button id="toggleAiChat" class="toggle-ai-chat">
           <i id="toggleIcon" class="fas fa-comment-alt"></i>
         </button>
       </main>
 
-      <!-- AI Chat Section (only visible when expanded) -->
       <div
         id="aiChatSection"
         class="ai-chat-section"
@@ -772,7 +809,6 @@
           </button>
         </div>
         <div class="ai-chat-body">
-          <!-- Sample AI messages (will be replaced with dynamic content later) -->
           <div class="chat-message">
             <div class="chat-avatar ai">
               <i class="fas fa-robot"></i>
@@ -782,7 +818,6 @@
               không?
             </div>
           </div>
-          <!-- Sample user message -->
           <div class="chat-message user">
             <div class="chat-bubble">
               Tính năng này sẽ được phát triển trong các phiên bản tiếp theo.
@@ -807,7 +842,7 @@
       </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
       // YouTube IFrame API
       let tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
@@ -834,6 +869,10 @@
       let maxWatchedTime = 0;
       let currentVideoId = "";
       let progressInterval;
+
+      const currentVideoIndex = /*[[${videos.indexOf(currentVideo)}]]*/ 0;
+      const totalVideos = /*[[${videos.size()}]]*/ 0;
+      const courseId = /*[[${course.ID_khoa_hoc}]]*/ 0;
 
       // Get YouTube Video ID from URL
       function getYouTubeVideoId(url) {
@@ -864,7 +903,6 @@
 
       // YouTube IFrame API Ready
       function onYouTubeIframeAPIReady() {
-        // Get video ID from current video
         const videoUrl = document
           .querySelector("[data-video-url]")
           ?.getAttribute("data-video-url");
@@ -903,21 +941,12 @@
 
       // Player Ready Event
       function onPlayerReady(event) {
-        // Hide loading spinner
         loadingSpinner.style.display = "none";
-
-        // Set duration
         durationDisplay.textContent = formatTime(player.getDuration());
-
-        // Load saved volume
         const savedVolume = loadVolumeFromStorage();
         player.setVolume(savedVolume * 100);
         volumeFill.style.width = savedVolume * 100 + "%";
-
-        // Initialize controls
         initControls();
-
-        // Start progress tracking
         startProgressTracking();
       }
 
@@ -929,9 +958,15 @@
             loadingSpinner.style.display = "none";
             break;
           case YT.PlayerState.PAUSED:
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            loadingSpinner.style.display = "none";
+            break;
           case YT.PlayerState.ENDED:
             playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             loadingSpinner.style.display = "none";
+            if (currentVideoIndex + 1 === totalVideos) {
+              window.location.href = `/quiz/${courseId}`;
+            }
             break;
           case YT.PlayerState.BUFFERING:
             loadingSpinner.style.display = "block";
@@ -969,25 +1004,12 @@
 
       // Initialize Controls
       function initControls() {
-        // Play/Pause functionality
         playPauseBtn.addEventListener("click", togglePlayPause);
-
-        // Rewind functionality (only to watched segments)
         rewindBtn.addEventListener("click", rewindVideo);
-
-        // Forward button is always disabled (no skipping ahead)
         forwardBtn.disabled = true;
-
-        // Mute functionality
         muteBtn.addEventListener("click", toggleMute);
-
-        // Progress bar click
         progressContainer.addEventListener("click", seekToPosition);
-
-        // Volume control
         volumeSlider.addEventListener("click", adjustVolume);
-
-        // Keyboard shortcuts
         document.addEventListener("keydown", handleKeyboard);
       }
 
@@ -1003,11 +1025,10 @@
         }
       }
 
-      // Rewind video (only to watched segments)
+      // Rewind video
       function rewindVideo() {
         if (maxWatchedTime > 0 && player) {
-          // Find the closest watched segment
-          let targetTime = Math.max(0, maxWatchedTime - 10); // Go back 10 seconds from max watched
+          let targetTime = Math.max(0, maxWatchedTime - 10);
           player.seekTo(targetTime, true);
         }
       }
@@ -1034,13 +1055,8 @@
           if (duration > 0 && !isNaN(currentTime) && !isNaN(duration)) {
             let progress = (currentTime / duration) * 100;
             progressBar.style.width = progress + "%";
-
-            // Update progress handle position
             progressHandle.style.left = progress + "%";
-
             currentTimeDisplay.textContent = formatTime(currentTime);
-
-            // Update watched segments
             updateWatchedSegments(currentTime);
           }
         }
@@ -1048,31 +1064,24 @@
 
       // Update watched segments
       function updateWatchedSegments(currentTime) {
-        // Update max watched time
         if (currentTime > maxWatchedTime) {
           maxWatchedTime = currentTime;
         }
-
-        // Add to watched segments if not already tracked
         let segmentFound = watchedSegments.find(
           (segment) => Math.abs(segment - currentTime) < 1
         );
-
         if (!segmentFound) {
           watchedSegments.push(currentTime);
         }
       }
 
-      // Seek to position (only within watched segments)
+      // Seek to position
       function seekToPosition(e) {
         if (!player) return;
-
         let rect = progressContainer.getBoundingClientRect();
         let clickX = e.clientX - rect.left;
         let percentage = clickX / rect.width;
         let seekTime = percentage * player.getDuration();
-
-        // Only allow seeking to watched segments or before max watched time
         if (seekTime <= maxWatchedTime) {
           player.seekTo(seekTime, true);
         }
@@ -1081,15 +1090,11 @@
       // Adjust volume
       function adjustVolume(e) {
         if (!player) return;
-
         let rect = volumeSlider.getBoundingClientRect();
         let clickX = e.clientX - rect.left;
         let percentage = Math.max(0, Math.min(1, clickX / rect.width));
-
         player.setVolume(percentage * 100);
         volumeFill.style.width = percentage * 100 + "%";
-
-        // Save volume to localStorage
         saveVolumeToStorage(percentage);
       }
 
@@ -1119,7 +1124,7 @@
         }
       }
 
-      // Load new video when page changes
+      // Load new video
       function loadVideo(videoUrl) {
         const videoId = getYouTubeVideoId(videoUrl);
         if (videoId && player && player.loadVideoById) {
@@ -1150,13 +1155,11 @@
         const toggleIcon = document.getElementById("toggleIcon");
 
         if (aiChatSection.style.display === "none") {
-          // Show AI chat
           aiChatSection.style.display = "flex";
           mainContainer.classList.add("ai-expanded");
           toggleIcon.classList.remove("fa-comment-alt");
           toggleIcon.classList.add("fa-chevron-right");
         } else {
-          // Hide AI chat
           aiChatSection.style.display = "none";
           mainContainer.classList.remove("ai-expanded");
           toggleIcon.classList.remove("fa-chevron-right");

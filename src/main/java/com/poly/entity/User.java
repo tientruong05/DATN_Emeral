@@ -1,5 +1,9 @@
 package com.poly.entity;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -68,4 +72,9 @@ public class User {
     public void setStatusAsString(String status) {
         this.status = status.equals("Hoạt động");
     }
+    
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Enrollment> enrollments;
+
 }

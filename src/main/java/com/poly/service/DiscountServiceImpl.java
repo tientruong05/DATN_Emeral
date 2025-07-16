@@ -75,7 +75,7 @@ public class DiscountServiceImpl implements DiscountService {
                 DiscountDetail detail = new DiscountDetail();
                 detail.setDiscount(savedDiscount);
                 detail.setCategory(category);
-                detail.setStatus("1");
+                detail.setStatus(true);
                 discountDetailRepository.save(detail);
             }
         }
@@ -87,7 +87,7 @@ public class DiscountServiceImpl implements DiscountService {
                 DiscountDetail detail = new DiscountDetail();
                 detail.setDiscount(savedDiscount);
                 detail.setCourse(course);
-                detail.setStatus("1");
+                detail.setStatus(true);
                 discountDetailRepository.save(detail);
             }
         }
@@ -119,7 +119,7 @@ public class DiscountServiceImpl implements DiscountService {
                 DiscountDetail detail = new DiscountDetail();
                 detail.setDiscount(updatedDiscount);
                 detail.setCategory(category);
-                detail.setStatus("1");
+                detail.setStatus(true);
                 discountDetailRepository.save(detail);
             }
         }
@@ -131,7 +131,7 @@ public class DiscountServiceImpl implements DiscountService {
                 DiscountDetail detail = new DiscountDetail();
                 detail.setDiscount(updatedDiscount);
                 detail.setCourse(course);
-                detail.setStatus("1");
+                detail.setStatus(true);
                 discountDetailRepository.save(detail);
             }
         }

@@ -242,7 +242,12 @@
         color: inherit;
       }
 
-      /* Suggested Courses */
+      .original-price {
+        font-size: 0.9rem;
+        color: #6b7280;
+        text-decoration: line-through;
+      }
+
       .suggested-courses {
         margin-top: 4rem;
       }
@@ -257,7 +262,7 @@
       }
 
       .suggested-courses h2::after {
-        content: "";
+        content: '';
         position: absolute;
         height: 4px;
         width: 60px;
@@ -325,6 +330,9 @@
 
       .course-details {
         padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
       }
 
       .course-details h3 {
@@ -340,7 +348,32 @@
         margin-bottom: 0.75rem;
       }
 
-      .course-details a {
+      .course-details .price-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .course-details .discounted-price {
+        font-weight: 600;
+        color: #1e3a8a;
+        font-size: 1rem;
+      }
+
+      .course-details .discount-badge {
+        background-color: #fef3c7;
+        color: #b45309;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .course-details .btn {
         background-color: #1e3a8a;
         color: white;
         padding: 0.5rem 1rem;
@@ -348,12 +381,14 @@
         text-decoration: none;
         font-weight: 500;
         font-size: 0.9rem;
-        display: inline-block;
+        text-align: center;
         transition: all 0.3s ease;
+        align-self: flex-start;
       }
 
-      .course-details a:hover {
+      .course-details .btn:hover {
         background-color: #1e40af;
+        transform: translateY(-1px);
       }
 
       /* Responsive Design */
@@ -422,6 +457,17 @@
           width: 100%;
           text-align: center;
         }
+		.course-details .course-description {
+		  color: #6b7280;
+		  font-size: 0.9rem;
+		  line-height: 1.4;
+		  display: -webkit-box;
+		  -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+		  -webkit-box-orient: vertical;
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+		  margin-bottom: 0.75rem;
+		}
       }
     </style>
   </head>
@@ -432,6 +478,7 @@
         <h3
           th:text="${cartItems != null} ? ${cartItems.size()} + ' khóa học trong giỏ hàng' : '0 khóa học trong giỏ hàng'"
         >
+          Calamity Jane
           0 khóa học trong giỏ hàng
         </h3>
       </div>
@@ -448,7 +495,7 @@
           class="close"
           onclick="this.parentElement.style.display='none';"
         >
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">×</span>
         </button>
       </div>
       <div
@@ -462,7 +509,7 @@
           class="close"
           onclick="this.parentElement.style.display='none';"
         >
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">×</span>
         </button>
       </div>
       <div
@@ -477,7 +524,7 @@
           class="close"
           onclick="this.parentElement.style.display='none';"
         >
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">×</span>
         </button>
       </div>
 
@@ -485,6 +532,13 @@
         <div class="select-all">
           <input type="checkbox" id="select-all" onchange="toggleSelectAll()" />
           <label for="select-all">Chọn tất cả</label>
+          <button
+            id="remove-all-btn"
+            style="margin-left: 1rem; background-color: #dc2626; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease; display: none;"
+            onclick="deleteAll()"
+          >
+            Xóa tất cả
+          </button>
         </div>
         <div th:each="item, iter : ${cartItems}" class="cart-item">
           <div class="item-checkbox">
@@ -506,7 +560,7 @@
           />
           <div class="cart-item-details">
             <h3 th:text="${item.course.ten_khoa_hoc}">Tên khóa học</h3>
-            <p th:text="${item.course.mo_ta}">Mô tả khóa học</p>
+            
           </div>
           <div class="cart-item-price">
             <p
@@ -514,7 +568,10 @@
             >
               0 VND
             </p>
-            <form th:action="@{/cart/remove/{id}(id=${item.id})}" method="post">
+            <form
+              th:action="@{/cart/remove/{id}(id=${item.id})}"
+              method="post"
+            >
               <button type="submit">🗑️ Xóa</button>
             </form>
           </div>
@@ -538,32 +595,30 @@
         <h2>Có thể bạn quan tâm</h2>
         <div class="course-list">
           <div th:each="course : ${suggestedCourses}" class="course-item">
-            <div class="course-favorite">❤</div>
-            <img
-              class="rounded-2xl"
-              th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
-              alt="Course thumbnail"
-              width="100"
-              height="100"
-            />
-            <div class="course-details">
-              <h3 th:text="${course.ten_khoa_hoc}">Tên khóa học</h3>
-              <p th:text="${course.mo_ta}">Mô tả khóa học</p>
-              <p
-                th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-              >
-                0 VND
-              </p>
-              <form
-                th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}"
-                method="post"
-              >
-                <input type="hidden" name="returnUrl" value="/cart" />
-                <button type="submit" class="btn btn-primary">
-                  Thêm giỏ hàng
-                </button>
-              </form>
+            <div class="course-image">
+              <img
+                th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
+                alt="Course thumbnail"
+              />
+              <div class="course-favorite">❤</div>
             </div>
+			<div class="course-details">
+			  <h3 th:text="${course.ten_khoa_hoc}">Tên khóa học</h3>
+			  
+			  <div class="price-container">
+			    <div th:if="${course.isDiscounted()}">
+			      <span class="discount-badge">
+			        <span th:text="${course.getDiscountPercentage()} + '%'"></span>
+			        <span style="font-size: 0.6rem;">OFF</span>
+			      </span>
+			      <p class="original-price" th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+			    </div>
+			    <p class="discounted-price" th:text="${course.gia_tien == null} ? 'Miễn phí' : ${#numbers.formatDecimal(course.isDiscounted() ? course.getDiscountedPrice() : course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+			    <form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
+			      <button type="submit" class="btn btn-primary">Thêm giỏ hàng</button>
+			    </form>
+			  </div>
+			</div>
           </div>
         </div>
       </div>
@@ -615,6 +670,34 @@
             .map((checkbox) => checkbox.value);
 
           selectedItemsInput.value = selectedIds.join(",");
+        }
+
+        function deleteAll() {
+          if (!confirm("Bạn có chắc muốn xóa tất cả các mục trong giỏ hàng?")) {
+            return;
+          }
+          const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+          const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+          fetch("/cart/remove/all", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              [csrfHeader]: csrfToken,
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                window.location.reload();
+              } else {
+                return response.text().then((text) => {
+                  throw new Error(text);
+                });
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Có lỗi xảy ra khi xóa giỏ hàng: " + error.message);
+            });
         }
 
         // Gọi lần đầu khi tải trang
