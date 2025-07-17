@@ -1,8 +1,11 @@
 package com.poly.controller;
 
 import com.poly.entity.Course;
+import com.poly.entity.Enrollment;
 import com.poly.entity.Video;
+import com.poly.entity.User;
 import com.poly.service.CourseService;
+import com.poly.service.EnrollmentService;
 import com.poly.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -23,12 +27,20 @@ public class VideoViewController {
     @Autowired
     private VideoService videoService;
 
+    @Autowired
+    private EnrollmentService enrollmentService;
+
     /**
      * Hiển thị trang học video với danh sách video của khóa học
      * Nếu không chỉ định video, sẽ hiển thị video đầu tiên
      */
     @GetMapping("/{courseId}")
-    public String viewCourseVideos(@PathVariable("courseId") Long courseId, Model model) {
+    public String viewCourseVideos(@PathVariable("courseId") Long courseId, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/Login_Signin";
+        }
+
         // Lấy thông tin khóa học
         Course course = courseService.findById(courseId);
         if (course == null) {
@@ -49,10 +61,17 @@ public class VideoViewController {
         // Lấy video đầu tiên để hiển thị
         Video currentVideo = videos.get(0);
 
+        // Kiểm tra trạng thái hoàn thành khóa học
+        Enrollment enrollment = enrollmentService.findByUserAndCourse(user.getIdNguoiDung(), courseId);
+        boolean hasCompletedCourse = enrollment != null && enrollment.getFinishDate() != null;
+
         model.addAttribute("course", course);
         model.addAttribute("videos", videos);
         model.addAttribute("currentVideo", currentVideo);
-        model.addAttribute("isAIChatExpanded", false); // Mặc định không mở rộng khung chat AI
+        model.addAttribute("isAIChatExpanded", false);
+        model.addAttribute("hasCompletedCourse", hasCompletedCourse);
+        model.addAttribute("currentVideoIndex", 0);
+        model.addAttribute("totalVideos", videos.size());
 
         return "Video_Learning";
     }
@@ -63,7 +82,12 @@ public class VideoViewController {
     @GetMapping("/{courseId}/{videoId}")
     public String viewSpecificVideo(@PathVariable("courseId") Long courseId, 
                                    @PathVariable("videoId") Long videoId, 
-                                   Model model) {
+                                   Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/Login_Signin";
+        }
+
         // Lấy thông tin khóa học
         Course course = courseService.findById(courseId);
         if (course == null) {
@@ -88,11 +112,25 @@ public class VideoViewController {
             currentVideo = videos.get(0);
         }
 
+        // Tính chỉ số của video hiện tại
+        int currentVideoIndex = videos.indexOf(currentVideo);
+        if (currentVideoIndex == -1) {
+            currentVideoIndex = 0;
+            currentVideo = videos.get(0);
+        }
+
+        // Kiểm tra trạng thái hoàn thành khóa học
+        Enrollment enrollment = enrollmentService.findByUserAndCourse(user.getIdNguoiDung(), courseId);
+        boolean hasCompletedCourse = enrollment != null && enrollment.getFinishDate() != null;
+
         model.addAttribute("course", course);
         model.addAttribute("videos", videos);
         model.addAttribute("currentVideo", currentVideo);
-        model.addAttribute("isAIChatExpanded", false); // Mặc định không mở rộng khung chat AI
+        model.addAttribute("isAIChatExpanded", false);
+        model.addAttribute("hasCompletedCourse", hasCompletedCourse);
+        model.addAttribute("currentVideoIndex", currentVideoIndex);
+        model.addAttribute("totalVideos", videos.size());
 
         return "Video_Learning";
     }
-} 
+}
