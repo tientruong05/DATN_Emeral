@@ -149,3 +149,7 @@ VALUES
     (1, 1, NULL, 1), -- Áp dụng cho danh mục Lập trình
     (1, NULL, 2, 1);  -- Áp dụng cho khóa học JavaScript
 GO
+
+ALTER TABLE Enrollments
+ADD order_code BIGINT,
+    status BIT;
