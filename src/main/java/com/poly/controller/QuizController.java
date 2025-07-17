@@ -9,7 +9,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,19 +43,20 @@ public class QuizController {
     @Autowired
     private EnrollmentService enrollmentService;
 
-
     @GetMapping({"/video-learning/quiz/{courseId}", "/quiz/{courseId}"})
     public String showQuiz(@PathVariable("courseId") Long courseId, Model model, HttpSession session) {
         log.info("Accessing quiz for courseId: {}", courseId);
         User user = (User) session.getAttribute("user");
         if (user == null) {
             log.warn("User not logged in, redirecting to login");
+            model.addAttribute("errorMessage", "Vui lòng đăng nhập để làm bài kiểm tra.");
             return "redirect:/Login_Signin";
         }
 
         if (courseId == null || courseId <= 0) {
             log.warn("Invalid courseId: {}, redirecting to index", courseId);
             model.addAttribute("errorMessage", "Khóa học không hợp lệ.");
+            model.addAttribute("hasCompletedCourse", false); // Đảm bảo giá trị mặc định
             return "redirect:/index";
         }
 
@@ -64,7 +64,25 @@ public class QuizController {
         if (course == null) {
             log.warn("Course not found for courseId: {}, redirecting to index", courseId);
             model.addAttribute("errorMessage", "Khóa học không tồn tại.");
+            model.addAttribute("hasCompletedCourse", false); // Đảm bảo giá trị mặc định
             return "redirect:/index";
+        }
+
+        // Kiểm tra trạng thái hoàn thành khóa học
+        boolean hasCompletedCourse = false;
+        try {
+            Enrollment enrollment = enrollmentService.findByUserAndCourse(user.getIdNguoiDung(), courseId);
+            hasCompletedCourse = enrollment != null && enrollment.getFinishDate() != null;
+            if (hasCompletedCourse) {
+                log.info("User {} has already completed course {}, redirecting to video learning", user.getIdNguoiDung(), courseId);
+                model.addAttribute("errorMessage", "Bạn đã hoàn thành khóa học này và không thể làm bài kiểm tra lại.");
+                model.addAttribute("hasCompletedCourse", true);
+                return "redirect:/video-learning/" + courseId;
+            }
+        } catch (Exception e) {
+            log.error("Error checking enrollment for userId: {}, courseId: {}", user.getIdNguoiDung(), courseId, e);
+            model.addAttribute("errorMessage", "Lỗi khi kiểm tra trạng thái khóa học.");
+            model.addAttribute("hasCompletedCourse", false);
         }
 
         List<Question> questions = questionService.findByCourseID_khoa_hoc(courseId);
@@ -82,6 +100,7 @@ public class QuizController {
         int totalTimeInSeconds = (course.getDiem_dat() != null && course.getDiem_dat() > 0) ? (int) (course.getDiem_dat() * 60) : 600;
         model.addAttribute("totalTimeInSeconds", totalTimeInSeconds);
         model.addAttribute("user", user);
+        model.addAttribute("hasCompletedCourse", hasCompletedCourse); // Đảm bảo luôn truyền giá trị
 
         return "Quiz";
     }
@@ -150,7 +169,6 @@ public class QuizController {
                         case "D": userAnswerContent = q.getDap_an_d(); break;
                     }
 
-                    // THÊM 2 DÒNG LOG này
                     log.debug("Answer options A={}, B={}, C={}, D={}", 
                         q.getDap_an_a(), q.getDap_an_b(), q.getDap_an_c(), q.getDap_an_d());
                     log.debug("Comparing userAnswerContent = '{}' vs dap_an_dung = '{}'", 
@@ -161,9 +179,6 @@ public class QuizController {
                         log.debug("Match found for question {} (ID_cau_hoi: {})", i, q.getID_cau_hoi());
                     }
                 }
-            
-        
-
             }
         }
         score = (score / totalQuestions) * 100;
@@ -181,7 +196,7 @@ public class QuizController {
                 enrollment.setEnrollmentDate(LocalDateTime.now());
             }
             enrollment.setDiem(score);
-            if (score > course.getDiem_dat()) {
+            if (score >= course.getDiem_dat()) {
                 enrollment.setFinishDate(LocalDate.now());
             }
 
@@ -194,10 +209,9 @@ public class QuizController {
         Map<String, Object> response = new HashMap<>();
         response.put("score", score);
         response.put("pass", score >= course.getDiem_dat());
-        response.put("totalQuestions", totalQuestions); // Thêm để hiển thị số câu hỏi
-        response.put("correctAnswers", (int) score); // Số câu đúng
+        response.put("totalQuestions", totalQuestions);
+        response.put("correctAnswers", (int) score);
         log.info("Returning response: {}", response);
         return response;
     }
-
 }
