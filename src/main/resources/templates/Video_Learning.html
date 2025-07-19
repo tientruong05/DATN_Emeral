@@ -1003,17 +1003,7 @@
             </li>
           </ul>
           <!-- Thêm nút Làm Quiz -->
-          <div class="quiz-link-container">
-            <a
-              th:href="@{'/video-learning/quiz/' + ${course.ID_khoa_hoc}}"
-              th:class="${allVideosWatched} ? 'quiz-link' : 'quiz-link disabled'"
-              th:attr="data-all-videos-watched=${allVideosWatched}"
-              onclick="handleQuizClick(this)"
-              th:text="'Làm bài kiểm tra: ' + ${course.ten_khoa_hoc}"
-            >
-              Làm bài kiểm tra
-            </a>
-          </div>
+        
         </div>
       </aside>
 
