@@ -931,57 +931,59 @@
             }
         }
 
-        function submitQuiz() {
-            console.log("Bắt đầu nộp bài tại", new Date().toLocaleString(), { courseId: courseId, answers: answers, timeLeft: timeLeft });
-            clearInterval(timerInterval);
+		function submitQuiz() {
+		    console.log("Bắt đầu nộp bài tại", new Date().toLocaleString(), { courseId: courseId, answers: answers, timeLeft: timeLeft });
+		    clearInterval(timerInterval);
 
-            if (!courseId || courseId <= 0) {
-                console.error("Course ID không hợp lệ:", courseId);
-                showError("Mã khóa học không hợp lệ. Vui lòng thử lại.");
-                return;
-            }
+		    if (!courseId || courseId <= 0) {
+		        console.error("Course ID không hợp lệ:", courseId);
+		        showError("Mã khóa học không hợp lệ. Vui lòng thử lại.");
+		        return;
+		    }
 
-            const payload = { courseId: courseId, answers: answers, timeLeft: timeLeft || 0 };
-            console.log("Gửi đến server với courseId:", courseId, "và payload:", JSON.stringify(payload));
+		    const payload = { courseId: courseId, answers: answers, timeLeft: timeLeft || 0 };
+		    console.log("Gửi đến server với courseId:", courseId, "và payload:", JSON.stringify(payload));
 
-            fetch('/submit-quiz', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    console.error("Lỗi HTTP:", response.status, response.statusText);
-                    return response.json().then(err => { throw new Error(err.message || `HTTP error! status: ${response.status}`); });
-                }
-                return response.json();
-            })
-            .then(data => {
-                const percentage = data.score; // Ví dụ 50%
-                const score10 = (percentage / 100 * 10).toFixed(1); // 5.0
-                const score10Float = parseFloat(score10); // ✅ Ép về số để so sánh
+		    fetch('/submit-quiz', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		            'Accept': 'application/json'
+		        },
+		        body: JSON.stringify(payload)
+		    })
+		    .then(response => {
+		        if (!response.ok) {
+		            console.error("Lỗi HTTP:", response.status, response.statusText);
+		            return response.json().then(err => { throw new Error(err.message || `HTTP error! status: ${response.status}`); });
+		        }
+		        return response.json();
+		    })
+		    .then(data => {
+		        const percentage = data.score; // Ví dụ 50%
+		        const score10 = (percentage / 100 * 10).toFixed(1); // 5.0
+		        const score10Float = parseFloat(score10); // ✅ Ép về số để so sánh
 
-                if (score10Float >= passScore10) {
-                    showResult(
-                        `🎉 Chúc mừng! Điểm của bạn: ${score10}. <a href="/certificate/${courseId}/${userId}">Xem chứng chỉ</a>`,
-                        `/certificate/${courseId}/${userId}`
-                    );
-                } else {
-                    showResult(
-                        `❌ Bạn chỉ đạt ${score10} điểm. Bạn chưa đủ điều kiện để nhận chứng chỉ. <a href="/video-learning/${courseId}">Quay lại trang video</a>`,
-                        `/quiz/${courseId}`
-                    );
-                }
-            })
-            .catch(error => {
-                console.error("Lỗi nộp bài:", error);
-                showError("Có lỗi khi nộp bài: " + (error.message || "Không xác định"));
-            });
-        }
-
+		        // Kiểm tra thông báo "Hết thời gian, vui lòng làm lại"
+		        if (data.message === "Hết thời gian, vui lòng làm lại.") {
+		            showResult(data.message, `/quiz/${courseId}`); // Hiển thị thông báo và làm mới trang
+		        } else if (score10Float >= passScore10) {
+		            showResult(
+		                `🎉 Chúc mừng! Điểm của bạn: ${score10}. <a href="/certificate/${courseId}/${userId}">Xem chứng chỉ</a>`,
+		                `/certificate/${courseId}/${userId}`
+		            );
+		        } else {
+		            showResult(
+		                `❌ Bạn chỉ đạt ${score10} điểm. Bạn chưa đủ điều kiện để nhận chứng chỉ. <a href="/video-learning/${courseId}">Quay lại trang video</a>`,
+		                `/quiz/${courseId}`
+		            );
+		        }
+		    })
+		    .catch(error => {
+		        console.error("Lỗi nộp bài:", error);
+		        showError("Có lỗi khi nộp bài: " + (error.message || "Không xác định"));
+		    });
+		}
         document.getElementById('prev-btn')?.addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
