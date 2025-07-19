@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Enrollments")
@@ -44,4 +46,12 @@ public class Enrollment {
     
     @Column(name = "status")
     private Boolean status; // Trạng thái đăng ký (true: đang học, false: đã kết thúc)
+    
+    @Column(name = "progress", columnDefinition = "FLOAT DEFAULT 0")
+    private Float progress = 0.0f; // Tiến độ học tập (0-100%)
+
+    @ElementCollection
+    @CollectionTable(name = "enrollment_completed_videos", joinColumns = @JoinColumn(name = "enrollment_id"))
+    @Column(name = "video_id")
+    private List<Long> completedVideos = new ArrayList<>();
 }

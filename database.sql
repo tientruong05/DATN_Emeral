@@ -26,6 +26,14 @@ CREATE TABLE Category (
 	status BIT DEFAULT 1
 );
 
+-- Bảng lưu các video đã hoàn thành cho mỗi lượt đăng ký
+CREATE TABLE enrollment_completed_videos (
+    enrollment_id INT NOT NULL,
+    video_id BIGINT NOT NULL,
+    PRIMARY KEY (enrollment_id, video_id),
+    FOREIGN KEY (enrollment_id) REFERENCES Enrollments(id) ON DELETE CASCADE
+);
+
 -- Bảng khóa học
 CREATE TABLE Course (
     ID_khoa_hoc INT PRIMARY KEY IDENTITY(1,1),

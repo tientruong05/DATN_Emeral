@@ -3,13 +3,12 @@ package com.poly.repository;
 import com.poly.entity.Course;
 import com.poly.entity.Enrollment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 public interface EnrollmentsRepository extends JpaRepository<Enrollment, Long> {
 
@@ -35,4 +34,11 @@ public interface EnrollmentsRepository extends JpaRepository<Enrollment, Long> {
     
     @Query("SELECT e.course FROM Enrollment e WHERE e.user.idNguoiDung = :userId")
     List<Course> findCoursesByUserId(@Param("userId") Long userId);
+    
+    @Modifying
+    @Query("UPDATE Enrollment e SET e.progress = :progress WHERE e.user.id = :userId AND e.course.ID_khoa_hoc = :courseId")
+    void updateProgress(@Param("userId") Long userId, @Param("courseId") Long courseId, @Param("progress") Float progress);
+    
+    @Query("SELECT e.progress FROM Enrollment e WHERE e.user.id = :userId AND e.course.ID_khoa_hoc = :courseId")
+    Float findProgressByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
 }

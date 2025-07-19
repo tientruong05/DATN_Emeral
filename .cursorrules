@@ -56,4 +56,4 @@ RestController:
 5. Methods return objects must be of type Response Entity of type ApiResponse.
 6. All class method logic must be implemented in a try..catch block(s).
 
-BIG Requirement: All new code must adhere to the structure and conventions of the existing codebase.
+BIG Requirement: All new code must adhere to the structure and conventions of the existing codebase. The database is fixed, don't add any new fields to the entity unless I ask.
