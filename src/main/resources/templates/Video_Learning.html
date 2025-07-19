@@ -97,7 +97,7 @@
       }
 
       .main-container.ai-expanded {
-        grid-template-columns: 300px 1fr 350px;
+        grid-template-columns: 300px 1fr 500px;
       }
 
       /* Video Player Area */
@@ -413,6 +413,7 @@
         overflow: hidden;
         height: 100vh;
         padding-top: 80px; /* Account for fixed header */
+        width: 500px;
       }
 
       .ai-chat-header {
@@ -448,6 +449,7 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        max-height: 80vh;
       }
 
       .chat-message {
@@ -487,6 +489,9 @@
         color: #ccc;
         padding: 0.75rem 1rem;
         border-radius: 12px;
+        max-width: 90%;
+        word-break: break-word;
+        white-space: pre-line;
       }
 
       .chat-message.user .chat-bubble {
@@ -808,7 +813,7 @@
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="ai-chat-body">
+        <div class="ai-chat-body" id="aiChatBody">
           <div class="chat-message">
             <div class="chat-avatar ai">
               <i class="fas fa-robot"></i>
@@ -818,23 +823,20 @@
               không?
             </div>
           </div>
-          <div class="chat-message user">
-            <div class="chat-bubble">
-              Tính năng này sẽ được phát triển trong các phiên bản tiếp theo.
-            </div>
-            <div class="chat-avatar user">
-              <i class="fas fa-user"></i>
-            </div>
-          </div>
         </div>
         <div class="chat-input-container">
-          <form class="chat-input-form">
+          <form
+            class="chat-input-form"
+            id="aiChatForm"
+            onsubmit="return false;"
+          >
             <textarea
               class="chat-input"
+              id="aiChatInput"
               placeholder="Nhập câu hỏi của bạn..."
               rows="2"
             ></textarea>
-            <button type="button" class="send-btn">
+            <button type="submit" class="send-btn" id="aiChatSendBtn">
               <i class="fas fa-paper-plane"></i>
             </button>
           </form>
@@ -1108,6 +1110,8 @@
 
       // Handle keyboard shortcuts
       function handleKeyboard(e) {
+        // Nếu đang focus vào ô chat thì bỏ qua các phím tắt video
+        if (document.activeElement === aiChatInput) return;
         switch (e.code) {
           case "Space":
             e.preventDefault();
@@ -1165,6 +1169,95 @@
           toggleIcon.classList.remove("fa-chevron-right");
           toggleIcon.classList.add("fa-comment-alt");
         }
+      }
+
+      // --- AI Chatbot Integration ---
+      const aiChatForm = document.getElementById("aiChatForm");
+      const aiChatInput = document.getElementById("aiChatInput");
+      const aiChatBody = document.getElementById("aiChatBody");
+      const aiChatSendBtn = document.getElementById("aiChatSendBtn");
+      let aiChatLoading = false;
+
+      aiChatForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        if (aiChatLoading) return;
+        const question = aiChatInput.value.trim();
+        if (!question) return;
+        addUserMessage(question);
+        aiChatInput.value = "";
+        aiChatSendBtn.disabled = true;
+        aiChatLoading = true;
+        addLoadingMessage();
+        try {
+          const response = await fetch("/api/chatbot/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question }),
+          });
+          const data = await response.json();
+          removeLoadingMessage();
+          if (data && data.success && data.data && data.data.answer) {
+            addAiMessage(data.data.answer);
+          } else {
+            addAiMessage(
+              data && data.message ? data.message : "Đã xảy ra lỗi."
+            );
+          }
+        } catch (err) {
+          removeLoadingMessage();
+          addAiMessage("Lỗi kết nối đến máy chủ.");
+        }
+        aiChatSendBtn.disabled = false;
+        aiChatLoading = false;
+        aiChatBody.scrollTop = aiChatBody.scrollHeight;
+      });
+
+      function addUserMessage(text) {
+        const msg = document.createElement("div");
+        msg.className = "chat-message user";
+        msg.innerHTML = `<div class="chat-bubble">${escapeHtml(
+          text
+        )}</div><div class="chat-avatar user"><i class="fas fa-user"></i></div>`;
+        aiChatBody.appendChild(msg);
+        aiChatBody.scrollTop = aiChatBody.scrollHeight;
+      }
+      function markdownToHtml(text) {
+        // Đậm: **text**
+        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+        // Nghiêng: *text*
+        text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
+        // Code: `text`
+        text = text.replace(/`([^`]+)`/g, "<code>$1</code>");
+        // Xuống dòng
+        text = text.replace(/\\n/g, "<br>");
+        return text;
+      }
+
+      function addAiMessage(text) {
+        const msg = document.createElement("div");
+        msg.className = "chat-message";
+        msg.innerHTML = `<div class="chat-avatar ai"><i class="fas fa-robot"></i></div><div class="chat-bubble">${markdownToHtml(
+          escapeHtml(text)
+        )}</div>`;
+        aiChatBody.appendChild(msg);
+        aiChatBody.scrollTop = aiChatBody.scrollHeight;
+      }
+      function addLoadingMessage() {
+        const msg = document.createElement("div");
+        msg.className = "chat-message";
+        msg.id = "aiChatLoadingMsg";
+        msg.innerHTML = `<div class="chat-avatar ai"><i class="fas fa-robot"></i></div><div class="chat-bubble"><span class='loading-spinner' style='position:static;width:24px;height:24px;border-width:3px;'></span></div>`;
+        aiChatBody.appendChild(msg);
+        aiChatBody.scrollTop = aiChatBody.scrollHeight;
+      }
+      function removeLoadingMessage() {
+        const msg = document.getElementById("aiChatLoadingMsg");
+        if (msg) msg.remove();
+      }
+      function escapeHtml(text) {
+        return text.replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
       }
 
       // Initialize when page loads
