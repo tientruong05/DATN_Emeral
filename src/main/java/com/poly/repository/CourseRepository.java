@@ -17,7 +17,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT c FROM Course c WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc")
     List<Course> findByCategoryTenDanhMucAndStatusTrue(@Param("tenDanhMuc") String tenDanhMuc);
-
+    
     @Query("SELECT c FROM Course c WHERE c.status = true")
     Page<Course> findByStatusTrue(Pageable pageable);
 
@@ -33,4 +33,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT c FROM Course c WHERE c.ten_khoa_hoc = :tenKhoaHoc")
     Optional<Course> findByTen_khoa_hoc(@Param("tenKhoaHoc") String tenKhoaHoc);
+    
+    @Query("SELECT c FROM Course c WHERE LOWER(c.ten_khoa_hoc) LIKE LOWER(CONCAT('%', :tenKhoaHoc, '%')) AND c.status = true")
+    Page<Course> findCoursesByTenKhoaHocAndStatusTrue(@Param("tenKhoaHoc") String tenKhoaHoc, Pageable pageable);
+    
+    @Query("SELECT c FROM Course c WHERE c.category.id = :idCate")
+    Page<Course> findByIdCate(@Param("idCate") Integer idCate, Pageable pageable);
 }

@@ -624,8 +624,8 @@
           nghệ.
         </p>
         <div class="hero-buttons">
-          <a th:href="@{/courses}" class="btn primary-btn">Khám phá ngay</a>
-          <a th:href="@{/courses}" class="btn secondary-btn">Xem khóa học</a>
+          <a th:href="@{#featured-courses-section}" class="btn primary-btn">Khám phá ngay</a>
+                <a th:href="@{/list}" class="btn secondary-btn">Xem khóa học</a>
         </div>
       </div>
       <div class="hero-image">
@@ -634,8 +634,9 @@
     </section>
 
     <!-- Featured Courses Section -->
-    <section class="featured-courses">
+    <section class="featured-courses"  id="featured-courses-section">
       <h2 class="section-title">Các khóa học nổi bật</h2>
+      <!-- 
       <div class="course-filters">
         <a
           th:href="@{/index(type='all',page=0)}"
@@ -660,7 +661,7 @@
             th:text="${category.tenDanhMuc == 'Tài chính' ? '' : ''}"
           ></span>
         </a>
-      </div>
+      </div> -->
       <div class="courses-grid" th:if="${courses.isEmpty()}">
         <p>Không có khóa học nào trong danh mục này.</p>
       </div>
@@ -690,7 +691,7 @@
                 style="text-decoration: none; color: inherit"
               >
                 <h3 class="course-title" th:text="${course.ten_khoa_hoc}"></h3>
-                <p class="course-info" th:text="${course.mo_ta}"></p>
+                <p class="course-info" th:text="${course.shortMo_ta}"></p>
               </a>
             </div>
             <div class="course-price">
@@ -730,7 +731,7 @@
                   method="post"
                 >
                   <input type="hidden" name="returnUrl" value="/index" />
-                  <button type="submit" class="btn btn-primary">
+                  <button type="submit" class="buy-btn">
                     Thêm giỏ hàng
                   </button>
                 </form>
@@ -739,7 +740,7 @@
           </div>
         </div>
       </div>
-      <!-- Pagination -->
+      <!-- Pagination 
       <div class="pagination-container" th:if="${totalPages > 1}">
         <nav aria-label="Course pagination">
           <ul class="pagination">
@@ -780,8 +781,8 @@
             </li>
           </ul>
         </nav>
-      </div>
-      <a th:href="@{/courses}" class="see-more-btn">Xem thêm khóa học</a>
+      </div> -->
+      <a th:href="@{/list}" class="see-more-btn">Xem thêm khóa học</a>
     </section>
 
     <!-- Stats Section -->
@@ -878,5 +879,6 @@
         </div>
       </div>
     </section>
+    <script th:src="@{/css/header.js}" ></script>
   </body>
 </html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chứng chỉ DevNest Learning</title>
+
+	
+ 
+    <style>
+		@page {
+		    size: A4 landscape;
+		    margin: 0;
+		  }
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: "Roboto", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column; /* Thay đổi hướng thành cột */
+        }
+
+        .certificate {
+            width: 1000px;
+            height: 580px;
+            background: white;
+            position: relative;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: visible;
+        }
+
+        .border-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 15px solid transparent;
+            border-image: repeating-linear-gradient(
+                45deg,
+                #4A5568 0px,
+                #4A5568 10px,
+                #2D3748 10px,
+                #2D3748 20px,
+                #4A5568 20px,
+                #4A5568 30px,
+                #E2E8F0 30px,
+                #E2E8F0 40px
+            ) 15;
+        }
+
+        .ornamental-corners {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #4A5568, #2D3748);
+            border-radius: 50%;
+        }
+
+        .corner-tl { top: 20px; left: 20px; }
+        .corner-tr { top: 20px; right: 20px; }
+        .corner-bl { bottom: 20px; left: 20px; }
+        .corner-br { bottom: 20px; right: 20px; }
+
+        .ornamental-corners::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: #E2E8F0;
+            border-radius: 50%;
+        }
+
+        .ornamental-corners::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #4A5568;
+            border-radius: 50%;
+        }
+
+        .devnest-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 50px 0 20px 0;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #00D4FF, #00A8CC);
+            margin-right: 10px;
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon::before {
+            content: '\003C/\003E';
+            color: #2D1B69;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .logo-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #00D4FF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .certificate-title {
+            font-family: 'Roboto', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #D4AF37;
+            text-align: center;
+            margin: 25px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .certificate-subtitle {
+            font-size: 12px;
+            color: #D4AF37;
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 12px;
+        }
+
+        .recipient-name {
+            font-family: 'Mea Culpa', serif;
+            font-size: 50px;
+            color: #2D3748;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .completion-text {
+            font-size: 14px;
+            color: #4A5568;
+            text-align: center;
+            margin: 8px 0 4px;
+        }
+
+        .course-name {
+            font-size: 35px;
+            font-weight: 600;
+            color: #E53E3E;
+            text-align: center;
+            margin: 4px 0 12px;
+            font-family: Pattaya;
+        }
+
+        .course-name-en {
+            font-size: 12px;
+            color: #718096;
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .center-ornament {
+            text-align: center;
+            margin: 20px 0;
+            color: #D4AF37;
+            font-size: 20px;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 120px;
+            margin-top: 40px;
+            position: absolute;
+            bottom: 120px;
+            left: 0;
+            right: 0;
+        }
+
+        .date-section {
+            font-size: 16px;
+            color: #D4AF37;
+            text-align: left;
+        }
+
+        .date-section strong {
+            font-weight: 600;
+        }
+
+        .team-section {
+            text-align: right;
+        }
+
+        .team-section h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #4A5568;
+            font-weight: 500;
+        }
+
+        .team-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .team-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00D4FF, #00A8CC);
+            margin-right: 12px;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .team-logo-icon::before {
+            content: '\003C/\003E';
+            color: #2D1B69;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .team-logo-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #00D4FF;
+        }
+.watermark {
+    position: absolute;
+    top: 54%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-size: 180px;
+    color: #f5fafd;
+    font-weight: bold;
+    z-index: 0;
+    font-family: 'Playfair Display', serif;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: 10px;
+}
+      @font-face {
+    font-family: 'Roboto';
+    src: url('Roboto-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Mea Culpa';
+    src: url('MeaCulpa-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Pattaya';
+    src: url('Pattaya-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Playfair Display';
+    src: url('PlayfairDisplay-VariableFont_wght.ttf') format('truetype');
+}
+        
+
+    </style>
+</head>
+<body>
+
+    <div class="certificate">
+        <div class="border-decoration"></div>
+        
+        <div class="ornamental-corners corner-tl"></div>
+        <div class="ornamental-corners corner-tr"></div>
+        <div class="ornamental-corners corner-bl"></div>
+        <div class="ornamental-corners corner-br"></div>
+        <div class="watermark">DEVNEST</div>
+        <div class="devnest-logo">
+            <div class="logo-icon"></div>
+            <div class="logo-text">DevNest Learning</div>
+        </div>
+
+        <div class="certificate-title">CHỨNG CHỈ HOÀN THÀNH</div>
+        <!-- <div class="certificate-subtitle">Certificate of Completion</div> -->
+        <div class="certificate-subtitle">Chứng nhận rằng 
+        <!-- / This certifies --></div>
+
+        <div class="recipient-name" th:text="${user.hoTen}"></div>
+
+        <div class="completion-text">đã hoàn thành thành công khóa học</div>
+        <div class="completion-text" style="font-size: 12px; color: #718096; font-style: italic;">
+        <!-- has successfully completed the course -->
+        </div>
+
+        <div class="course-name" th:text="${course.ten_khoa_hoc}">Kỹ năng Giao tiếp Chuyên nghiệp</div>
+        <!-- <div class="course-name-en">Professional Communication Skills</div> -->
+
+        <div class="center-ornament">❦ ❦ ❦</div>
+
+        <div class="bottom-section">
+            <div class="date-section">
+                <strong>Ngày / Date:</strong>
+                <span th:text="${enrollment.finishDate != null ? enrollment.finishDate.format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy')) : ''}"></span>
+                
+            </div>
+            
+            <div class="team-section">
+                <h4>DEVNEST TEAM</h4>
+                <div class="team-logo">
+                    <div class="team-logo-icon"></div>
+                    <div class="team-logo-text">DEVNEST</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

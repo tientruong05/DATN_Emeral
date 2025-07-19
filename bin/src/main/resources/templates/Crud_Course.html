@@ -121,6 +121,13 @@
       .content-btn:hover {
         background-color: #0056b3;
       }
+      .video-btn {
+        background-color: #28a745;
+        color: white;
+      }
+      .video-btn:hover {
+        background-color: #218838;
+      }
       .delete-btn {
         background-color: #dc3545;
         color: white;
@@ -143,23 +150,69 @@
         justify-content: center;
       }
 
+      /* .modal-content {
+      background-color: white;
+      padding: 0;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+     */
       .modal-content {
         background-color: white;
-        padding: 0;
+        padding: 0; /* Giữ nguyên padding 0 để body của modal quản lý padding */
         border-radius: 12px;
         width: 90%;
         max-width: 500px;
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+
+        /* --- Bắt đầu phần thêm/sửa --- */
+        max-height: 90vh; /* Giới hạn chiều cao tối đa của modal, ví dụ 90% chiều cao viewport */
+        display: flex; /* Sử dụng flexbox để cấu trúc header, body, footer */
+        flex-direction: column; /* Xếp các phần tử theo cột */
+        overflow: hidden; /* Ẩn overflow ở cấp độ modal-content để modal-body có thể cuộn */
+        /* --- Kết thúc phần thêm/sửa --- */
       }
 
+      .modal-body {
+        padding: 1.5rem;
+        /* --- Bắt đầu phần thêm/sửa --- */
+        flex-grow: 1; /* Cho phép modal-body mở rộng để lấp đầy không gian còn lại */
+        overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung tràn */
+        /* --- Kết thúc phần thêm/sửa --- */
+      }
+
+      /* Giữ nguyên các style khác của modal-header và modal-footer */
       .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-shrink: 0; /* Ngăn header co lại */
         padding: 1.5rem;
         border-bottom: 1px solid #eee;
       }
 
+      .modal-footer {
+        flex-shrink: 0; /* Ngăn footer co lại */
+        padding: 1.5rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
       .modal-header h2 {
         color: #002855;
         margin: 0;
@@ -216,14 +269,6 @@
       .form-group select:focus {
         outline: none;
         border-color: #002855;
-      }
-
-      .modal-footer {
-        padding: 1.5rem;
-        border-top: 1px solid #eee;
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
       }
 
       .cancel-btn,
@@ -404,6 +449,15 @@
                   title="Nội dung"
                 >
                   <i class="fas fa-book"></i>
+                </a>
+
+                <!-- Nút học video -->
+                <a
+                  th:href="@{'/video-learning/' + ${course.ID_khoa_hoc}}"
+                  class="btn-action video-btn"
+                  title="Học video"
+                >
+                  <i class="fas fa-play-circle"></i>
                 </a>
 
                 <!-- Nút xóa -->

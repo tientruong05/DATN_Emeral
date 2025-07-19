@@ -97,6 +97,10 @@ public class RevenueService {
                 Course course = (Course) row[0];
                 Double revenue = (Double) row[1];
                 Long enrollments = (Long) row[2];
+                Long total = enrollmentsRepository.countTotalEnrollmentsByCourseId(course.getID_khoa_hoc());
+                Long completed = enrollmentsRepository.countCompletedEnrollmentsByCourseId(course.getID_khoa_hoc());
+
+                double completionRate = (total != 0) ? (completed * 100.0 / total) : 0.0;
 
                 Map<String, Object> courseData = new HashMap<>();
                 courseData.put("rank", i + 1);
@@ -104,7 +108,7 @@ public class RevenueService {
                 courseData.put("enrollments", enrollments != null ? enrollments : 0L);
                 courseData.put("revenue", revenue != null ? revenue : 0.0);
                 courseData.put("ratio",
-                        totalRevenue > 0 ? (revenue != null ? revenue : 0.0) / totalRevenue * 100 : 0.0);
+                        totalRevenue > 0 ? completionRate : 0);
                 courseData.put("trend", revenue != null && revenue > 400_000_000 ? "Cao"
                         : revenue != null && revenue > 300_000_000 ? "Trung bình" : "Thấp");
 

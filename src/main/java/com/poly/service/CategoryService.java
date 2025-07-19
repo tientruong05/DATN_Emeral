@@ -30,6 +30,10 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+    public List<Category> getCategoriesByStatus(){
+    	return categoryRepository.findByStatus(true);
+    }
+    
     public Category getCategoryById(Integer id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thể loại"));

@@ -18,26 +18,38 @@
         box-sizing: border-box;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
+
       body {
         background-color: #f7f9fc;
         color: #333;
       }
+
       .manage-categories-container {
         max-width: 1200px;
         margin: 2rem auto;
         padding: 1rem;
       }
+
       .manage-categories-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1.5rem;
       }
+
       .manage-categories-header h1 {
         color: #002855;
         font-size: 2rem;
       }
-      .add-category-btn {
+
+      .manage-categories-header .button-group {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .add-category-btn,
+      .import-excel-btn,
+      .export-excel-btn {
         background-color: #002855;
         color: white;
         padding: 0.6rem 1.2rem;
@@ -45,10 +57,31 @@
         border-radius: 6px;
         font-weight: bold;
         cursor: pointer;
+        text-decoration: none;
       }
-      .add-category-btn:hover {
+
+      .add-category-btn:hover,
+      .import-excel-btn:hover,
+      .export-excel-btn:hover {
         background-color: #001f42;
       }
+
+      .import-excel-btn {
+        background-color: #17a2b8;
+      }
+
+      .import-excel-btn:hover {
+        background-color: #138496;
+      }
+
+      .export-excel-btn {
+        background-color: #28a745;
+      }
+
+      .export-excel-btn:hover {
+        background-color: #218838;
+      }
+
       .categories-table {
         width: 100%;
         border-collapse: collapse;
@@ -57,38 +90,46 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         overflow: hidden;
       }
+
       .categories-table th,
       .categories-table td {
         padding: 1rem;
         text-align: left;
         border-bottom: 1px solid #eee;
       }
+
       .categories-table th {
         background-color: #002855;
         color: white;
         text-transform: uppercase;
         font-size: 0.85rem;
       }
+
       .categories-table th:last-child,
       .categories-table td:last-child {
         text-align: center;
       }
+
       .category-name {
         color: #002855;
         font-weight: 500;
       }
+
       .category-status.active {
         color: #28a745;
       }
+
       .category-status.inactive {
         color: #dc3545;
       }
+
       .action-buttons {
         display: flex;
         gap: 0.5rem;
         justify-content: center;
         align-items: center;
       }
+
       .btn-action {
         width: 40px;
         height: 40px;
@@ -100,20 +141,25 @@
         border: none;
         cursor: pointer;
       }
+
       .edit-btn {
         background-color: #ff6b00;
         color: white;
       }
+
       .edit-btn:hover {
         background-color: #e65c00;
       }
+
       .delete-btn {
         background-color: #dc3545;
         color: white;
       }
+
       .delete-btn:hover {
         background-color: #c82333;
       }
+
       .modal {
         display: none;
         position: fixed;
@@ -126,6 +172,7 @@
         justify-content: center;
         align-items: center;
       }
+
       .modal-content,
       .delete-modal-content {
         background-color: white;
@@ -135,19 +182,23 @@
         width: 90%;
         max-width: 500px;
       }
+
       .delete-modal-content p {
         margin-bottom: 1.5rem;
         color: #333;
         font-size: 1rem;
       }
+
       .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
+
       .modal-header h2 {
         color: #002855;
       }
+
       .close-btn {
         font-size: 1.5rem;
         color: #666;
@@ -155,14 +206,17 @@
         border: none;
         cursor: pointer;
       }
+
       .form-group {
         margin-bottom: 1rem;
       }
+
       .form-group label {
         font-weight: 500;
         display: block;
         margin-bottom: 0.5rem;
       }
+
       .form-group input,
       .form-group select,
       .form-group textarea {
@@ -171,15 +225,18 @@
         border: 1px solid #ccc;
         border-radius: 6px;
       }
+
       .form-group .error {
         color: #dc3545;
         font-size: 0.85rem;
       }
+
       .modal-footer {
         display: flex;
         justify-content: flex-end;
         gap: 0.8rem;
       }
+
       .save-btn,
       .cancel-btn,
       .confirm-delete-btn {
@@ -189,39 +246,67 @@
         font-weight: 500;
         cursor: pointer;
       }
+
       .save-btn {
         background-color: #002855;
         color: white;
       }
+
       .save-btn:hover {
         background-color: #001f42;
       }
+
       .cancel-btn {
         background-color: #dc3545;
         color: white;
       }
+
       .cancel-btn:hover {
         background-color: #c82333;
       }
+
       .confirm-delete-btn {
         background-color: #dc3545;
         color: white;
       }
+
       .confirm-delete-btn:hover {
         background-color: #c82333;
       }
+
       .error-message {
         color: #dc3545;
         margin-bottom: 1rem;
         font-weight: 500;
       }
+
       .field-error {
         color: #dc3545;
         font-size: 0.85rem;
         display: none;
       }
+
+      .pagination {
+        margin-top: 1rem;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .pagination a {
+        margin: 0 8px;
+        text-decoration: none;
+        color: #002855;
+        font-weight: bold;
+      }
+
+      .pagination span {
+        margin: 0 8px;
+      }
     </style>
   </head>
+
   <body>
     <!-- Hidden elements to store Thymeleaf data -->
     <div id="modal-data" style="display: none">
@@ -237,17 +322,32 @@
         id="error-tenDanhMuc-text"
         th:text="${tenDanhMucError != null ? tenDanhMucError : ''}"
       ></span>
+      <span
+        id="error-import-text"
+        th:text="${error != null ? error : ''}"
+      ></span>
     </div>
 
     <div class="manage-categories-container">
       <div class="manage-categories-header">
         <h1>Quản lý thể loại</h1>
-        <button
-          class="add-category-btn"
-          onclick="openModal('add-category-modal')"
-        >
-          Thêm thể loại
-        </button>
+        <div class="button-group">
+          <button
+            class="add-category-btn"
+            onclick="openModal('add-category-modal')"
+          >
+            Thêm thể loại
+          </button>
+          <button
+            class="import-excel-btn"
+            onclick="openModal('import-category-modal')"
+          >
+            Nhập Excel
+          </button>
+          <a th:href="@{/Crud_Categories/export}" class="export-excel-btn"
+            >Xuất Excel</a
+          >
+        </div>
       </div>
 
       <!-- Hiển thị thông báo lỗi nếu có -->
@@ -263,7 +363,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr th:each="category : ${categories}">
+          <tr th:each="category : ${categoryPage.content}">
             <td class="category-name" th:text="${category.tenDanhMuc}"></td>
             <td th:text="${category.description}"></td>
             <td
@@ -294,6 +394,22 @@
           </tr>
         </tbody>
       </table>
+      <div class="pagination">
+        <a
+          th:if="${categoryPage.hasPrevious()}"
+          th:href="@{/Crud_Categories(page=${categoryPage.number - 1}, size=${categoryPage.size})}"
+          >« Trước</a
+        >
+        <span
+          >Trang <span th:text="${categoryPage.number + 1}"></span> /
+          <span th:text="${categoryPage.totalPages}"></span
+        ></span>
+        <a
+          th:if="${categoryPage.hasNext()}"
+          th:href="@{/Crud_Categories(page=${categoryPage.number + 1}, size=${categoryPage.size})}"
+          >Sau »</a
+        >
+      </div>
 
       <!-- Add Category Modal -->
       <div class="modal" id="add-category-modal">
@@ -436,6 +552,50 @@
           </div>
         </div>
       </div>
+
+      <!-- Import Excel Modal -->
+      <div class="modal" id="import-category-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Nhập danh mục từ Excel</h2>
+            <button
+              class="close-btn"
+              onclick="closeModal('import-category-modal')"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="modal-body">
+            <form
+              th:action="@{/Crud_Categories/import}"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <div class="form-group">
+                <label for="import-file">Chọn file Excel</label>
+                <input
+                  type="file"
+                  id="import-file"
+                  name="file"
+                  accept=".xlsx,.xls"
+                  required
+                />
+                <div class="error" id="error-import-file"></div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="cancel-btn"
+                  onclick="closeModal('import-category-modal')"
+                >
+                  Hủy
+                </button>
+                <button type="submit" class="save-btn">Nhập</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- JavaScript for Modal -->
@@ -449,6 +609,9 @@
         if (modalId === "edit-category-modal") {
           document.getElementById("edit-error-message").style.display = "none";
           document.getElementById("error-tenDanhMuc").style.display = "none";
+        }
+        if (modalId === "import-category-modal") {
+          document.getElementById("error-import-file").style.display = "none";
         }
       }
 
@@ -484,6 +647,7 @@
         const addModal = document.getElementById("add-category-modal");
         const editModal = document.getElementById("edit-category-modal");
         const deleteModal = document.getElementById("delete-category-modal");
+        const importModal = document.getElementById("import-category-modal");
 
         if (event.target === addModal) {
           addModal.style.display = "none";
@@ -496,6 +660,10 @@
         if (event.target === deleteModal) {
           deleteModal.style.display = "none";
         }
+        if (event.target === importModal) {
+          importModal.style.display = "none";
+          document.getElementById("error-import-file").style.display = "none";
+        }
       };
 
       // Tự động mở modal và hiển thị lỗi nếu có
@@ -507,6 +675,8 @@
         const tenDanhMucError = document.getElementById(
           "error-tenDanhMuc-text"
         ).textContent;
+        const importError =
+          document.getElementById("error-import-text").textContent;
 
         if (showAddModal) {
           openModal("add-category-modal");
@@ -529,6 +699,15 @@
               "#edit-category-modal .form-group:nth-child(1) .field-error"
             ).style.display = "block";
           }
+        }
+        if (importError) {
+          openModal("import-category-modal");
+          document.querySelector(
+            "#import-category-modal .form-group .error"
+          ).textContent = importError;
+          document.querySelector(
+            "#import-category-modal .form-group .error"
+          ).style.display = "block";
         }
       };
     </script>

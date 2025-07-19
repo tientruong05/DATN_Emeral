@@ -188,13 +188,13 @@ public class CertificateController {
                 PdfRendererBuilder builder = new PdfRendererBuilder();
                 builder.useFastMode();
                 builder.useFont(() -> {
-                    InputStream fontStream = getClass().getResourceAsStream("/font/Pattaya-Regular.ttf");
+                    InputStream fontStream = getClass().getResourceAsStream("/font/Merriweather-VariableFont_opsz,wdth,wght.ttf");
                     if (fontStream == null) {
-                        logger.error("Font Pattaya-Regular.ttf not found");
-                        throw new IllegalStateException("Font Pattaya-Regular.ttf not found");
+                        logger.error("Font Merriweather-VariableFont_opsz,wdth,wght.ttf not found");
+                        throw new IllegalStateException("Font Merriweather-VariableFont_opsz,wdth,wght.ttf not found");
                     }
                     return fontStream;
-                }, "Pattaya");
+                }, "Merri");
                 builder.useFont(() -> {
                     InputStream fontStream = getClass().getResourceAsStream("/font/MeaCulpa-Regular.ttf");
                     if (fontStream == null) {
@@ -219,7 +219,9 @@ public class CertificateController {
                     }
                     return fontStream;
                 }, "Playfair Display");
-                builder.withHtmlContent(htmlContent, null);
+                String baseUrl = getClass().getResource("/static/upload/").toExternalForm();
+                builder.withHtmlContent(htmlContent, baseUrl);
+//                builder.withHtmlContent(htmlContent, null);
                 builder.toStream(outputStream);
                 builder.run();
 

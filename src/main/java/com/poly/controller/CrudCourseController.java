@@ -46,6 +46,10 @@ public class CrudCourseController {
     		@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
     	Page<Course> coursePage = courseService.getAllCategories(PageRequest.of(page, size));
+    	model.addAttribute("currentPage", coursePage.getNumber());
+        model.addAttribute("totalPages", coursePage.getTotalPages());
+        model.addAttribute("pageSize", coursePage.getSize());
+//        model.addAttribute("totalItems", courses.getTotalElements());
         model.addAttribute("courses", coursePage);
         model.addAttribute("categories", categoryRepo.findAll());
         model.addAttribute("course", new Course());

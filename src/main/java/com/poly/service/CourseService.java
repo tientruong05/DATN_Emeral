@@ -59,6 +59,10 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
+    public Page<Course> findSearchAll(String query, Pageable pageable) {
+        return courseRepository.findCoursesByTenKhoaHocAndStatusTrue(query, pageable);
+    }
+    
     public Course findById(Long id) {
         return courseRepository.findById(id).orElse(null);
     }
@@ -94,6 +98,8 @@ public class CourseService {
         
         return coursePage.getContent();
     }
+    
+    
     
     public int getTotalPages(String type) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
