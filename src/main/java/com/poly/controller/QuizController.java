@@ -1,6 +1,6 @@
 package com.poly.controller;
 
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -15,14 +15,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.poly.dto.QuizSubmissionDTO;
 import com.poly.entity.Course;
 import com.poly.entity.Enrollment;
 import com.poly.entity.Question;
-import com.poly.entity.Video;
 import com.poly.entity.User;
 import com.poly.service.CourseService;
 import com.poly.service.EnrollmentService;
@@ -46,9 +44,7 @@ public class QuizController {
     private EnrollmentService enrollmentService;
 
     @GetMapping({"/video-learning/quiz/{courseId}", "/quiz/{courseId}"})
-    public String showQuiz(@PathVariable("courseId") Long courseId, 
-                          @RequestParam(value = "retake", required = false) Boolean retake,
-                          Model model, HttpSession session) {
+    public String showQuiz(@PathVariable("courseId") Long courseId, Model model, HttpSession session) {
         log.info("Accessing quiz for courseId: {}", courseId);
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -68,54 +64,25 @@ public class QuizController {
         if (course == null) {
             log.warn("Course not found for courseId: {}, redirecting to index", courseId);
             model.addAttribute("errorMessage", "Khóa học không tồn tại.");
+            model.addAttribute("hasCompletedCourse", false); // Đảm bảo giá trị mặc định
             return "redirect:/index";
         }
 
+        // Kiểm tra trạng thái hoàn thành khóa học
         boolean hasCompletedCourse = false;
-        List<Video> videos = videoService.findByCourseID_khoa_hoc(courseId);
-
         try {
-            hasCompletedCourse = enrollmentService.isCourseCompleted(user.getIdNguoiDung(), courseId);
-            
-            // Kiểm tra xem user đã làm quiz và đạt điểm chưa
             Enrollment enrollment = enrollmentService.findByUserAndCourse(user.getIdNguoiDung(), courseId);
-            boolean hasTakenQuiz = enrollment != null && enrollment.getDiem() != null;
-            
-            log.info("User {} - enrollment: {}, diem: {}, hasTakenQuiz: {}", 
-                    user.getIdNguoiDung(), enrollment != null, 
-                    enrollment != null ? enrollment.getDiem() : "null", hasTakenQuiz);
-            
-            if (hasCompletedCourse && !Boolean.TRUE.equals(retake)) {
-                log.info("User {} has already completed the course {} and cannot retake the quiz.", user.getIdNguoiDung(), courseId);
-                model.addAttribute("errorMessage", "Bạn đã hoàn thành khóa học này và không thể làm lại bài kiểm tra.");
+            hasCompletedCourse = enrollment != null && enrollment.getFinishDate() != null;
+            if (hasCompletedCourse) {
+                log.info("User {} has already completed course {}, redirecting to video learning", user.getIdNguoiDung(), courseId);
+                model.addAttribute("errorMessage", "Bạn đã hoàn thành khóa học này và không thể làm bài kiểm tra lại.");
                 model.addAttribute("hasCompletedCourse", true);
-                return "redirect:/video-learning/" + courseId + "/" + (videos.isEmpty() ? "" : videos.get(0).getID_video());
+                return "redirect:/video-learning/" + courseId;
             }
-            
-            // Nếu user muốn làm lại quiz, reset điểm
-            // Nếu user muốn làm lại quiz, reset điểm (chỉ khi khóa học chưa hoàn thành)
-            if (enrollment != null && hasTakenQuiz && Boolean.TRUE.equals(retake) && !hasCompletedCourse) {
-                log.info("User {} is retaking quiz for course {}", user.getIdNguoiDung(), courseId);
-                enrollment.setDiem(null);
-                enrollmentService.save(enrollment);
-                hasTakenQuiz = false;
-            }
-            
-            // Nếu chưa hoàn thành khóa học, không cho phép làm quiz
-            // Nếu chưa xem hết video, không cho phép làm quiz
-            Float progress = enrollmentService.getCurrentProgress(user.getIdNguoiDung(), courseId);
-            if (progress == null || progress < 100) {
-                log.warn("User {} trying to access quiz for course {} without completing videos", user.getIdNguoiDung(), courseId);
-                model.addAttribute("errorMessage", "Vui lòng hoàn thành tất cả các video trước khi làm bài kiểm tra.");
-                return "redirect:/video-learning/" + courseId + "/" + (videos.isEmpty() ? "" : videos.get(0).getID_video());
-            }
-            
-            log.info("User {} has completed course {} and can take quiz", user.getIdNguoiDung(), courseId);
         } catch (Exception e) {
             log.error("Error checking enrollment for userId: {}, courseId: {}", user.getIdNguoiDung(), courseId, e);
             model.addAttribute("errorMessage", "Lỗi khi kiểm tra trạng thái khóa học.");
             model.addAttribute("hasCompletedCourse", false);
-            return "redirect:/video-learning/" + courseId;
         }
 
         List<Question> questions = questionService.findByCourseID_khoa_hoc(courseId);
@@ -216,7 +183,10 @@ public class QuizController {
         }
         score = (score / totalQuestions) * 100;
         log.debug("Calculated score: {}", score);
+        
 
+        // Di chuyển dòng này ra đây
+        double score10 = (score / 100.0) * 10.0;
         // Lưu kết quả vào enrollment
         if (user != null) {
             log.debug("Fetching or creating enrollment for userId: {}, courseId: {}", user.getIdNguoiDung(), courseId);
@@ -229,9 +199,11 @@ public class QuizController {
                 enrollment.setEnrollmentDate(LocalDateTime.now());
             }
             enrollment.setDiem(score);
-            if (score >= course.getDiem_dat()) {
-                enrollmentService.completeCourse(user.getIdNguoiDung(), courseId);
+           
+            if (score10 >= course.getDiem_dat()) {
+                enrollment.setFinishDate(LocalDate.now());
             }
+
 
             enrollmentService.save(enrollment);
             log.info("Saved enrollment for user {} with score {}", user.getIdNguoiDung(), score);
@@ -241,7 +213,8 @@ public class QuizController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("score", score);
-        response.put("pass", score >= course.getDiem_dat());
+        response.put("pass", score10 >= course.getDiem_dat());
+
         response.put("totalQuestions", totalQuestions);
         response.put("correctAnswers", (int) score);
         log.info("Returning response: {}", response);
