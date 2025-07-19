@@ -160,4 +160,6 @@ GO
 
 ALTER TABLE Enrollments
 ADD order_code BIGINT,
-    status BIT;
+    status BIT
+    progress FLOAT DEFAULT 0;
+
