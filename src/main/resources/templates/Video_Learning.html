@@ -87,6 +87,36 @@
         font-size: 0.9rem;
       }
 
+      /* Course Progress Bar */
+      .course-progress-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 1rem;
+      }
+
+      .course-progress-bar {
+        width: 100px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .course-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #45a049);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .course-progress-text {
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        min-width: 35px;
+      }
+
       /* Main Layout - Full Screen */
       .main-container {
         display: grid;
@@ -268,6 +298,213 @@
         justify-content: space-between;
         align-items: center;
         gap: 1rem;
+      }
+
+      .control-left,
+      .control-center,
+      .control-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .completed-btn {
+        background: #4caf50 !important;
+        color: white !important;
+        border-color: #4caf50 !important;
+        transition: all 0.3s ease;
+      }
+
+      .completed-btn:hover {
+        background: #45a049 !important;
+        border-color: #45a049 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+      }
+
+      .completed-btn:disabled {
+        background: #ccc !important;
+        border-color: #ccc !important;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .completion-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #4caf50;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .completion-status i {
+        color: #ffd700;
+      }
+
+      .quiz-redirect-btn:hover {
+        background: #e55a00 !important;
+        border-color: #e55a00 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 107, 0, 0.3);
+      }
+
+      .quiz-retake-btn:hover {
+        background: #218838 !important;
+        border-color: #218838 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+      }
+
+      .watch-progress-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+
+      /* Notification Styles */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 10000;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-left: 4px solid #4caf50;
+        color: #4caf50;
+      }
+
+      .notification.error {
+        border-left: 4px solid #f44336;
+        color: #f44336;
+      }
+
+      .notification.info {
+        border-left: 4px solid #2196f3;
+        color: #2196f3;
+      }
+
+      .notification i {
+        font-size: 1.2rem;
+      }
+
+      /* Quiz Modal Styles */
+      .quiz-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+      }
+
+      .quiz-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .quiz-modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        animation: modalSlideIn 0.3s ease-out;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-50px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .quiz-modal-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .quiz-modal-header i {
+        font-size: 3rem;
+        color: #ff6b00;
+        margin-bottom: 1rem;
+      }
+
+      .quiz-modal-header h3 {
+        color: #002855;
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .quiz-modal-body {
+        margin-bottom: 2rem;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .quiz-modal-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .quiz-modal-btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        min-width: 120px;
+      }
+
+      .quiz-modal-btn.primary {
+        background: #ff6b00;
+        color: white;
+      }
+
+      .quiz-modal-btn.primary:hover {
+        background: #e55a00;
+        transform: translateY(-2px);
+      }
+
+      .quiz-modal-btn.secondary {
+        background: #f8f9fa;
+        color: #666;
+        border: 1px solid #ddd;
+      }
+
+      .quiz-modal-btn.secondary:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
       }
 
       .control-btn-nav {
@@ -625,8 +862,43 @@
         }
       }
       .watched-icon {
-        color: green;
+        color: #4caf50;
         margin-left: 5px;
+        font-size: 0.9rem;
+      }
+
+      .lesson-status {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      /* Locked video styles */
+      .lesson-item.locked {
+        opacity: 0.6;
+        background-color: #f5f5f5;
+      }
+
+      .lesson-item.locked:hover {
+        background-color: #f0f0f0;
+      }
+
+      .lesson-item.completed {
+        background-color: #f8fff8;
+      }
+
+      .lesson-item.completed:hover {
+        background-color: #f0fff0;
+      }
+
+      .locked-link {
+        cursor: not-allowed !important;
+        pointer-events: none;
+      }
+
+      .locked-icon {
+        color: #ccc !important;
+        font-size: 0.9rem;
       }
       .quiz-link.disabled {
         pointer-events: none;
@@ -655,6 +927,23 @@
               th:text="${'Video ' + (videos.indexOf(currentVideo) + 1) + '/' + videos.size()}"
               >Video 1/8</span
             >
+            <!-- Course Progress Bar -->
+            <div
+              class="course-progress-container"
+              th:if="${progressInfo != null}"
+            >
+              <div class="course-progress-bar">
+                <div
+                  class="course-progress-fill"
+                  th:style="'width: ' + ${progressInfo.progress()} + '%'"
+                ></div>
+              </div>
+              <span
+                class="course-progress-text"
+                th:text="${T(java.lang.Math).round(progressInfo.progress())} + '%'"
+                >0%</span
+              >
+            </div>
           </div>
         </div>
       </div>
@@ -679,19 +968,36 @@
             <li
               th:each="video : ${videos}"
               class="lesson-item"
-              th:classappend="${video.ID_video == currentVideo.ID_video ? 'active' : ''}"
+              th:classappend="${(video.ID_video == currentVideo.ID_video ? 'active' : '') + (progressInfo != null && videos.indexOf(video) > progressInfo.completedVideos() ? ' locked' : '')}"
             >
               <a
-                th:href="@{'/video-learning/' + ${course.ID_khoa_hoc} + '/' + ${video.ID_video}}"
+                th:href="${progressInfo != null && videos.indexOf(video) <= progressInfo.completedVideos() ? '/video-learning/' + course.ID_khoa_hoc + '/' + video.ID_video : 'javascript:void(0)'}"
+                th:class="${progressInfo != null && videos.indexOf(video) > progressInfo.completedVideos() ? 'locked-link' : ''}"
+                th:attr="data-is-locked=${progressInfo != null && videos.indexOf(video) > progressInfo.completedVideos()}"
+                onclick="handleVideoClick(this)"
               >
                 <span class="lesson-title" th:text="${video.ten_video}"
                   >Bài học</span
                 >
-                <span
-                  class="lesson-status"
-                  th:if="${video.ID_video == currentVideo.ID_video}"
-                >
-                  <i class="fas fa-play-circle"></i>
+                <span class="lesson-status">
+                  <!-- Current video indicator -->
+                  <i
+                    th:if="${video.ID_video == currentVideo.ID_video}"
+                    class="fas fa-play-circle"
+                    style="color: #002855"
+                  ></i>
+                  <!-- Completed video indicator -->
+                  <i
+                    th:if="${progressInfo != null && progressInfo.completedVideos() > 0 && videos.indexOf(video) < progressInfo.completedVideos()}"
+                    class="fas fa-check-circle watched-icon"
+                    style="color: #4caf50"
+                  ></i>
+                  <!-- Locked video indicator -->
+                  <i
+                    th:if="${progressInfo != null && videos.indexOf(video) > progressInfo.completedVideos()}"
+                    class="fas fa-lock locked-icon"
+                    style="color: #ccc"
+                  ></i>
                 </span>
               </a>
             </li>
@@ -701,7 +1007,8 @@
             <a
               th:href="@{'/video-learning/quiz/' + ${course.ID_khoa_hoc}}"
               th:class="${allVideosWatched} ? 'quiz-link' : 'quiz-link disabled'"
-              th:onclick="${allVideosWatched} ? '' : 'alert(\'Bạn cần xem hết tất cả video trước khi làm bài kiểm tra.\')'"
+              th:attr="data-all-videos-watched=${allVideosWatched}"
+              onclick="handleQuizClick(this)"
               th:text="'Làm bài kiểm tra: ' + ${course.ten_khoa_hoc}"
             >
               Làm bài kiểm tra
@@ -781,15 +1088,75 @@
                 <span>Bài trước</span>
               </a>
             </div>
+            <div class="control-center">
+              <button
+                id="markCompletedBtn"
+                class="control-btn-nav completed-btn"
+                th:attr="data-course-id=${course.ID_khoa_hoc}, data-video-id=${currentVideo.ID_video}"
+                th:if="${currentVideo != null && !hasCompletedCourse && progressInfo != null && videos.indexOf(currentVideo) == progressInfo.completedVideos()}"
+                style="display: none"
+              >
+                <i class="fas fa-check-circle"></i>
+                <span>Đã hoàn thành</span>
+              </button>
+              <div
+                class="watch-progress-info"
+                th:if="${currentVideo != null && !hasCompletedCourse && progressInfo != null && videos.indexOf(currentVideo) == progressInfo.completedVideos()}"
+              >
+                <span id="watchProgressText"
+                  >Xem thêm <span id="remainingPercent">0</span>% để có thể đánh
+                  dấu hoàn thành</span
+                >
+              </div>
+              <div class="completion-status" th:if="${progressInfo != null and progressInfo.progress() >= 100 and !progressInfo.isCompleted()}">
+                <i class="fas fa-trophy"></i>
+                <span>Đã hoàn thành khóa học!</span>
+                <a
+                  th:href="@{'/video-learning/quiz/' + ${course.ID_khoa_hoc}}"
+                  class="control-btn-nav quiz-redirect-btn"
+                  style="
+                    margin-left: 1rem;
+                    background: #ff6b00;
+                    color: white;
+                    border-color: #ff6b00;
+                  "
+                >
+                  <i class="fas fa-question-circle"></i>
+                  <span>Làm bài kiểm tra</span>
+                </a>
+                <a
+                  th:href="@{'/video-learning/quiz/' + ${course.ID_khoa_hoc} + '?retake=true'}"
+                  class="control-btn-nav quiz-retake-btn"
+                  style="
+                    margin-left: 0.5rem;
+                    background: #28a745;
+                    color: white;
+                    border-color: #28a745;
+                  "
+                >
+                  <i class="fas fa-redo"></i>
+                  <span>Làm lại bài kiểm tra</span>
+                </a>
+              </div>
+            </div>
             <div class="control-right">
               <a
-                th:if="${videos != null && !videos.isEmpty() && videos.indexOf(currentVideo) < videos.size() - 1}"
+                th:if="${videos != null && !videos.isEmpty() && videos.indexOf(currentVideo) < videos.size() - 1 && progressInfo != null && videos.indexOf(currentVideo) < progressInfo.completedVideos()}"
                 th:href="@{'/video-learning/' + ${course.ID_khoa_hoc} + '/' + ${videos[videos.indexOf(currentVideo) + 1].ID_video}}"
                 class="control-btn-nav"
               >
                 <span>Bài tiếp theo</span>
                 <i class="fas fa-chevron-right"></i>
               </a>
+              <button
+                th:if="${videos != null && !videos.isEmpty() && videos.indexOf(currentVideo) < videos.size() - 1 && progressInfo != null && videos.indexOf(currentVideo) >= progressInfo.completedVideos()}"
+                class="control-btn-nav"
+                style="opacity: 0.5; cursor: not-allowed"
+                disabled
+              >
+                <span>Bài tiếp theo</span>
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -871,10 +1238,16 @@
       let maxWatchedTime = 0;
       let currentVideoId = "";
       let progressInterval;
+      let videoWatchProgress = 0; // Track video watch progress (0-100%)
+      const REQUIRED_WATCH_PERCENTAGE = 80; // 80% required to mark as completed
+      let hasAutoMarked = false; // Track if video has been auto-marked as completed
 
       const currentVideoIndex = /*[[${videos.indexOf(currentVideo)}]]*/ 0;
       const totalVideos = /*[[${videos.size()}]]*/ 0;
       const courseId = /*[[${course.ID_khoa_hoc}]]*/ 0;
+
+      // Lưu trữ video IDs để sử dụng trong JavaScript
+      const videoIds = /*[[${videos.![ID_video]}]]*/ [];
 
       // Get YouTube Video ID from URL
       function getYouTubeVideoId(url) {
@@ -966,9 +1339,8 @@
           case YT.PlayerState.ENDED:
             playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             loadingSpinner.style.display = "none";
-            if (currentVideoIndex + 1 === totalVideos) {
-              window.location.href = `/quiz/${courseId}`;
-            }
+            // Tự động đánh dấu hoàn thành khi video kết thúc
+            autoMarkAsCompleted();
             break;
           case YT.PlayerState.BUFFERING:
             loadingSpinner.style.display = "block";
@@ -1060,6 +1432,16 @@
             progressHandle.style.left = progress + "%";
             currentTimeDisplay.textContent = formatTime(currentTime);
             updateWatchedSegments(currentTime);
+
+            // Update video watch progress
+            videoWatchProgress = progress;
+            updateWatchProgressUI();
+
+            // Tự động đánh dấu hoàn thành khi xem được 100%
+            if (progress >= 100 && !hasAutoMarked) {
+              hasAutoMarked = true;
+              autoMarkAsCompleted();
+            }
           }
         }
       }
@@ -1135,6 +1517,7 @@
           currentVideoId = videoId;
           maxWatchedTime = 0;
           watchedSegments = [];
+          hasAutoMarked = false; // Reset auto-mark flag for new video
           player.loadVideoById(videoId);
           loadingSpinner.style.display = "block";
         }
@@ -1260,9 +1643,436 @@
         });
       }
 
+      // Check course completion status on page load
+      function checkCourseCompletionStatus() {
+        // Get progress info from Thymeleaf template variables
+        const progressInfo = {
+          progress: /*[[${progressInfo != null ? progressInfo.progress() : 0}]]*/ 0,
+          isCompleted: /*[[${progressInfo != null ? progressInfo.isCompleted() : false}]]*/ false,
+          totalVideos: /*[[${videos != null ? videos.size() : 0}]]*/ 0,
+          completedVideos: /*[[${progressInfo != null ? progressInfo.completedVideos() : 0}]]*/ 0
+        };
+
+        // Check if all videos are completed but course is not yet completed
+        if (progressInfo.progress >= 100 && !progressInfo.isCompleted) {
+          // Show notification after a short delay to ensure page is fully loaded
+          setTimeout(() => {
+            showNotification(
+              "🎉 Bạn đã hoàn thành tất cả video! Hãy làm bài kiểm tra để nhận chứng chỉ.",
+              "success"
+            );
+            
+            // Show quiz modal after a delay
+            setTimeout(() => {
+              showQuizModal();
+            }, 3000);
+          }, 1000);
+        }
+      }
+
       // Initialize when page loads
       document.addEventListener("DOMContentLoaded", function () {
         // Video URL is already set as data attribute in HTML
+
+        // Initialize mark completed button
+        initializeMarkCompletedButton();
+        
+        // Check course completion status
+        checkCourseCompletionStatus();
+      });
+
+      // Handle mark completed button
+      function initializeMarkCompletedButton() {
+        const markCompletedBtn = document.getElementById("markCompletedBtn");
+        if (markCompletedBtn) {
+          markCompletedBtn.addEventListener("click", async function () {
+            const courseId = this.getAttribute("data-course-id");
+            const videoId = this.getAttribute("data-video-id");
+
+            if (!courseId || !videoId) {
+              alert("Thông tin khóa học hoặc video không hợp lệ");
+              return;
+            }
+
+            // Check if user has watched enough of the video
+            if (videoWatchProgress < REQUIRED_WATCH_PERCENTAGE) {
+              showNotification(
+                `Bạn cần xem ít nhất ${REQUIRED_WATCH_PERCENTAGE}% video để đánh dấu hoàn thành`,
+                "error"
+              );
+              return;
+            }
+
+            // Disable button to prevent multiple clicks
+            this.disabled = true;
+            this.innerHTML =
+              '<i class="fas fa-spinner fa-spin"></i> <span>Đang xử lý...</span>';
+
+            try {
+              const response = await fetch(
+                "/video-learning/api/mark-completed",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                  },
+                  body: `courseId=${courseId}&videoId=${videoId}`,
+                }
+              );
+
+              const data = await response.json();
+
+              if (data.success) {
+                // Update progress bar
+                updateProgressDisplay(data.data);
+
+                // Show success message
+                showNotification("Đã hoàn thành video!", "success");
+
+                // Update button state
+                this.innerHTML =
+                  '<i class="fas fa-check"></i> <span>Đã hoàn thành</span>';
+                this.style.background = "#45a049";
+
+                // Check if all videos are now complete
+                if (data.data.progress >= 100 && !data.data.isCompleted) {
+                  showNotification(
+                    "🎉 Chúc mừng! Bạn đã hoàn thành tất cả video! Hãy làm bài kiểm tra để nhận chứng chỉ.",
+                    "success"
+                  );
+                  
+                  // Show quiz modal after a delay
+                  setTimeout(() => {
+                    showQuizModal();
+                  }, 2000);
+                } else if (data.data.isCompleted) {
+                  showNotification(
+                    "🎉 Chúc mừng! Bạn đã hoàn thành khóa học!",
+                    "success"
+                  );
+                }
+                // Per user request, do not navigate to the next video automatically.
+                // The video will continue to play.
+              } else {
+                showNotification(data.message || "Có lỗi xảy ra", "error");
+                // Re-enable button
+                this.disabled = false;
+                this.innerHTML =
+                  '<i class="fas fa-check-circle"></i> <span>Đã hoàn thành</span>';
+              }
+            } catch (error) {
+              console.error("Error marking video as completed:", error);
+              showNotification(
+                "Có lỗi xảy ra khi kết nối đến máy chủ",
+                "error"
+              );
+              // Re-enable button
+              this.disabled = false;
+              this.innerHTML =
+                '<i class="fas fa-check-circle"></i> <span>Đã hoàn thành</span>';
+            }
+          });
+        }
+      }
+
+      // Update progress display
+      function updateProgressDisplay(progressInfo) {
+        const progressFill = document.querySelector(".course-progress-fill");
+        const progressText = document.querySelector(".course-progress-text");
+
+        if (progressFill && progressText) {
+          const roundedProgress = Math.round(progressInfo.progress);
+          progressFill.style.width = roundedProgress + "%";
+          progressText.textContent = roundedProgress + "%";
+        }
+
+        // Update video list to show completed status
+        updateVideoListUI(progressInfo);
+      }
+
+      // Update video list UI after completing a video
+      function updateVideoListUI(progressInfo) {
+        const videoItems = document.querySelectorAll(".lesson-item");
+        const completedVideos = progressInfo.completedVideos;
+
+        videoItems.forEach((item, index) => {
+          const link = item.querySelector("a");
+          const statusSpan = item.querySelector(".lesson-status");
+
+          if (index < completedVideos) {
+            // Video đã hoàn thành
+            item.classList.remove("locked");
+            item.classList.add("completed");
+            link.classList.remove("locked-link");
+            link.href = `/video-learning/${courseId}/${videoIds[index]}`;
+
+            // Cập nhật icon
+            if (statusSpan) {
+              statusSpan.innerHTML =
+                '<i class="fas fa-check-circle watched-icon" style="color: #4caf50"></i>';
+            }
+          } else if (index === completedVideos) {
+            // Video hiện tại (có thể xem)
+            item.classList.remove("locked");
+            item.classList.remove("completed");
+            link.classList.remove("locked-link");
+            link.href = `/video-learning/${courseId}/${videoIds[index]}`;
+
+            // Cập nhật icon
+            if (statusSpan) {
+              statusSpan.innerHTML =
+                '<i class="fas fa-play-circle" style="color: #002855"></i>';
+            }
+          } else {
+            // Video bị khóa
+            item.classList.add("locked");
+            item.classList.remove("completed");
+            link.classList.add("locked-link");
+            link.href = "javascript:void(0)";
+
+            // Cập nhật icon
+            if (statusSpan) {
+              statusSpan.innerHTML =
+                '<i class="fas fa-lock locked-icon" style="color: #ccc"></i>';
+            }
+          }
+        });
+
+        // Cập nhật nút "Bài tiếp theo" nếu có
+        updateNextVideoButton(completedVideos);
+      }
+
+      // Update next video button
+      function updateNextVideoButton(completedVideos) {
+        const nextVideoBtn = document.querySelector(".control-right a");
+        const nextVideoDisabledBtn = document.querySelector(
+          ".control-right button[disabled]"
+        );
+
+        if (completedVideos < totalVideos - 1) {
+          // Có video tiếp theo
+          if (nextVideoBtn) {
+            nextVideoBtn.style.display = "inline-flex";
+          }
+          if (nextVideoDisabledBtn) {
+            nextVideoDisabledBtn.style.display = "none";
+          }
+        } else {
+          // Không có video tiếp theo
+          if (nextVideoBtn) {
+            nextVideoBtn.style.display = "none";
+          }
+          if (nextVideoDisabledBtn) {
+            nextVideoDisabledBtn.style.display = "inline-flex";
+          }
+        }
+      }
+
+      // Tự động đánh dấu hoàn thành khi video kết thúc
+      async function autoMarkAsCompleted() {
+        const markCompletedBtn = document.getElementById("markCompletedBtn");
+
+        // Chỉ tự động đánh dấu nếu có nút mark completed và user chưa đánh dấu
+        if (
+          markCompletedBtn &&
+          !markCompletedBtn.disabled &&
+          markCompletedBtn.style.display !== "none"
+        ) {
+          const courseId = markCompletedBtn.getAttribute("data-course-id");
+          const videoId = markCompletedBtn.getAttribute("data-video-id");
+
+          if (!courseId || !videoId) {
+            console.error("Thông tin khóa học hoặc video không hợp lệ");
+            return;
+          }
+
+          try {
+            const response = await fetch("/video-learning/api/mark-completed", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: `courseId=${courseId}&videoId=${videoId}`,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              // Update progress bar
+              updateProgressDisplay(data.data);
+
+              // Show success message
+              showNotification(
+                "Video đã được tự động đánh dấu hoàn thành!",
+                "success"
+              );
+
+              // Update button state
+              markCompletedBtn.innerHTML =
+                '<i class="fas fa-check"></i> <span>Đã hoàn thành</span>';
+              markCompletedBtn.style.background = "#45a049";
+              markCompletedBtn.disabled = true;
+
+              // Check if all videos are completed (progress = 100%) but course not yet completed
+              if (data.data.progress >= 100 && !data.data.isCompleted) {
+                setTimeout(() => {
+                  showNotification(
+                    "🎉 Chúc mừng! Bạn đã hoàn thành tất cả video! Hãy làm bài kiểm tra để nhận chứng chỉ.",
+                    "success"
+                  );
+                  
+                  // Show quiz modal after a delay
+                  setTimeout(() => {
+                    showQuizModal();
+                  }, 2000);
+                }, 1000);
+              } else if (data.data.isCompleted) {
+                setTimeout(() => {
+                  showNotification(
+                    "🎉 Chúc mừng! Bạn đã hoàn thành khóa học!",
+                    "success"
+                  );
+                }, 1000);
+              } else {
+                // Nếu chưa hoàn thành tất cả video, chuyển đến video tiếp theo
+                const nextVideoIndex = data.data.completedVideos;
+                if (nextVideoIndex < totalVideos) {
+                  setTimeout(() => {
+                    showNotification("Chuyển đến video tiếp theo...", "info");
+                    // Redirect to next video
+                    setTimeout(() => {
+                      window.location.href = `/video-learning/${courseId}/${videoIds[nextVideoIndex]}`;
+                    }, 2000);
+                  }, 1000);
+                }
+              }
+            } else {
+              console.error(
+                "Lỗi khi tự động đánh dấu hoàn thành:",
+                data.message
+              );
+            }
+          } catch (error) {
+            console.error("Error auto marking video as completed:", error);
+          }
+        }
+      }
+
+      // Show notification
+      function showNotification(message, type = "info") {
+        // Create notification element
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+          <i class="fas fa-${
+            type === "success"
+              ? "check-circle"
+              : type === "error"
+              ? "exclamation-circle"
+              : "info-circle"
+          }"></i>
+          <span>${message}</span>
+        `;
+
+        // Add to page
+        document.body.appendChild(notification);
+
+        // Show notification
+        setTimeout(() => {
+          notification.classList.add("show");
+        }, 100);
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+          notification.classList.remove("show");
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 3000);
+      }
+
+      // Update watch progress UI
+      function updateWatchProgressUI() {
+        const markCompletedBtn = document.getElementById("markCompletedBtn");
+        const watchProgressText = document.getElementById("watchProgressText");
+        const remainingPercent = document.getElementById("remainingPercent");
+
+        if (videoWatchProgress >= REQUIRED_WATCH_PERCENTAGE) {
+          // Show mark completed button
+          if (markCompletedBtn) {
+            markCompletedBtn.style.display = "inline-flex";
+          }
+          // Hide progress text
+          if (watchProgressText) {
+            watchProgressText.style.display = "none";
+          }
+        } else {
+          // Hide mark completed button
+          if (markCompletedBtn) {
+            markCompletedBtn.style.display = "none";
+          }
+          // Show progress text
+          if (watchProgressText && remainingPercent) {
+            watchProgressText.style.display = "block";
+            const remaining = Math.ceil(
+              REQUIRED_WATCH_PERCENTAGE - videoWatchProgress
+            );
+            remainingPercent.textContent = remaining;
+          }
+        }
+      }
+
+      // Handle video click
+      function handleVideoClick(element) {
+        const isLocked = element.getAttribute("data-is-locked") === "true";
+        if (isLocked) {
+          showLockedMessage();
+          return false;
+        }
+        return true;
+      }
+
+      // Handle quiz click
+      function handleQuizClick(element) {
+        const allVideosWatched =
+          element.getAttribute("data-all-videos-watched") === "true";
+        if (!allVideosWatched) {
+          alert("Bạn cần xem hết tất cả video trước khi làm bài kiểm tra.");
+          return false;
+        }
+        return true;
+      }
+
+      // Show locked message
+      function showLockedMessage() {
+        showNotification(
+          "Bạn cần hoàn thành video trước đó trước khi xem video này",
+          "error"
+        );
+      }
+
+      // Quiz Modal Functions
+      function showQuizModal() {
+        const modal = document.getElementById('quizModal');
+        modal.classList.add('show');
+      }
+
+      function closeQuizModal() {
+        const modal = document.getElementById('quizModal');
+        modal.classList.remove('show');
+      }
+
+      function goToQuiz() {
+        window.location.href = `/video-learning/quiz/${courseId}`;
+      }
+
+      // Close modal when clicking outside
+      document.getElementById('quizModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeQuizModal();
+        }
       });
 
       // Cleanup on page unload
@@ -1270,5 +2080,24 @@
         stopProgressTracking();
       });
     </script>
+
+    <!-- Quiz Modal -->
+    <div id="quizModal" class="quiz-modal">
+      <div class="quiz-modal-content">
+        <div class="quiz-modal-header">
+          <i class="fas fa-trophy"></i>
+          <h3>Chúc mừng!</h3>
+        </div>
+        <div class="quiz-modal-body">
+          <p>Bạn đã hoàn thành tất cả video trong khóa học!</p>
+          <p>Hãy làm bài kiểm tra để nhận chứng chỉ hoàn thành khóa học.</p>
+        </div>
+        <div class="quiz-modal-buttons">
+          <button class="quiz-modal-btn secondary" onclick="closeQuizModal()">Để sau</button>
+          <button class="quiz-modal-btn primary" onclick="goToQuiz()">Làm bài kiểm tra</button>
+        </div>
+      </div>
+    </div>
+
   </body>
 </html>
