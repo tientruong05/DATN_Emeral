@@ -181,7 +181,42 @@ public class QuizController {
                 }
             }
         }
-        score = (score / totalQuestions) * 100;
+     
+        int correctCount = 0;
+        int answeredCount = 0;
+
+        if (answers != null) {
+            for (int i = 0; i < totalQuestions; i++) {
+                Question q = questions.get(i);
+                String userAnswer = answers.get(String.valueOf(i));
+
+                if (userAnswer != null) {
+                    answeredCount++; // <== Đếm số câu có chọn
+                    String userAnswerContent = null;
+                    switch (userAnswer.toUpperCase()) {
+                        case "A": userAnswerContent = q.getDap_an_a(); break;
+                        case "B": userAnswerContent = q.getDap_an_b(); break;
+                        case "C": userAnswerContent = q.getDap_an_c(); break;
+                        case "D": userAnswerContent = q.getDap_an_d(); break;
+                    }
+
+                    if (userAnswerContent != null && userAnswerContent.trim().equalsIgnoreCase(q.getDap_an_dung().trim())) {
+                        correctCount++;
+                    }
+                }
+            }
+        }
+
+        // Nếu không trả lời câu nào → score = 0
+      
+        if (answeredCount == 0) {
+            score = 0;
+            log.info("User submitted blank quiz (0 answers). Score set to 0.");
+        } else {
+            score = ((double) correctCount / totalQuestions) * 100;
+        }
+
+       
         log.debug("Calculated score: {}", score);
         
 
