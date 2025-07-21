@@ -3,21 +3,108 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Footer</title>
-    <style></style>
+    <title>Footer - DevNest E-Learning</title>
+	<!-- Custom CSS -->
+	    <link rel="stylesheet" href="footer.css" />
+    <!-- Font Awesome - Sử dụng phiên bản ổn định -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
+  
   <body>
-    <footer>
-      <div class="footer-content">
-        <div>
-          <div class="footer-logo">DEV<span>NEST</span></div>
-          <p class="footer-description">
-            Nền tảng học tập công nghệ thông tin trực tuyến
-          </p>
+    <footer class="devnest-footer">
+      <div class="devnest-footer-main">
+        <div class="devnest-footer-content">
+          <!-- Thông tin công ty -->
+          <div class="devnest-footer-section">
+            <a href="#" class="devnest-footer-logo">
+              <div class="devnest-logo-icon"></div>
+              <div class="devnest-logo-text">
+                <span class="devnest-brand-name">DevNest</span>
+                <span class="devnest-brand-subtitle">Learning</span>
+              </div>
+            </a>
+            <p class="devnest-footer-description">
+              Nền tảng học lập trình trực tuyến hàng đầu Việt Nam với hàng nghìn khóa học chất lượng cao, giúp bạn phát triển kỹ năng công nghệ thông tin một cách hiệu quả.
+            </p>
+            <div class="devnest-social-links">
+              <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+
+          <!-- Giới thiệu -->
+          <div class="devnest-footer-section">
+            <h3>Về DevNest</h3>
+            <ul>
+              <li><a href="/About">Giới thiệu về chúng tôi</a></li>
+              <li><a href="/courses">Khóa học của chúng tôi</a></li>
+             
+            </ul>
+          </div>
+
+          <!-- Hỗ trợ -->
+          <div class="devnest-footer-section">
+            <h3>Hỗ trợ học viên</h3>
+            <ul>
+              <li><a href="#"><i class="fas fa-robot"></i> Chat với AI hỗ trợ</a></li>
+              <!--<li><a href="/faq">Câu hỏi thường gặp</a></li> -->
+              <li><a href="/Policy">Chính sách bảo mật</a></li>
+              <li><a href="/Terms">Điều khoản sử dụng</a></li>
+            </ul>
+          </div>
+
+          <!-- Liên hệ -->
+          <div class="devnest-footer-section">
+            <h3>Liên hệ</h3>
+            <div class="devnest-contact-info">
+              <div class="devnest-contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>107A Thanh Niên<br>P.Quy Nhơn Nam, Gia Lai</span>
+              </div>
+              <div class="devnest-contact-item">
+                <i class="fas fa-phone"></i>
+                <span>039 404 4568 (24/7)</span>
+              </div>
+              <div class="devnest-contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>DevNestLearning@gmail.com</span>
+              </div>
+              <div class="devnest-contact-item">
+                <i class="fas fa-clock"></i>
+                <span>T2-T7: 8:00 - 22:00<br>Chủ nhật: 9:00 - 18:00</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="copyright">
-        © 2025. DEVNEST LEARNING. All rights reserved.
+
+      <!-- Newsletter -->
+      <div class="devnest-newsletter-section">
+        <div class="devnest-newsletter-content">
+          <div class="devnest-newsletter-info">
+            <h3>Đăng ký nhận tin tức mới nhất</h3>
+            <p>Nhận thông báo về khóa học mới, ưu đãi đặc biệt và tips học lập trình hiệu quả</p>
+          </div>
+          <div class="devnest-newsletter-form">
+            <input type="email" placeholder="Nhập email của bạn" />
+            <button type="submit">Đăng ký</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copyright -->
+      <div class="devnest-footer-bottom">
+        <div class="devnest-footer-bottom-content">
+          <div class="devnest-copyright">
+            © 2025 DevNest Learning Platform. All rights reserved.
+          </div>
+        </div>
       </div>
     </footer>
   </body>

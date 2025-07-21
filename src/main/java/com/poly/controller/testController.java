@@ -106,4 +106,16 @@ public class testController {
 	public String Quiz() {
 		return "Quiz";
 	}
+	@RequestMapping("About")
+	public String About() {
+		return "About";
+	}
+	@RequestMapping("Policy")
+	public String Policy() {
+		return "Policy";
+	}
+	@RequestMapping("Terms")
+	public String Terms() {
+		return "Terms";
+	}
 }
