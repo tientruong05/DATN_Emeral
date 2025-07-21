@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điều khoản Người dùng - DevNest Learning</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- AOS Animation -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2a1f3d;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #2a1f3d 0%, #3d2a5a 100%);
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #00d4ff 0%, #00b8db 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .hero-logo i {
+            color: #2a1f3d;
+            font-size: 2.5rem;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #00b8db 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* Content Section */
+        .content-section {
+            padding: 100px 0;
+            background: #f8f9fa;
+        }
+
+        .terms-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #00d4ff 0%, #00b8db 100%);
+            color: white;
+            padding: 30px;
+            border-bottom: none;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header i {
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .card-body {
+            padding: 40px;
+        }
+
+        .section-item {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid #00d4ff;
+            transition: all 0.3s ease;
+        }
+
+        .section-item:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .section-item h4 {
+            color: #2a1f3d;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .section-item p {
+            color: #6c757d;
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+
+        .section-item ul {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .section-item ul li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 184, 219, 0.1) 100%);
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .highlight-box h5 {
+            color: #2a1f3d;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .highlight-box i {
+            color: #00d4ff;
+            margin-right: 10px;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, #2a1f3d 0%, #3d2a5a 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .contact-info h4 {
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .contact-info .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .contact-info .contact-item i {
+            color: #00d4ff;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .last-updated {
+            background: white;
+            border: 2px solid #00d4ff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .last-updated p {
+            margin: 0;
+            color: #2a1f3d;
+            font-weight: 600;
+        }
+
+        .last-updated .date {
+            color: #00d4ff;
+            font-weight: 700;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .card-body {
+                padding: 25px;
+            }
+
+            .section-item {
+                padding: 20px;
+            }
+
+            .hero-section {
+                padding: 60px 0;
+            }
+
+            .content-section {
+                padding: 60px 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .card-header {
+                padding: 20px;
+            }
+
+            .card-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .section-item {
+                padding: 15px;
+            }
+
+            .contact-info {
+                padding: 20px;
+            }
+        }
+    </style>
+	<link rel="stylesheet" th:href="@{/css/header.css}" />
+	<link rel="stylesheet" th:href="@{/css/footer.css}" />
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content text-center" data-aos="fade-up">
+                <div class="hero-logo">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h1 class="hero-title">Điều Khoản Người Dùng</h1>
+                <p class="hero-subtitle">Quy định và điều khoản sử dụng dịch vụ DevNest Learning</p>
+                <p class="lead">Vui lòng đọc kỹ các điều khoản trước khi sử dụng dịch vụ của chúng tôi</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="content-section">
+        <div class="container">
+            <!-- Chấp nhận điều khoản -->
+            <div class="terms-card" data-aos="fade-up">
+                <div class="card-header">
+                    <h2><i class="bi bi-handshake"></i>Chấp Nhận Điều Khoản</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <p>Bằng việc truy cập và sử dụng trang web DevNest Learning, bạn đồng ý tuân thủ và bị ràng buộc bởi các điều khoản và điều kiện sử dụng được nêu trong tài liệu này.</p>
+                        <div class="highlight-box">
+                            <h5><i class="bi bi-info-circle"></i>Lưu ý quan trọng</h5>
+                            <p>Nếu bạn không đồng ý với bất kỳ điều khoản nào, vui lòng không sử dụng dịch vụ của chúng tôi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mô tả dịch vụ -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-header">
+                    <h2><i class="bi bi-laptop"></i>Mô Tả Dịch Vụ</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <p>DevNest Learning cung cấp nền tảng học trực tuyến chuyên về lập trình với các tính năng chính:</p>
+                        <ul>
+                            <li>Các khóa học lập trình đa dạng từ cơ bản đến nâng cao</li>
+                            <li>Video bài giảng chất lượng cao do chuyên gia biên soạn</li>
+                            <li>Hệ thống quiz kiểm tra và đánh giá kết quả học tập</li>
+                            <li>Chatbox AI hỗ trợ học viên 24/7</li>
+                            <li>Cấp chứng chỉ hoàn thành khóa học qua email</li>
+                            <li>Thanh toán trực tuyến qua quét mã QR ngân hàng</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Đăng ký tài khoản -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-header">
+                    <h2><i class="bi bi-person-plus"></i>Đăng Ký Tài Khoản</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <h4>Yêu cầu đăng ký</h4>
+                        <p>Để sử dụng dịch vụ, bạn cần tạo tài khoản với thông tin chính xác và đầy đủ. Bạn chịu trách nhiệm bảo mật thông tin đăng nhập.</p>
+                    </div>
+                    
+                    <div class="section-item">
+                        <h4>Quyền hạn tài khoản</h4>
+                        <ul>
+                            <li>Truy cập các khóa học đã mua</li>
+                            <li>Tham gia quiz và nhận chứng chỉ</li>
+                            <li>Sử dụng chatbox AI hỗ trợ</li>
+                            <li>Theo dõi tiến độ học tập</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <h4>Bảo mật tài khoản</h4>
+                        <p>Không chia sẻ thông tin đăng nhập với người khác. Thông báo ngay cho chúng tôi nếu phát hiện tài khoản bị xâm nhập.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thanh toán và hoàn tiền -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="card-header">
+                    <h2><i class="bi bi-credit-card"></i>Thanh Toán và Hoàn Tiền</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <h4>Phương thức thanh toán</h4>
+                        <p>Chúng tôi chấp nhận thanh toán trực tuyến qua quét mã QR ngân hàng. Tất cả giao dịch được xử lý an toàn và bảo mật.</p>
+                    </div>
+                    
+                    <div class="section-item">
+                        <h4>Chính sách hoàn tiền</h4>
+                        <ul>
+                            <li>Hoàn tiền 100% trong vòng 7 ngày nếu chưa bắt đầu học</li>
+                            <li>Hoàn tiền 50% trong vòng 14 ngày nếu đã học dưới 30% khóa học</li>
+                            <li>Không hoàn tiền nếu đã hoàn thành hơn 30% khóa học</li>
+                            <li>Hoàn tiền sẽ được xử lý trong vòng 5-7 ngày làm việc</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <h4>Giá cả và khuyến mại</h4>
+                        <p>Giá khóa học có thể thay đổi theo thời gian. Các chương trình khuyến mại có điều kiện và thời hạn cụ thể.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quyền truy cập khóa học -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="card-header">
+                    <h2><i class="bi bi-play-circle"></i>Quyền Truy Cập Khóa Học</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <h4>Thời gian truy cập</h4>
+                        <p>Sau khi mua khóa học thành công, bạn có quyền truy cập vĩnh viễn vào nội dung đã mua, trừ khi có thông báo khác.</p>
+                    </div>
+                    
+                    <div class="section-item">
+                        <h4>Giới hạn sử dụng</h4>
+                        <ul>
+                            <li>Tài khoản chỉ dành cho sử dụng cá nhân</li>
+                            <li>Không được chia sẻ, sao chép, hoặc phân phối nội dung</li>
+                            <li>Không được tạo tài khoản thay cho người khác</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <h4>Chứng chỉ hoàn thành</h4>
+                        <p>Chứng chỉ sẽ được cấp khi bạn đạt điểm yêu cầu trong các bài quiz và hoàn thành đầy đủ khóa học.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quy định hành vi người dùng -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="card-header">
+                    <h2><i class="bi bi-exclamation-triangle"></i>Quy Định Hành Vi</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <h4>Hành vi được phép</h4>
+                        <ul>
+                            <li>Học tập và sử dụng nội dung cho mục đích cá nhân</li>
+                            <li>Tương tác tích cực với chatbox AI</li>
+                            <li>Báo cáo lỗi kỹ thuật hoặc nội dung không phù hợp</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <h4>Hành vi bị cấm</h4>
+                        <ul>
+                            <li>Sao chép, tái phân phối nội dung khóa học</li>
+                            <li>Hack, spam, hoặc làm gián đoạn hệ thống</li>
+                            <li>Sử dụng công cụ tự động để truy cập dịch vụ</li>
+                            <li>Tạo nhiều tài khoản để lừa đảo hệ thống</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <h5><i class="bi bi-exclamation-circle"></i>Hậu quả vi phạm</h5>
+                            <p>Tài khoản có thể bị đình chỉ hoặc xóa vĩnh viễn mà không được hoàn tiền.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dịch vụ AI Chatbox -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="600">
+                <div class="card-header">
+                    <h2><i class="bi bi-robot"></i>Dịch Vụ AI Chatbox</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <h4>Mục đích sử dụng</h4>
+                        <p>AI Chatbox được thiết kế để hỗ trợ học viên giải đáp thắc mắc về nội dung khóa học và kỹ thuật lập trình.</p>
+                    </div>
+                    
+                    <div class="section-item">
+                        <h4>Giới hạn trách nhiệm</h4>
+                        <ul>
+                            <li>AI có thể đưa ra thông tin không chính xác 100%</li>
+                            <li>Không thay thế hoàn toàn sự tư vấn của chuyên gia</li>
+                            <li>Chúng tôi không chịu trách nhiệm về thiệt hại từ thông tin AI cung cấp</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <h4>Quyền riêng tư</h4>
+                        <p>Cuộc trò chuyện với AI có thể được lưu trữ để cải thiện dịch vụ. Không chia sẻ thông tin nhạy cảm với AI.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sở hữu trí tuệ -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="700">
+                <div class="card-header">
+                    <h2><i class="bi bi-c-circle"></i>Sở Hữu Trí Tuệ</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <p>Tất cả nội dung trên DevNest Learning bao gồm video, văn bản, hình ảnh, quiz, và mã nguồn đều thuộc bản quyền của chúng tôi hoặc đối tác.</p>
+                    </div>
+                    
+                    <div class="section-item">
+                        <h4>Quyền của DevNest Learning</h4>
+                        <ul>
+                            <li>Sở hữu toàn bộ nội dung và giao diện website</li>
+                            <li>Quyền thay đổi, cập nhật nội dung bất kỳ lúc nào</li>
+                            <li>Quyền ngăn chặn việc sử dụng trái phép</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <h4>Quyền của người dùng</h4>
+                        <ul>
+                            <li>Sử dụng nội dung đã mua cho mục đích học tập cá nhân</li>
+                            <li>Tải chứng chỉ và sử dụng cho mục đích nghề nghiệp</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chấm dứt dịch vụ -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="800">
+                <div class="card-header">
+                    <h2><i class="bi bi-x-circle"></i>Chấm Dứt Dịch Vụ</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <h4>Chấm dứt bởi người dùng</h4>
+                        <p>Bạn có thể xóa tài khoản bất kỳ lúc nào. Việc xóa tài khoản không ảnh hưởng đến các khoản phí đã thanh toán.</p>
+                    </div>
+                    
+                    <div class="section-item">
+                        <h4>Chấm dứt bởi DevNest Learning</h4>
+                        <p>Chúng tôi có quyền đình chỉ hoặc chấm dứt tài khoản của bạn nếu:</p>
+                        <ul>
+                            <li>Vi phạm điều khoản sử dụng</li>
+                            <li>Sử dụng dịch vụ cho mục đích bất hợp pháp</li>
+                            <li>Gây thiệt hại đến hệ thống hoặc người dùng khác</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <div class="highlight-box">
+                            <h5><i class="bi bi-info-circle"></i>Thông báo trước</h5>
+                            <p>Chúng tôi sẽ thông báo trước ít nhất 30 ngày khi ngừng cung cấp dịch vụ.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thay đổi điều khoản -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="900">
+                <div class="card-header">
+                    <h2><i class="bi bi-arrow-repeat"></i>Thay Đổi Điều Khoản</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-item">
+                        <p>DevNest Learning có quyền cập nhật điều khoản này để phản ánh các thay đổi trong dịch vụ hoặc yêu cầu pháp lý.</p>
+                    </div>
+                    
+                    <div class="section-item">
+                        <h4>Thông báo thay đổi</h4>
+                        <ul>
+                            <li>Thông báo qua email đăng ký</li>
+                            <li>Hiển thị trên trang web ít nhất 30 ngày</li>
+                            <li>Cập nhật ngày hiệu lực trong tài liệu</li>
+                        </ul>
+                    </div>
+
+                    <div class="section-item">
+                        <h4>Chấp nhận thay đổi</h4>
+                        <p>Việc tiếp tục sử dụng dịch vụ sau khi điều khoản mới có hiệu lực được coi là bạn đồng ý với những thay đổi đó.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liên hệ -->
+            <div class="terms-card" data-aos="fade-up" data-aos-delay="1000">
+                <div class="card-header">
+                    <h2><i class="bi bi-envelope"></i>Liên Hệ Hỗ Trợ</h2>
+                </div>
+                <div class="card-body">
+                    <div class="contact-info">
+                        <h4>Cần hỗ trợ về điều khoản sử dụng?</h4>
+                        <p>Liên hệ với chúng tôi qua các kênh sau:</p>
+                        
+                        <div class="contact-item">
+                            <i class="bi bi-envelope-fill"></i>
+                            <span>DevNestLearning@gmail.com</span>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="bi bi-telephone-fill"></i>
+                            <span>039 404 4568 (24/7)</span>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>DevNest Learning, 107A Thanh Niên, Phường Quy Nhơn Nam, tỉnh Gia Lai</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cập nhật điều khoản -->
+            <div class="last-updated" data-aos="fade-up" data-aos-delay="1100">
+                <p>Điều khoản này được cập nhật lần cuối vào ngày <span class="date">21/07/2025</span></p>
+                <p>DevNest Learning có quyền cập nhật điều khoản này và sẽ thông báo cho người dùng về những thay đổi quan trọng.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll-to-top functionality
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                document.body.style.cursor = 'default';
+            }
+        });
+    </script>
+</body>
+</html>
