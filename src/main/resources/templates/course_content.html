@@ -535,6 +535,11 @@
         <div class="tab-content active" id="video-tab">
           <div class="tab-content-header">
             <h2><i class="fas fa-video"></i> Danh sách video</h2>
+            <form th:action="@{'/course-content/' + ${course.ID_khoa_hoc} + '/videos/import'}" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".xlsx,.xls" required>
+                <button type="submit">Import Excel</button>
+            </form>
+            <a th:href="@{'/course-content/' + ${course.ID_khoa_hoc} + '/videos/export'}" class="btn btn-success">Export Excel</a>
             <button
               class="add-btn"
               onclick="openVideoModal('add-video-modal', 'add')"

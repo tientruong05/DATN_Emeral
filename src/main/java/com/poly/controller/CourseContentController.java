@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // For RedirectAttributes
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType; // Import MediaType
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.List; // For List type if not already imported
@@ -44,6 +45,8 @@ public class CourseContentController {
     private QuestionRepository questionRepository;
     @Autowired
     private QuizExcelService quizExcelService;
+    @Autowired
+    private com.poly.service.VideoExcelService videoExcelService;
 
 
     // --- Course Content Page Display ---
@@ -126,7 +129,59 @@ public class CourseContentController {
         redirectAttributes.addFlashAttribute("successMessage", "Video deleted successfully!");
         return "redirect:/course-content/" + courseId + "#video-tab"; // Redirect back to video tab
     }
+    // ...existing code...
 
+    // Method to handle importing videos from an Excel file
+
+    @PostMapping("/{courseId}/videos/import")
+    public String importVideos(@PathVariable Long courseId,
+                            @RequestParam("file") MultipartFile file,
+                            RedirectAttributes redirectAttributes) {
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng chọn một file Excel để tải lên.");
+            return "redirect:/course-content/" + courseId + "#video-tab";
+        }
+        try {
+            List<Video> importedVideos = videoExcelService.importVideosFromExcel(file.getInputStream(), courseId);
+            if (importedVideos == null || importedVideos.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Không có video nào được import từ file Excel.");
+                return "redirect:/course-content/" + courseId + "#video-tab";
+            }
+            // Xóa video cũ nếu muốn, hoặc chỉ thêm mới
+            videoService.deleteOldVideos(courseId);
+            for (Video v : importedVideos) {
+                v.setID_video(null);
+            }
+            videoService.saveNewVideos(importedVideos);
+            redirectAttributes.addFlashAttribute("message", "Đã nhập " + importedVideos.size() + " video từ Excel thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi nhập video: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/course-content/" + courseId + "#video-tab";
+    }
+
+    @GetMapping("/{courseId}/videos/export")
+    public ResponseEntity<byte[]> exportVideos(@PathVariable Long courseId) {
+        List<Video> videos = videoService.findByCourseID_khoa_hoc(courseId);
+        try {
+            byte[] excelBytes = videoExcelService.exportVideosToExcel(videos);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            String filename = "danh_sach_video_khoa_hoc_" + courseId + ".xlsx";
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelBytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
     // --- Question CRUD Operations ---
 
     // Method to handle adding a new question

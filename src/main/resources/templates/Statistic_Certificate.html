@@ -655,7 +655,6 @@
             <p class="page-subtitle">Theo dõi tỷ lệ hoàn thành và cấp chứng chỉ cho học viên</p>
         </div>
 
-        <!-- Summary Statistics -->
         <div class="summary-grid">
             <div class="summary-card certificates">
                 <div class="summary-header">
@@ -663,11 +662,11 @@
                         <i class="fas fa-award"></i>
                     </div>
                 </div>
-                <div class="summary-value">1,847</div>
+                <div class="summary-value" th:text="${#numbers.formatDecimal(summary.totalCertificatesIssued, 0, 'COMMA', 0, 'POINT')}">1,847</div>
                 <div class="summary-label">Tổng chứng chỉ đã cấp</div>
-                <div class="summary-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+12.4% so với tháng trước</span>
+                <div th:classappend="${summary.certChangePercentage >= 0 ? 'positive' : 'negative'}" class="summary-change">
+                    <i th:classappend="${summary.certChangePercentage >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
+                    <span th:text="${#numbers.formatDecimal(summary.certChangePercentage, 1, 'COMMA', 1, 'POINT')} + '% so với tháng trước'">+12.4% so với tháng trước</span>
                 </div>
             </div>
 
@@ -677,11 +676,11 @@
                         <i class="fas fa-user-graduate"></i>
                     </div>
                 </div>
-                <div class="summary-value">2,456</div>
+                <div class="summary-value" th:text="${#numbers.formatDecimal(summary.totalActiveStudents, 0, 'COMMA', 0, 'POINT')}">2,456</div>
                 <div class="summary-label">Tổng số học viên đang học</div>
-                <div class="summary-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+8.9% so với tháng trước</span>
+                <div th:classappend="${summary.activeChangePercentage >= 0 ? 'positive' : 'negative'}" class="summary-change">
+                    <i th:classappend="${summary.activeChangePercentage >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
+                    <span th:text="${#numbers.formatDecimal(summary.activeChangePercentage, 1, 'COMMA', 1, 'POINT')} + '% so với tháng trước'">+8.9% so với tháng trước</span>
                 </div>
             </div>
 
@@ -691,11 +690,11 @@
                         <i class="fas fa-percentage"></i>
                     </div>
                 </div>
-                <div class="summary-value">75.2%</div>
+                <div class="summary-value" th:text="${#numbers.formatDecimal(summary.completionRate, 1, 'COMMA', 1, 'POINT')} + '%'">75.2%</div>
                 <div class="summary-label">Tỷ lệ hoàn thành khóa học</div>
-                <div class="summary-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+3.7% so với tháng trước</span>
+                <div th:classappend="${summary.completionChangePercentage >= 0 ? 'positive' : 'negative'}" class="summary-change">
+                    <i th:classappend="${summary.completionChangePercentage >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
+                    <span th:text="${#numbers.formatDecimal(summary.completionChangePercentage, 1, 'COMMA', 1, 'POINT')} + '% so với tháng trước'">+3.7% so với tháng trước</span>
                 </div>
             </div>
 
@@ -705,16 +704,15 @@
                         <i class="fas fa-clock"></i>
                     </div>
                 </div>
-                <div class="summary-value">609</div>
+                <div class="summary-value" th:text="${#numbers.formatDecimal(summary.studentsPendingCertificate, 0, 'COMMA', 0, 'POINT')}">609</div>
                 <div class="summary-label">Học viên chờ cấp chứng chỉ</div>
-                <div class="summary-change negative">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>-2.1% so với tháng trước</span>
+                <div th:classappend="${summary.pendingChangePercentage >= 0 ? 'positive' : 'negative'}" class="summary-change">
+                    <i th:classappend="${summary.pendingChangePercentage >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
+                    <span th:text="${#numbers.formatDecimal(summary.pendingChangePercentage, 1, 'COMMA', 1, 'POINT')} + '% so với tháng trước'">-2.1% so với tháng trước</span>
                 </div>
             </div>
         </div>
 
-        <!-- Certificate Progress Chart -->
         <div class="chart-card">
             <div class="card-header">
                 <h2><i class="fas fa-chart-pie"></i> Biểu đồ tỷ lệ hoàn thành khóa học</h2>
@@ -752,7 +750,6 @@
             </div>
         </div>
 
-        <!-- Overall Progress -->
         <div class="certificate-stats-grid">
             <div class="certificate-stat-card">
                 <h3 style="text-align: center; color: #002855; margin-bottom: 1rem;">
@@ -763,10 +760,11 @@
                         <circle class="progress-circle" cx="60" cy="60" r="50"></circle>
                         <circle class="progress-bar-circle" cx="60" cy="60" r="50" id="overallProgress"></circle>
                     </svg>
-                    <div class="progress-text" id="overallPercentage">75.2%</div>
+                    <div class="progress-text" id="overallPercentage"></div>
                 </div>
                 <p style="text-align: center; color: #666; margin-top: 1rem;">
-                    1,847 / 2,456 học viên hoàn thành
+                    <span id="overallCompletedCount" th:text="${#numbers.formatDecimal(summary.totalCertificatesIssued, 0, 'COMMA', 0, 'POINT')}">1,847</span> /
+                    <span id="overallTotalStudents" th:text="${#numbers.formatDecimal(summary.totalStudentsEverEnrolled, 0, 'COMMA', 0, 'POINT')}">2,456</span> học viên hoàn thành
                 </p>
             </div>
 
@@ -799,7 +797,6 @@
             </div>
         </div>
 
-        <!-- Certificate Statistics by Course Table -->
         <div class="chart-card">
             <div class="card-header">
                 <h2><i class="fas fa-graduation-cap"></i> Thống kê chứng chỉ theo khóa học</h2>
@@ -811,103 +808,31 @@
                             <th><i class="fas fa-hashtag"></i> STT</th>
                             <th><i class="fas fa-book"></i> Tên khóa học</th>
                             <th><i class="fas fa-users"></i> Tổng học viên</th>
-                            <th><i class="fas fa-certificate"></i> Đã cấp chứng chỉ</th>
+                            <th><i class="fas fa-user-graduate"></i> Đang học</th> <th><i class="fas fa-certificate"></i> Đã cấp chứng chỉ</th>
                             <th><i class="fas fa-percentage"></i> Tỷ lệ hoàn thành</th>
-                            <th><i class="fas fa-chart-bar"></i> Tiến độ</th>
                             <th><i class="fas fa-star"></i> Xếp loại</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><strong>1</strong></td>
-                            <td class="course-name">React JS từ cơ bản đến nâng cao</td>
-                            <td>324</td>
-                            <td><strong style="color: #28a745;">287</strong></td>
-                            <td><strong style="color: #28a745;">88.6%</strong></td>
+                        <tr th:each="stat : ${courseStats}">
+                            <td th:text="${stat.rank}">1</td>
+                            <td class="course-name" th:text="${stat.courseName}">React JS từ cơ bản đến nâng cao</td>
+                            <td th:text="${stat.totalStudents}">324</td>
+                            <td th:text="${stat.activeStudents}"></td> <td th:text="${stat.completedCertificates}">287</td>
+                            <td th:with="formattedCompletionRate=${#numbers.formatDecimal(stat.completionRate, 1, 'COMMA', 1, 'POINT')}"
+                                th:style="${stat.completionRate >= 85 ? 'color: #28a745;' : (stat.completionRate >= 70 ? 'color: #007bff;' : (stat.completionRate >= 50 ? 'color: #ffc107;' : 'color: #dc3545;'))}"
+                                th:text="${formattedCompletionRate + '%'}">88.6%</td>
                             <td>
                                 <div class="progress-bar">
-                                    <div class="progress-fill progress-excellent" style="width: 88.6%;"></div>
+                                    <div th:classappend="${stat.completionRate >= 85 ? 'progress-excellent' : (stat.completionRate >= 70 ? 'progress-good' : (stat.completionRate >= 50 ? 'progress-average' : 'progress-low'))}"
+                                         class="progress-fill" th:style="'width: ' + ${stat.completionRate} + '%;'"></div>
                                 </div>
                             </td>
-                            <td><span class="status-badge status-excellent">Xuất sắc</span></td>
+                            <td><span th:classappend="${stat.completionStatus == 'Xuất sắc' ? 'status-excellent' : (stat.completionStatus == 'Giỏi' ? 'status-good' : (stat.completionStatus == 'Khá' ? 'status-average' : 'status-low'))}"
+                                      class="status-badge" th:text="${stat.completionStatus}">Xuất sắc</span></td>
                         </tr>
-                        <tr>
-                            <td><strong>2</strong></td>
-                            <td class="course-name">Node.js Backend Development</td>
-                            <td>287</td>
-                            <td><strong style="color: #007bff;">234</strong></td>
-                            <td><strong style="color: #007bff;">81.5%</strong></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill progress-good" style="width: 81.5%;"></div>
-                                </div>
-                            </td>
-                            <td><span class="status-badge status-good">Giỏi</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>3</strong></td>
-                            <td class="course-name">Python cho Data Science</td>
-                            <td>256</td>
-                            <td><strong style="color: #007bff;">198</strong></td>
-                            <td><strong style="color: #007bff;">77.3%</strong></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill progress-good" style="width: 77.3%;"></div>
-                                </div>
-                            </td>
-                            <td><span class="status-badge status-good">Giỏi</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>4</strong></td>
-                            <td class="course-name">Flutter Mobile Development</td>
-                            <td>198</td>
-                            <td><strong style="color: #ffc107;">134</strong></td>
-                            <td><strong style="color: #ffc107;">67.7%</strong></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill progress-average" style="width: 67.7%;"></div>
-                                </div>
-                            </td>
-                            <td><span class="status-badge status-average">Khá</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>5</strong></td>
-                            <td class="course-name">UI/UX Design Master Class</td>
-                            <td>145</td>
-                            <td><strong style="color: #dc3545;">78</strong></td>
-                            <td><strong style="color: #dc3545;">53.8%</strong></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill progress-low" style="width: 53.8%;"></div>
-                                </div>
-                            </td>
-                            <td><span class="status-badge status-low">Trung bình</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>6</strong></td>
-                            <td class="course-name">DevOps và Cloud Computing</td>
-                            <td>189</td>
-                            <td><strong style="color: #007bff;">145</strong></td>
-                            <td><strong style="color: #007bff;">76.7%</strong></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill progress-good" style="width: 76.7%;"></div>
-                                </div>
-                            </td>
-                            <td><span class="status-badge status-good">Giỏi</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>7</strong></td>
-                            <td class="course-name">Machine Learning cơ bản</td>
-                            <td>167</td>
-                            <td><strong style="color: #ffc107;">89</strong></td>
-                            <td><strong style="color: #ffc107;">53.3%</strong></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill progress-average" style="width: 53.3%;"></div>
-                                </div>
-                            </td>
-                            <td><span class="status-badge status-average">Khá</span></td>
+                        <tr th:if="${#lists.isEmpty(courseStats)}">
+                            <td colspan="8" style="text-align: center; padding: 20px;">Không có dữ liệu thống kê khóa học nào.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -915,45 +840,54 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
-let certificateChart;
+    let certificateChart;
 
-// Dữ liệu mẫu cho biểu đồ chứng chỉ
-const certificateData = {
-    '30days': {
-        labels: ['Đã hoàn thành', 'Đang học', 'Chưa hoàn thành'],
-        data: [1847, 609, 234],
-        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-    },
-    '7days': {
-        labels: ['Đã hoàn thành', 'Đang học', 'Chưa hoàn thành'],
-        data: [145, 89, 23],
-        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-    },
-    '3months': {
-        labels: ['Đã hoàn thành', 'Đang học', 'Chưa hoàn thành'],
-        data: [3200, 900, 400],
-        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-    },
-    '6months': {
-        labels: ['Đã hoàn thành', 'Đang học', 'Chưa hoàn thành'],
-        data: [5400, 1200, 600],
-        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-    },
-    '1year': {
-        labels: ['Đã hoàn thành', 'Đang học', 'Chưa hoàn thành'],
-        data: [9000, 2000, 900],
-        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+    // Fetch chart data from backend
+async function fetchChartData(selectedTimeRange) { // Renamed parameter to avoid conflict
+    // Use the passed parameter, or re-read from DOM if you prefer, but don't re-declare
+    // const timeRange = document.getElementById('timeRange').value; // REMOVE THIS LINE
+    const chartType = document.getElementById('chartType').value; // This is fine
+
+    // Now use selectedTimeRange instead of timeRange in the fetch URL
+    try {
+        const response = await fetch(`/admin/statistics/certificate/chart-data?timeRange=${selectedTimeRange}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Failed to fetch chart data:', response.status, errorText);
+            return null;
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching chart data:', error);
+        return null;
     }
-};
+}
 
-// Hàm khởi tạo biểu đồ
-function renderCertificateChart() {
+    // Function to render/update the chart
+    async function updateChart() { // Now matches the HTML onchange call
     const timeRange = document.getElementById('timeRange').value;
     const chartType = document.getElementById('chartType').value;
     const ctx = document.getElementById('certificateChart').getContext('2d');
-    const data = certificateData[timeRange];
+
+    const chartBackendData = await fetchChartData(timeRange);
+
+    if (!chartBackendData || chartBackendData.data.every(val => val === 0)) {
+        if (certificateChart) {
+            certificateChart.destroy();
+            certificateChart = null; // Clear chart instance
+        }
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        // Display a message if no data
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#666';
+        ctx.textAlign = 'center';
+        ctx.fillText('Không có dữ liệu biểu đồ cho khoảng thời gian này.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+        console.warn('No data received for the chart for timeRange:', timeRange);
+        return;
+    }
 
     if (certificateChart) {
         certificateChart.destroy();
@@ -962,11 +896,11 @@ function renderCertificateChart() {
     certificateChart = new Chart(ctx, {
         type: chartType,
         data: {
-            labels: data.labels,
+            labels: chartBackendData.labels,
             datasets: [{
                 label: 'Số lượng chứng chỉ',
-                data: data.data,
-                backgroundColor: data.backgroundColor,
+                data: chartBackendData.data,
+                backgroundColor: chartBackendData.backgroundColor,
                 borderColor: '#ffffff',
                 borderWidth: 2,
                 hoverOffset: 4
@@ -1029,36 +963,70 @@ function renderCertificateChart() {
             } : {},
             animation: {
                 duration: 1000,
-                easing: 'easeInOutQuart'
             }
         }
     });
-
-
-    // Cập nhật tỷ lệ hoàn thành tổng thể
-    const overallProgress = document.getElementById('overallProgress');
-    const overallPercentage = document.getElementById('overallPercentage');
-    const totalCompleted = data.data[0];
-    const totalStudents = data.data.reduce((a, b) => a + b, 0);
-    const percentage = ((totalCompleted / totalStudents) * 100).toFixed(1);
-
-    overallProgress.style.strokeDashoffset = 377 - (377 * (percentage / 100));
-    overallPercentage.textContent = `${percentage}%`;
 }
 
-// Sự kiện thay đổi filter
-function updateChart() {
-    renderCertificateChart();
-}
-
-// Khởi tạo biểu đồ mặc định
-document.addEventListener('DOMContentLoaded', function () {
-    renderCertificateChart();
+// Initial chart load when the page is ready
+document.addEventListener('DOMContentLoaded', () => {
+    updateChart(); // Call updateChart on page load
+    updateOverallCompletionProgress(); // Make sure this function is defined too
 });
+
+// Function for overall completion progress
+function updateOverallCompletionProgress() {
+    const overallProgressCircle = document.getElementById('overallProgress');
+    const overallPercentageText = document.getElementById('overallPercentage');
+    const overallCompletedCount = document.getElementById('overallCompletedCount');
+    const overallTotalStudents = document.getElementById('overallTotalStudents');
+
+    // Get values from Thymeleaf-rendered elements
+    const completed = parseInt(overallCompletedCount.textContent.replace(/,/g, ''));
+    const total = parseInt(overallTotalStudents.textContent.replace(/,/g, ''));
+
+    if (total === 0) {
+        overallPercentageText.textContent = '0%';
+        overallProgressCircle.style.strokeDashoffset = 377; // Reset to empty
+        return;
+    }
+
+    const percentage = (completed / total) * 100;
+    const circumference = 2 * Math.PI * 50; // 2 * pi * r (r=50)
+    const offset = circumference - (percentage / 100) * circumference;
+
+    overallProgressCircle.style.strokeDashoffset = offset;
+    overallPercentageText.textContent = `${percentage.toFixed(1)}%`;
+
+    // Optionally change color based on percentage
+    if (percentage >= 85) {
+        overallProgressCircle.style.stroke = '#28a745'; // Excellent
+    } else if (percentage >= 70) {
+        overallProgressCircle.style.stroke = '#007bff'; // Good
+    } else if (percentage >= 50) {
+        overallProgressCircle.style.stroke = '#ffc107'; // Average
+    } else {
+        overallProgressCircle.style.stroke = '#dc3545'; // Low
+    }
+}
+
+
+// Export Chart Functions (ensure these are also globally accessible or handled)
+function exportChart(format) {
+    if (!certificateChart) {
+        alert('Không có biểu đồ để xuất.');
+        return;
+    }
+
+    if (format === 'png') {
+        const link = document.createElement('a');
+        link.href = certificateChart.toBase64Image();
+        link.download = 'certificate_chart.png';
+        link.click();
+    } else if (format === 'pdf') {
+        alert('Chức năng xuất PDF đang được phát triển.'); // You'd need a library like jsPDF for this
+    }
+}
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <!-- Font Awesome for icons -->
-   
-    
 </body>
 </html>

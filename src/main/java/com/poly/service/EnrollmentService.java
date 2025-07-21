@@ -1,8 +1,11 @@
 package com.poly.service;
 
 import com.poly.dto.CourseProgressDTO;
+import com.poly.dto.CourseStatisticsDTO;
+import com.poly.entity.Course;
 import com.poly.entity.Enrollment;
 import com.poly.entity.Video;
+import com.poly.repository.CourseRepository;
 import com.poly.repository.EnrollmentsRepository;
 import com.poly.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class EnrollmentService {
@@ -21,6 +27,9 @@ public class EnrollmentService {
     @Autowired
     private VideoRepository videoRepository;
 
+    @Autowired
+    private CourseRepository courseRepository;
+    
     public List<Enrollment> findAll() {
         return enrollmentsRepository.findAll();
     }
@@ -167,4 +176,100 @@ public class EnrollmentService {
                           ", progressInfo: " + progressInfo + ", isCompleted: " + isCompleted);
         return isCompleted;
     }
+    public long getTotalStudents() {
+        return enrollmentsRepository.countDistinctUsers();
+    }
+
+    public long getActiveStudents() {
+        // Based on your Enrollment's 'status' field: true means đang học (active)
+        return enrollmentsRepository.countDistinctActiveUsers();
+    }
+
+    public long getCompletedStudents() {
+        // Based on your Enrollment's 'finishDate' field: not null means completed
+        return enrollmentsRepository.countDistinctCompletedUsers();
+    }
+
+    public double getAverageStudentsPerCourse() {
+        long totalCourses = courseRepository.count();
+        if (totalCourses == 0) {
+            return 0.0;
+        }
+        return (double) enrollmentsRepository.countDistinctUsers() / totalCourses;
+    }
+
+    public double calculatePercentageChange(long current, long previous) {
+        if (previous == 0) {
+            return current > 0 ? 100.0 : 0.0;
+        }
+        return ((double) (current - previous) / previous) * 100.0;
+    }
+
+    public List<CourseStatisticsDTO> getTopCoursesByStudents(int limit) {
+        List<Course> courses = courseRepository.findAll();
+
+        return courses.stream()
+                .map(course -> {
+                    long totalEnrollments = enrollmentsRepository.countByCourse(course);
+                    // Use the newly defined methods
+                    long activeEnrollments = enrollmentsRepository.countByCourseAndStatusIsTrue(course); // Changed method call
+                    long completedEnrollments = enrollmentsRepository.countByCourseAndFinishDateIsNotNull(course); // Changed method call
+                    
+                    double completionRate = totalEnrollments > 0 ?
+                            ((double) completedEnrollments / totalEnrollments) * 100 : 0.0;
+
+                    String popularityStatus = "Bình thường";
+                    if (totalEnrollments >= 450) { // Example threshold
+                        popularityStatus = "Hot";
+                    } else if (totalEnrollments >= 300) { // Example threshold
+                        popularityStatus = "Phổ biến";
+                    }
+
+                    return new CourseStatisticsDTO(
+                            0, // Rank will be set after sorting
+                            course.getTen_khoa_hoc(),
+                            totalEnrollments,
+                            activeEnrollments,
+                            completedEnrollments,
+                            completionRate,
+                            popularityStatus
+                    );
+                })
+                .sorted(Comparator.comparingLong(CourseStatisticsDTO::getTotalStudents).reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+   public Map<String, Long> getStudentDistributionByCourse(String statusFilter) {
+        List<Enrollment> enrollments;
+        if ("active".equals(statusFilter)) {
+            enrollments = enrollmentsRepository.findByStatus(true);
+        } else if ("completed".equals(statusFilter)) {
+            // *** FIX HERE ***
+            // Use the new repository method that checks for finishDate not null
+            enrollments = enrollmentsRepository.findByFinishDateIsNotNull();
+        } else { // "all"
+            enrollments = enrollmentsRepository.findAll();
+        }
+
+        // Add a debug log to see the enrollments list before grouping
+        System.out.println("DEBUG: Enrollments fetched for statusFilter '" + statusFilter + "': " + enrollments.size() + " records.");
+        if (enrollments.isEmpty()) {
+            System.out.println("DEBUG: No enrollments found for statusFilter '" + statusFilter + "'. Chart data will be empty.");
+        }
+
+
+        return enrollments.stream()
+                .collect(Collectors.groupingBy(
+                        enrollment -> {
+                            // Safely get course name, handle potential null course (though it shouldn't be null)
+                            if (enrollment.getCourse() != null) {
+                                return enrollment.getCourse().getTen_khoa_hoc();
+                            }
+                            return "Unknown Course"; // Or throw an exception, depending on your data integrity
+                        },
+                        Collectors.counting()
+                ));
+    }
+
 }

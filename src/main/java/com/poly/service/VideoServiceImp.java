@@ -39,4 +39,10 @@ public class VideoServiceImp implements VideoService {
         // CALL THE CORRECTED REPOSITORY METHOD HERE
         return videoRepository.findVideosByCourseId(courseId);
     }
+    public void deleteOldVideos(Long courseId) {
+        List<Video> videos = videoRepository.findVideosByCourseId(courseId);
+        for (Video video : videos) {
+            videoRepository.deleteById(video.getID_video());
+        }
+    }
 }
