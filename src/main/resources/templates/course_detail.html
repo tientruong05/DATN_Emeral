@@ -23,67 +23,123 @@
 		body {
 			color: #333;
 			line-height: 1.6;
-			background-color: #f5f5f5;
+			background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+			min-height: 100vh;
 		}
 
 		/* Course Header */
 		.course-header {
-			background-color: #002855;
+			background: linear-gradient(135deg, #002855 0%, #004080 100%);
 			color: white;
 			padding: 3rem 5%;
 			position: relative;
+			overflow: hidden;
+		}
+
+		.course-header::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+			opacity: 0.1;
 		}
 
 		.course-header-content {
 			display: flex;
 			justify-content: space-between;
-			gap: 2rem;
+			gap: 3rem;
+			position: relative;
+			z-index: 2;
+			align-items: center;
 		}
 
 		.course-info {
-			width: 60%;
+			flex: 1;
+			max-width: 60%;
 		}
 
 		.course-title {
-			font-size: 2.2rem;
-			margin-bottom: 1rem;
+			font-size: 2.8rem;
+			margin-bottom: 1.2rem;
 			font-weight: 700;
+			text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+			line-height: 1.2;
 		}
 
 		.course-description {
-			margin-bottom: 1.5rem;
+			margin-bottom: 2rem;
 			font-size: 1.1rem;
-			opacity: 0.9;
+			opacity: 0.95;
+			line-height: 1.6;
+			color: #e8f0ff;
 		}
 
-		.course-meta {
-			display: flex;
-			align-items: center;
-			gap: 1.5rem;
-			margin-bottom: 1rem;
-			font-size: 0.9rem;
+		/* Compact Meta Info Layout */
+		.course-meta-compact {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 1rem;
+			margin-bottom: 1.5rem;
 		}
 
 		.course-meta-item {
 			display: flex;
 			align-items: center;
+			background: rgba(255,255,255,0.12);
+			padding: 0.7rem 1rem;
+			border-radius: 8px;
+			backdrop-filter: blur(10px);
+			transition: all 0.3s ease;
+			font-size: 0.9rem;
+			border: 1px solid rgba(255,255,255,0.1);
+		}
+
+		.course-meta-item:hover {
+			background: rgba(255,255,255,0.2);
+			transform: translateY(-2px);
 		}
 
 		.course-meta-item i {
-			margin-right: 0.5rem;
+			margin-right: 0.7rem;
+			font-size: 1rem;
+			opacity: 0.9;
+			width: 16px;
+		}
+
+		.course-meta-secondary {
+			display: flex;
+			gap: 1rem;
+			flex-wrap: wrap;
+		}
+
+		.course-meta-secondary .course-meta-item {
+			background: rgba(255,255,255,0.08);
+			border: 1px solid rgba(255,255,255,0.15);
 		}
 
 		.course-image-container {
-			width: 40%;
+			flex: 0 0 400px;
 			position: relative;
+			display: flex;
+			justify-content: center;
 		}
 
 		.course-image {
 			width: 100%;
-			max-width: 400px;
-			border-radius: 8px;
-			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-			border: 3px solid white;
+			max-width: 380px;
+			height: 250px;
+			object-fit: cover;
+			border-radius: 12px;
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+			border: 3px solid rgba(255,255,255,0.2);
+			transition: transform 0.3s ease;
+		}
+
+		.course-image:hover {
+			transform: translateY(-8px) scale(1.02);
 		}
 
 		/* Course Content */
@@ -92,6 +148,8 @@
 			display: flex;
 			justify-content: space-between;
 			gap: 3rem;
+			max-width: 1400px;
+			margin: 0 auto;
 		}
 
 		.course-details {
@@ -100,58 +158,94 @@
 
 		.course-sidebar {
 			width: 30%;
+			position: relative;
 		}
 
 		.section-title {
-			font-size: 1.5rem;
+			font-size: 1.8rem;
 			margin-bottom: 1.5rem;
 			position: relative;
 			padding-bottom: 0.5rem;
-			border-bottom: 2px solid #eee;
+			color: #002855;
+			font-weight: 600;
 		}
 
 		.section-title::after {
 			content: "";
 			position: absolute;
-			width: 50px;
-			height: 3px;
-			background-color: #002855;
-			bottom: -2px;
+			width: 60px;
+			height: 4px;
+			background: linear-gradient(45deg, #002855, #0056b3);
+			bottom: 0;
 			left: 0;
+			border-radius: 2px;
 		}
 
 		/* What You'll Learn */
+		.what-youll-learn {
+			background: white;
+			border-radius: 15px;
+			padding: 2rem;
+			margin-bottom: 2rem;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+			border: 1px solid rgba(0,40,85,0.1);
+		}
+
 		.features-list {
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
-			gap: 1rem;
-			margin-bottom: 2rem;
+			gap: 1.5rem;
+			margin-top: 1rem;
 		}
 
 		.feature-item {
 			display: flex;
 			align-items: flex-start;
+			padding: 1rem;
+			background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+			border-radius: 10px;
+			transition: all 0.3s ease;
+		}
+
+		.feature-item:hover {
+			transform: translateX(10px);
+			box-shadow: 0 5px 15px rgba(0,40,85,0.1);
 		}
 
 		.feature-item i {
-			margin-right: 0.5rem;
+			margin-right: 1rem;
 			color: #28a745;
 			margin-top: 0.3rem;
+			font-size: 1.2rem;
 		}
 
 		/* Course Content */
+		.course-curriculum {
+			background: white;
+			border-radius: 15px;
+			padding: 2rem;
+			margin-bottom: 2rem;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+			border: 1px solid rgba(0,40,85,0.1);
+		}
+
 		.accordion-button {
 			font-weight: 600;
-			padding: 1rem;
+			padding: 1.5rem;
+			background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+			border: none;
+			border-radius: 10px !important;
 		}
 
 		.accordion-button:not(.collapsed) {
-			background-color: #e7f1ff;
-			color: #002855;
+			background: linear-gradient(135deg, #002855 0%, #004080 100%);
+			color: white;
+			box-shadow: 0 5px 15px rgba(0,40,85,0.2);
 		}
 
 		.accordion-body {
 			padding: 0;
+			border-radius: 0 0 10px 10px;
 		}
 
 		.lesson-list {
@@ -161,11 +255,21 @@
 		}
 
 		.lesson-item {
-			padding: 1rem;
+			padding: 1.2rem;
 			border-bottom: 1px solid #eee;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+			transition: all 0.3s ease;
+		}
+
+		.lesson-item:hover {
+			background: #f8f9ff;
+			transform: translateX(10px);
+		}
+
+		.lesson-item:last-child {
+			border-bottom: none;
 		}
 
 		.lesson-title {
@@ -174,147 +278,171 @@
 		}
 
 		.lesson-title i {
-			margin-right: 0.75rem;
-			color: #666;
+			margin-right: 1rem;
+			color: #002855;
+			font-size: 1.1rem;
 		}
 
 		.lesson-meta {
-			font-size: 0.85rem;
+			font-size: 0.9rem;
 			color: #777;
+			background: #f0f7ff;
+			padding: 0.3rem 0.8rem;
+			border-radius: 15px;
 		}
 
 		/* Course Sidebar */
 		.course-card {
-			background-color: white;
-			border-radius: 8px;
+			background: white;
+			border-radius: 15px;
 			overflow: hidden;
-			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+			box-shadow: 0 15px 35px rgba(0,0,0,0.1);
 			position: sticky;
-			top: 1rem;
+			top: 2rem;
+			border: 1px solid rgba(0,40,85,0.1);
 		}
 
 		.course-card-header {
-			padding: 1.5rem;
+			padding: 2rem;
 			text-align: center;
+			background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+			position: relative;
+		}
+
+		/* Discount Badge */
+		.discount-badge {
+			position: absolute;
+			top: -10px;
+			right: 20px;
+			background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+			color: white;
+			padding: 8px 12px;
+			border-radius: 8px;
+			font-size: 0.75rem;
+			font-weight: bold;
+			z-index: 10;
+			text-transform: uppercase;
+			box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+			transform: rotate(-5deg);
+			animation: pulse 2s infinite;
+		}
+
+		@keyframes pulse {
+			0%, 100% { transform: rotate(-5deg) scale(1); }
+			50% { transform: rotate(-5deg) scale(1.05); }
 		}
 
 		.course-card-price {
-			font-size: 2rem;
+			font-size: 2.5rem;
 			font-weight: bold;
 			margin-bottom: 1rem;
+			color: #002855;
+		}
+
+		.original-price {
+			font-size: 1rem;
+			color: #999;
+			text-decoration: line-through;
+			margin-bottom: 8px;
+			opacity: 0.7;
+		}
+
+		.price {
+			font-weight: bold;
+		}
+
+		.free {
+			color: #28a745;
+			background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+			padding: 0.5rem 1rem;
+			border-radius: 25px;
+			display: inline-block;
+		}
+
+		.discounted-price {
+			color: #e74c3c;
+			font-weight: bold;
 		}
 
 		.course-card-button {
 			display: block;
 			width: 100%;
-			padding: 1rem;
-			background-color: #002855;
+			padding: 1.2rem;
+			background: linear-gradient(135deg, #002855 0%, #004080 100%);
 			color: white;
 			border: none;
-			border-radius: 4px;
-			font-size: 1rem;
+			border-radius: 10px;
+			font-size: 1.1rem;
 			font-weight: 600;
 			text-align: center;
 			text-decoration: none;
 			cursor: pointer;
-			transition: background-color 0.3s ease;
+			transition: all 0.3s ease;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.course-card-button::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+			transition: left 0.5s;
+		}
+
+		.course-card-button:hover::before {
+			left: 100%;
 		}
 
 		.course-card-button:hover {
-			background-color: #001f42;
+			transform: translateY(-3px);
+			box-shadow: 0 10px 25px rgba(0,40,85,0.3);
 		}
 
 		.course-card-button.purchased {
-			background-color: #28a745;
+			background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
 		}
 
 		.course-card-button.purchased:hover {
-			background-color: #218838;
-		}
-
-		.course-card-details {
-			padding: 1.5rem;
-			border-top: 1px solid #eee;
-		}
-
-		.course-detail-item {
-			display: flex;
-			justify-content: space-between;
-			margin-bottom: 1rem;
-		}
-
-		.course-detail-label {
-			color: #777;
-		}
-
-		.course-detail-value {
-			font-weight: 600;
-		}
-
-		/* Instructor */
-		.instructor-card {
-			background-color: white;
-			border-radius: 8px;
-			padding: 1.5rem;
-			margin-bottom: 2rem;
-			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-		}
-
-		.instructor-info {
-			display: flex;
-			align-items: center;
-			margin-bottom: 1rem;
-		}
-
-		.instructor-avatar {
-			width: 64px;
-			height: 64px;
-			border-radius: 50%;
-			margin-right: 1rem;
-			object-fit: cover;
-		}
-
-		.instructor-name {
-			font-size: 1.2rem;
-			margin-bottom: 0.25rem;
-		}
-
-		.instructor-title {
-			color: #666;
-			font-size: 0.9rem;
-		}
-
-		.instructor-stats {
-			display: flex;
-			gap: 1.5rem;
-			margin-bottom: 1rem;
-			font-size: 0.9rem;
-		}
-
-		.instructor-stat-item {
-			display: flex;
-			align-items: center;
-		}
-
-		.instructor-stat-item i {
-			margin-right: 0.5rem;
-			color: #002855;
+			background: linear-gradient(135deg, #218838 0%, #1ea87a 100%);
 		}
 
 		/* Responsive Design */
+		@media (max-width: 1200px) {
+			.course-meta-compact {
+				grid-template-columns: repeat(2, 1fr);
+			}
+			
+			.course-image-container {
+				flex: 0 0 350px;
+			}
+			
+			.course-image {
+				max-width: 330px;
+				height: 220px;
+			}
+		}
+
 		@media (max-width: 991px) {
 			.course-header-content {
 				flex-direction: column;
 			}
 
-			.course-info,
+			.course-info {
+				max-width: 100%;
+			}
+
 			.course-image-container {
-				width: 100%;
+				flex: none;
+				margin-top: 2rem;
 			}
 
 			.course-image {
 				max-width: 100%;
-				margin-top: 1.5rem;
+				height: auto;
 			}
 
 			.course-content-container {
@@ -329,36 +457,53 @@
 			.features-list {
 				grid-template-columns: 1fr;
 			}
+
+			.course-title {
+				font-size: 2.2rem;
+			}
+
+			.course-meta-compact {
+				grid-template-columns: 1fr;
+				gap: 0.8rem;
+			}
 		}
 
 		@media (max-width: 576px) {
-			.course-meta {
-				flex-direction: column;
-				align-items: flex-start;
-				gap: 0.5rem;
+			.course-header {
+				padding: 2rem 3%;
+			}
+
+			.course-content-container {
+				padding: 2rem 3%;
+			}
+
+			.course-title {
+				font-size: 1.8rem;
+			}
+
+			.section-title {
+				font-size: 1.5rem;
+			}
+
+			.course-meta-item {
+				font-size: 0.85rem;
+				padding: 0.6rem 0.8rem;
 			}
 		}
-		.original-price {
-		        font-size: 0.7rem;
-		        color: #999;
-		        text-decoration: line-through;
-		        margin-bottom: 2px;
-		      }
 
-		      .price {
-		        font-weight: bold;
-		      }
+		/* Notification styles */
+		.alert {
+			border-radius: 10px;
+			border: none;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+		}
 
-		      .free {
-		        color: #28a745;
-		      }
-
-		      .discounted-price {
-		        color: #e74c3c;
-		        font-weight: bold;
-		      }
+		.alert-warning {
+			background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+			color: #856404;
+			border-left: 4px solid #ffc107;
+		}
 	</style>
-
 </head>
 
 <body>
@@ -446,6 +591,7 @@
 						<h2 class="accordion-header" id="headingOne">
 							<button class="accordion-button" type="button" data-bs-toggle="collapse"
 								data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+								<i class="fas fa-play-circle me-2"></i>
 								Danh sách video bài giảng
 							</button>
 						</h2>
@@ -474,111 +620,57 @@
 					</div>
 				</div>
 			</div>
-
-			<!-- Requirements -->
-			<div class="requirements mt-4">
-				<h2 class="section-title">Yêu cầu</h2>
-				<ul>
-					<li>
-						Không có yêu cầu đặc biệt - khóa học phù hợp cho mọi trình độ
-					</li>
-					<li>Chỉ cần máy tính có kết nối internet để học trực tuyến</li>
-					<li>Sẵn sàng học hỏi và thực hành kiến thức mới</li>
-				</ul>
-			</div>
-
-			<!-- Instructor -->
-			<div class="instructor mt-4">
-				<h2 class="section-title">Giảng viên</h2>
-				<div class="instructor-card">
-					<div class="instructor-info">
-						<img src="/upload/default.png" alt="Instructor" class="instructor-avatar" />
-						<div>
-							<h3 class="instructor-name">
-								Đội ngũ giảng viên DEVNEST LEARNING
-							</h3>
-							<p class="instructor-title">Chuyên gia trong lĩnh vực</p>
-						</div>
-					</div>
-					<div class="instructor-stats">
-						<div class="instructor-stat-item">
-							<i class="fas fa-star"></i>
-							<span>4.8 Điểm đánh giá</span>
-						</div>
-						<div class="instructor-stat-item">
-							<i class="fas fa-user-graduate"></i>
-							<span>500+ Học viên</span>
-						</div>
-						<div class="instructor-stat-item">
-							<i class="fas fa-book"></i>
-							<span>5+ Khóa học</span>
-						</div>
-					</div>
-					<p>
-						Đội ngũ giảng viên của DEVNEST LEARNING là những chuyên gia hàng
-						đầu với nhiều năm kinh nghiệm trong lĩnh vực. Với phương pháp
-						giảng dạy hiệu quả và thực tiễn, họ sẽ giúp bạn tiếp thu kiến thức
-						một cách nhanh chóng và dễ dàng áp dụng vào thực tế.
-					</p>
-				</div>
-			</div>
 		</div>
 
 		<div class="course-sidebar">
 			<div class="course-card">
 				<div class="course-card-header">
-					<div class="original-price" th:if="${course.isDiscounted() and course.gia_tien != null}"
-						th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></div>
-					<!-- Giá sau giảm hoặc giá bình thường -->
-					<span th:if="${course.gia_tien == null}" class="price free">Miễn phí</span>
-					<span th:if="${course.gia_tien != null and !course.isDiscounted()}" class="price"
-						th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
-					<span th:if="${course.gia_tien != null and course.isDiscounted()}" class="price discounted-price"
-						th:text="${#numbers.formatDecimal(course.getDiscountedPrice(), 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
+					<!-- Discount Badge - chỉ hiển thị khi có giảm giá -->
+					<div class="discount-badge" th:if="${course.isDiscounted()}">
+						<div th:text="${course.getDiscountPercentage()} + '% OFF'"></div>
+					</div>
+					
+					<div class="course-card-price">
+						<div class="original-price" th:if="${course.isDiscounted() and course.gia_tien != null}"
+							th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></div>
+						<!-- Giá sau giảm hoặc giá bình thường -->
+						<span th:if="${course.gia_tien == null}" class="price free">Miễn phí</span>
+						<span th:if="${course.gia_tien != null and !course.isDiscounted()}" class="price"
+							th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
+						<span th:if="${course.gia_tien != null and course.isDiscounted()}" class="price discounted-price"
+							th:text="${#numbers.formatDecimal(course.getDiscountedPrice(), 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
+					</div>
 				</div>
+				
 				<!-- Thông báo lỗi nếu không có video -->
 				<div th:if="${errorMessage != null}" class="alert alert-warning text-center"
-					style="margin-bottom: 1rem; font-size: 1rem">
+					style="margin: 1rem; font-size: 1rem">
 					<i class="fas fa-exclamation-triangle"></i>
 					<span th:text="${errorMessage}"></span>
 				</div>
-				<div th:if="${isEnrolled}">
-					<a th:href="@{/video-learning/{id}(id=${course.ID_khoa_hoc})}" class="course-card-button purchased"
-						th:if="${!videos.isEmpty()}">Xem ngay</a>
-					<button class="course-card-button purchased disabled" th:if="${videos.isEmpty()}" disabled
-						style="cursor: not-allowed; opacity: 0.7">
-						Xem ngay
-					</button>
-				</div>
-				<div th:unless="${isEnrolled}">
-					<form th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}" method="post">
-						<input type="hidden" name="returnUrl"
-							th:value="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}" />
-						<button type="submit" class="course-card-button">
-							Thêm vào giỏ hàng
+				
+				<div style="padding: 0 2rem 2rem;">
+					<div th:if="${isEnrolled}">
+						<a th:href="@{/video-learning/{id}(id=${course.ID_khoa_hoc})}" class="course-card-button purchased"
+							th:if="${!videos.isEmpty()}">
+							<i class="fas fa-play me-2"></i>Xem ngay
+						</a>
+						<button class="course-card-button purchased disabled" th:if="${videos.isEmpty()}" disabled
+							style="cursor: not-allowed; opacity: 0.7">
+							<i class="fas fa-lock me-2"></i>Xem ngay
 						</button>
-					</form>
+					</div>
+					<div th:unless="${isEnrolled}">
+						<form th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}" method="post">
+							<input type="hidden" name="returnUrl"
+								th:value="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}" />
+							<button type="submit" class="course-card-button">
+								<i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
+							</button>
+						</form>
+					</div>
 				</div>
 			</div>
-			<div class="course-card-details">
-				<div class="course-detail-item">
-					<span class="course-detail-label">Tổng số video</span>
-					<span class="course-detail-value" th:text="${videoCount}"></span>
-				</div>
-				<div class="course-detail-item">
-					<span class="course-detail-label">Cấp độ</span>
-					<span class="course-detail-value">Tất cả trình độ</span>
-				</div>
-				<div class="course-detail-item">
-					<span class="course-detail-label">Truy cập</span>
-					<span class="course-detail-value">Trọn đời</span>
-				</div>
-				<div class="course-detail-item">
-					<span class="course-detail-label">Chứng chỉ</span>
-					<span class="course-detail-value">Có</span>
-				</div>
-			</div>
-		</div>
 		</div>
 	</section>
 
