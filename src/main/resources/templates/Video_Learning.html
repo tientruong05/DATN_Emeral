@@ -1108,7 +1108,10 @@
                   dấu hoàn thành</span
                 >
               </div>
-              <div class="completion-status" th:if="${progressInfo != null and progressInfo.progress() >= 100 and !progressInfo.isCompleted()}">
+              <div
+                class="completion-status"
+                th:if="${progressInfo != null and progressInfo.progress() >= 100 and !progressInfo.isCompleted()}"
+              >
                 <i class="fas fa-trophy"></i>
                 <span>Đã hoàn thành khóa học!</span>
                 <a
@@ -1466,9 +1469,11 @@
         let clickX = e.clientX - rect.left;
         let percentage = clickX / rect.width;
         let seekTime = percentage * player.getDuration();
-        if (seekTime <= maxWatchedTime) {
+        // chỉ cho phép người dùng tìm kiếm trong khoảng thời gian đã xem:
+        /*if (seekTime <= maxWatchedTime) {
           player.seekTo(seekTime, true);
-        }
+        }*/
+        player.seekTo(seekTime, true);
       }
 
       // Adjust volume
@@ -1650,7 +1655,7 @@
           progress: /*[[${progressInfo != null ? progressInfo.progress() : 0}]]*/ 0,
           isCompleted: /*[[${progressInfo != null ? progressInfo.isCompleted() : false}]]*/ false,
           totalVideos: /*[[${videos != null ? videos.size() : 0}]]*/ 0,
-          completedVideos: /*[[${progressInfo != null ? progressInfo.completedVideos() : 0}]]*/ 0
+          completedVideos: /*[[${progressInfo != null ? progressInfo.completedVideos() : 0}]]*/ 0,
         };
 
         // Check if all videos are completed but course is not yet completed
@@ -1661,7 +1666,7 @@
               "🎉 Bạn đã hoàn thành tất cả video! Hãy làm bài kiểm tra để nhận chứng chỉ.",
               "success"
             );
-            
+
             // Show quiz modal after a delay
             setTimeout(() => {
               showQuizModal();
@@ -1676,7 +1681,7 @@
 
         // Initialize mark completed button
         initializeMarkCompletedButton();
-        
+
         // Check course completion status
         checkCourseCompletionStatus();
       });
@@ -1740,7 +1745,7 @@
                     "🎉 Chúc mừng! Bạn đã hoàn thành tất cả video! Hãy làm bài kiểm tra để nhận chứng chỉ.",
                     "success"
                   );
-                  
+
                   // Show quiz modal after a delay
                   setTimeout(() => {
                     showQuizModal();
@@ -1920,7 +1925,7 @@
                     "🎉 Chúc mừng! Bạn đã hoàn thành tất cả video! Hãy làm bài kiểm tra để nhận chứng chỉ.",
                     "success"
                   );
-                  
+
                   // Show quiz modal after a delay
                   setTimeout(() => {
                     showQuizModal();
@@ -2055,13 +2060,13 @@
 
       // Quiz Modal Functions
       function showQuizModal() {
-        const modal = document.getElementById('quizModal');
-        modal.classList.add('show');
+        const modal = document.getElementById("quizModal");
+        modal.classList.add("show");
       }
 
       function closeQuizModal() {
-        const modal = document.getElementById('quizModal');
-        modal.classList.remove('show');
+        const modal = document.getElementById("quizModal");
+        modal.classList.remove("show");
       }
 
       function goToQuiz() {
@@ -2069,11 +2074,13 @@
       }
 
       // Close modal when clicking outside
-      document.getElementById('quizModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-          closeQuizModal();
-        }
-      });
+      document
+        .getElementById("quizModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeQuizModal();
+          }
+        });
 
       // Cleanup on page unload
       window.addEventListener("beforeunload", function () {
@@ -2093,11 +2100,14 @@
           <p>Hãy làm bài kiểm tra để nhận chứng chỉ hoàn thành khóa học.</p>
         </div>
         <div class="quiz-modal-buttons">
-          <button class="quiz-modal-btn secondary" onclick="closeQuizModal()">Để sau</button>
-          <button class="quiz-modal-btn primary" onclick="goToQuiz()">Làm bài kiểm tra</button>
+          <button class="quiz-modal-btn secondary" onclick="closeQuizModal()">
+            Để sau
+          </button>
+          <button class="quiz-modal-btn primary" onclick="goToQuiz()">
+            Làm bài kiểm tra
+          </button>
         </div>
       </div>
     </div>
-
   </body>
 </html>
