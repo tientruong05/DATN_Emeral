@@ -8,294 +8,206 @@
 	
  
     <style>
-		@page {
-		    size: A4 landscape;
-		    margin: 0;
-		  }
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-            font-family: "Roboto", sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column; /* Thay đổi hướng thành cột */
-        }
+@page {
+    size: A4 landscape;
+    margin: 0;
+}
 
-        .certificate {
-            width: 1000px;
-            height: 580px;
-            background: white;
-            position: relative;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            overflow: visible;
-        }
+html, body {
+    width: 100%;
+    height: auto !important; /* Dùng auto để nội dung đẩy chiều cao nếu cần */
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+    font-family: "Roboto", sans-serif;
+    /* Loại bỏ display: flex; align-items: center; justify-content: center; từ html, body nếu đã có ở body riêng */
+}
 
-        .border-decoration {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: 15px solid transparent;
-            border-image: repeating-linear-gradient(
-                45deg,
-                #4A5568 0px,
-                #4A5568 10px,
-                #2D3748 10px,
-                #2D3748 20px,
-                #4A5568 20px,
-                #4A5568 30px,
-                #E2E8F0 30px,
-                #E2E8F0 40px
-            ) 15;
-        }
+body {
+    display: flex;
+    justify-content: center; /* Căn giữa certificate theo chiều ngang */
+    align-items: center; /* Căn giữa certificate theo chiều dọc */
+    min-height: 100vh; /* Đảm bảo body có đủ chiều cao để căn giữa */
+    flex-direction: column; /* Đảm bảo các phần tử xếp dọc nếu có nhiều hơn 1 */
+    margin: 0; /* Đảm bảo body không có margin mặc định */
+}
 
-        .ornamental-corners {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, #4A5568, #2D3748);
-            border-radius: 50%;
-        }
+.certificate {
+    width: 1122.52px;  /* Chuẩn A4 landscape ở 96dpi */
+    height: 793.7px;
+    background-image: url('../upload/certificate.jpg'); /* Đảm bảo đường dẫn đúng */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: avoid;
+    /* border: 1px dashed blue; */ /* Giữ lại để debug, sau đó xóa */
 
-        .corner-tl { top: 20px; left: 20px; }
-        .corner-tr { top: 20px; right: 20px; }
-        .corner-bl { bottom: 20px; left: 20px; }
-        .corner-br { bottom: 20px; right: 20px; }
+    /* Không cần margin: auto cho .certificate nữa vì body đã căn giữa nó */
+}
 
-        .ornamental-corners::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            background: #E2E8F0;
-            border-radius: 50%;
-        }
+/* Các phần bên trong chứng chỉ */
+.certificate-title {
+    font-family: 'Playfair Display', serif; /* Đảm bảo font này được nhúng */
+    font-size: 32px;
+    font-weight: 700;
+    color: #D4AF37;
+    text-align: center;
+    margin: 150px auto 8px auto; /* Căn giữa block này */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block; /* Đảm bảo là block để margin auto có tác dụng */
+}
 
-        .ornamental-corners::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            background: #4A5568;
-            border-radius: 50%;
-        }
+.certificate-subtitle {
+    font-family: 'Roboto', serif;
+    font-size: 12px;
+    color: #D4AF37;
+    text-align: center;
+    font-style: italic;
+    margin: 0 auto 12px auto; /* Căn giữa block này */
+    display: block; /* Đảm bảo là block */
+}
 
-        .devnest-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 50px 0 20px 0;
-        }
+.recipient-name {
+    font-family: 'Mea Culpa', serif; /* Đảm bảo font này được nhúng */
+    font-size: 50px;
+    color: #2D3748;
+    text-align: center;
+    margin: 20px auto; /* Sửa đổi: Đặt margin-left và margin-right thành auto */
+    font-weight: 400;
+    font-style: italic;
 
-        .logo-icon {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, #00D4FF, #00A8CC);
-            margin-right: 10px;
-            position: relative;
-            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    white-space: nowrap; /* Giữ nguyên để ngăn xuống dòng */
+    overflow: visible; /* Cho phép nội dung tràn ra khỏi box nếu quá dài */
+ /* Giới hạn chiều rộng để không chạm vào lề quá sát */
+    display: block; /* Đảm bảo là block để margin auto có tác dụng */
+    /* border: 1px dashed red; */ /* Giữ lại để debug, sau đó xóa */
+}
 
-        .logo-icon::before {
-            content: '\003C/\003E';
-            color: #2D1B69;
-            font-weight: bold;
-            font-size: 10px;
-        }
+.completion-text {
+    font-family: 'Roboto', serif;
+    font-size: 14px;
+    color: #4A5568;
+    text-align: center;
+    margin: 8px auto 4px auto; /* Căn giữa block này */
+    display: block; /* Đảm bảo là block */
+}
 
-        .logo-text {
-            font-family: 'Roboto', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: #00D4FF;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+.course-name {
+    font-size: 35px;
+    font-weight: 600;
+    color: #E53E3E;
+    text-align: center; /* Quan trọng để căn giữa các dòng text */
+    margin: 4px auto 12px auto; /* Căn giữa block này */
+    font-family: 'Merri'; /* Đảm bảo font này được nhúng (hoặc Pattaya nếu muốn) */
 
-        .certificate-title {
-            font-family: 'Roboto', serif;
-            font-size: 32px;
-            font-weight: 700;
-            color: #D4AF37;
-            text-align: center;
-            margin: 25px 0 8px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+    /* XÓA white-space: nowrap; để cho phép xuống dòng */
+    /* overflow: visible; */ /* Mặc định là visible, không cần khai báo tường minh */
+ /* Giới hạn chiều rộng để text xuống dòng bên trong phạm vi này */
+    display: block; /* Đảm bảo là block để margin auto có tác dụng */
+    /* border: 1px dashed black; */ /* Giữ lại để debug, sau đó xóa */
+}
 
-        .certificate-subtitle {
-            font-size: 12px;
-            color: #D4AF37;
-            text-align: center;
-            font-style: italic;
-            margin-bottom: 12px;
-        }
+.course-name-en {
+    font-size: 12px;
+    color: #718096;
+    text-align: center;
+    font-style: italic;
+    margin: 0 auto 15px auto; /* Căn giữa block này */
+    display: block; /* Đảm bảo là block */
+}
 
-        .recipient-name {
-            font-family: 'Mea Culpa', serif;
-            font-size: 50px;
-            color: #2D3748;
-            text-align: center;
-            margin: 20px 0;
-            font-weight: 400;
-            font-style: italic;
-        }
+.center-ornament {
+    text-align: center;
+    margin: 0 auto; /* Căn giữa block này */
+    color: #D4AF37;
+    font-size: 20px;
+    display: block; /* Đảm bảo là block */
+}
 
-        .completion-text {
-            font-size: 14px;
-            color: #4A5568;
-            text-align: center;
-            margin: 8px 0 4px;
-        }
-
-        .course-name {
-            font-size: 35px;
-            font-weight: 600;
-            color: #E53E3E;
-            text-align: center;
-            margin: 4px 0 12px;
-            font-family: Pattaya;
-        }
-
-        .course-name-en {
-            font-size: 12px;
-            color: #718096;
-            text-align: center;
-            font-style: italic;
-            margin-bottom: 15px;
-        }
-
-        .center-ornament {
-            text-align: center;
-            margin: 20px 0;
-            color: #D4AF37;
-            font-size: 20px;
-        }
-
-        .bottom-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 120px;
-            margin-top: 40px;
-            position: absolute;
-            bottom: 120px;
-            left: 0;
-            right: 0;
-        }
-
-        .date-section {
-            font-size: 16px;
-            color: #D4AF37;
-            text-align: left;
-        }
-
-        .date-section strong {
-            font-weight: 600;
-        }
-
-        .team-section {
-            text-align: right;
-        }
-
-        .team-section h4 {
-            margin: 0 0 5px 0;
-            font-size: 14px;
-            color: #4A5568;
-            font-weight: 500;
-        }
-
-        .team-logo {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-        }
-
-        .team-logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #00D4FF, #00A8CC);
-            margin-right: 12px;
-            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .team-logo-icon::before {
-            content: '\003C/\003E';
-            color: #2D1B69;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .team-logo-text {
-            font-family: 'Roboto', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: #00D4FF;
-        }
-.watermark {
+.bottom-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 100px;
     position: absolute;
-    top: 54%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-35deg);
-    font-size: 180px;
-    color: #f5fafd;
-    font-weight: bold;
-    z-index: 0;
-    font-family: 'Playfair Display', serif;
-    pointer-events: none;
-    user-select: none;
-    letter-spacing: 10px;
+    bottom: 150px;
+    left: 0;
+    right: 0;
+    width: auto; /* Để padding và justify-content hoạt động đúng */
 }
-      @font-face {
-    font-family: 'Roboto';
-    src: url('Roboto-Regular.ttf') format('truetype');
-}
-@font-face {
-    font-family: 'Mea Culpa';
-    src: url('MeaCulpa-Regular.ttf') format('truetype');
-}
-@font-face {
-    font-family: 'Pattaya';
-    src: url('Pattaya-Regular.ttf') format('truetype');
-}
-@font-face {
-    font-family: 'Playfair Display';
-    src: url('PlayfairDisplay-VariableFont_wght.ttf') format('truetype');
-}
-        
 
+.date-section {
+    font-size: 16px;
+    color: #D4AF37;
+    text-align: left; /* Giữ nguyên căn trái */
+}
+
+.date-section strong {
+    font-weight: 600;
+}
+
+.team-section {
+    text-align: right; /* Giữ nguyên căn phải */
+}
+
+.team-section h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #4A5568;
+    font-weight: 500;
+}
+
+.team-logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Giữ nguyên căn phải */
+}
+
+.team-logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00D4FF, #00A8CC);
+    margin-right: 12px;
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.team-logo-icon::before {
+    content: '\003C/\003E';
+    color: #2D1B69;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.team-logo-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #00D4FF;
+}
+    
     </style>
 </head>
 <body>
 
-    <div class="certificate">
-        <div class="border-decoration"></div>
+   <div class="certificate">
+        <div class="border-decoration"  style="visibility: hidden;"></div>
         
-        <div class="ornamental-corners corner-tl"></div>
-        <div class="ornamental-corners corner-tr"></div>
-        <div class="ornamental-corners corner-bl"></div>
-        <div class="ornamental-corners corner-br"></div>
-        <div class="watermark">DEVNEST</div>
-        <div class="devnest-logo">
-            <div class="logo-icon"></div>
-            <div class="logo-text">DevNest Learning</div>
+        <div class="ornamental-corners corner-tl" style="visibility: hidden;"></div>
+        <div class="ornamental-corners corner-tr" style="visibility: hidden;"></div>
+        <div class="ornamental-corners corner-bl" style="visibility: hidden;"></div>
+        <div class="ornamental-corners corner-br" style="visibility: hidden;"></div>
+        <div class="watermark" style="visibility: hidden;">DEVNEST</div>
+        <div class="devnest-logo" style="visibility: hidden;">
+            <div class="logo-icon" style="visibility: hidden;"></div>
+            <div class="logo-text" style="visibility: hidden;">DevNest Learning</div>
         </div>
 
         <div class="certificate-title">CHỨNG CHỈ HOÀN THÀNH</div>
@@ -306,14 +218,14 @@
         <div class="recipient-name" th:text="${user.hoTen}"></div>
 
         <div class="completion-text">đã hoàn thành thành công khóa học</div>
-        <div class="completion-text" style="font-size: 12px; color: #718096; font-style: italic;">
-        <!-- has successfully completed the course -->
-        </div>
+        <!--<div class="completion-text" style="font-size: 12px; color: #718096; font-style: italic;">
+         has successfully completed the course 
+        </div>-->
 
         <div class="course-name" th:text="${course.ten_khoa_hoc}">Kỹ năng Giao tiếp Chuyên nghiệp</div>
         <!-- <div class="course-name-en">Professional Communication Skills</div> -->
 
-        <div class="center-ornament">❦ ❦ ❦</div>
+        <div class="center-ornament" style="visibility: hidden;">❦ ❦ ❦</div>
 
         <div class="bottom-section">
             <div class="date-section">
@@ -322,11 +234,11 @@
                 
             </div>
             
-            <div class="team-section">
-                <h4>DEVNEST TEAM</h4>
-                <div class="team-logo">
-                    <div class="team-logo-icon"></div>
-                    <div class="team-logo-text">DEVNEST</div>
+            <div class="team-section" style="visibility: hidden;">
+                <h4 style="visibility: hidden;">DEVNEST TEAM</h4>
+                <div class="team-logo" style="visibility: hidden;">
+                    <div class="team-logo-icon" style="visibility: hidden;"></div>
+                    <div class="team-logo-text" style="visibility: hidden;">DEVNEST</div>
                 </div>
             </div>
         </div>

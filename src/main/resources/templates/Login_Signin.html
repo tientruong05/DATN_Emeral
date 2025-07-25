@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html
-  th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}"
-  xmlns:th="http://www.thymeleaf.org"
-  lang="vi"
->
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Đăng Nhập/Đăng Ký - DEVNEST LEARNING</title>
     <style>
       /* Giữ nguyên toàn bộ CSS của bạn */
-      body {
+      
+	  body {
         display: flex;
         justify-content: center;
         align-items: flex-start;
@@ -328,7 +325,7 @@
               name="email"
               placeholder="Nhập email"
               required
-              value="tientmpy00023@gmail.com"
+              value=""
             />
           </div>
           <div class="form-group">
@@ -342,7 +339,7 @@
             />
           </div>
           <div class="container">
-            <a href="/forgotPass" class="forgot-pass">Quên mật khẩu?</a>
+            <a href="/forgot-password" class="forgot-pass">Quên mật khẩu?</a>
           </div>
 
           <button type="submit" class="submit-btn">Đăng nhập</button>

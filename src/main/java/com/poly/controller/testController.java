@@ -71,11 +71,6 @@ public class testController {
 		return "Login_Signin";
 	}
 
-	@RequestMapping("payment")
-	public String payment() {
-		return "Payment";
-	}
-
 	@RequestMapping("Statistic_Revenue")
 	public String Statistic_Revenue() {
 		return "Statistic_Revenue";
@@ -90,20 +85,39 @@ public class testController {
 	public String Statistic_Certificate() {
 		return "Statistic_Certificate";
 	}
+
 	@RequestMapping("CourseInProgess")
 	public String CourseInProgess() {
 		return "CourseInProgess";
 	}
+
 	@RequestMapping("history-payment")
 	public String History_Payment() {
 		return "History_Payment";
 	}
+
 	@RequestMapping("Video_Learning")
 	public String Video_Learning() {
 		return "Video_Learning";
 	}
+
 	@RequestMapping("Quiz")
 	public String Quiz() {
 		return "Quiz";
+	}
+
+	@RequestMapping("About")
+	public String About() {
+		return "About";
+	}
+
+	@RequestMapping("Policy")
+	public String Policy() {
+		return "Policy";
+	}
+
+	@RequestMapping("Terms")
+	public String Terms() {
+		return "Terms";
 	}
 }

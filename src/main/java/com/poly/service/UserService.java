@@ -7,13 +7,17 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,11 +29,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    // @Autowired
+    // private BCryptPasswordEncoder passwordEncoder; // Thêm để băm mật khẩu
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     // Thêm phương thức này vào UserService
     public Page<User> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -40,35 +47,36 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        // Kiểm tra email trùng
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email đã tồn tại, vui lòng nhập email khác");
         }
-        // Gán giá trị mặc định cho tenNguoiDung nếu null
-        if (user.getTenNguoiDung() == null) {
-            user.setTenNguoiDung(user.getEmail().split("@")[0]); // Lấy phần trước @ của email
+        if (user.getTenNguoiDung() == null || user.getTenNguoiDung().trim().isEmpty()) {
+            user.setTenNguoiDung(user.getEmail().split("@")[0]);
         }
-        // Không gán giá trị cho so_dien_thoai, giữ NULL nếu không được cung cấp
+        // Đảm bảo mật khẩu được băm trước khi lưu
+        if (user.getMatKhau() != null && !user.getMatKhau().isEmpty() && !user.getMatKhau().startsWith("$2a$")) {
+            user.setMatKhau(passwordEncoder.encode(user.getMatKhau()));
+        }
         return userRepository.save(user);
     }
 
     public User updateUser(Long id, User userDetails) {
         User user = getUserById(id);
-        // Kiểm tra email trùng (bỏ qua nếu email không thay đổi)
         if (!user.getEmail().equals(userDetails.getEmail()) && userRepository.existsByEmail(userDetails.getEmail())) {
             throw new RuntimeException("Email đã tồn tại, vui lòng nhập email khác");
         }
-        // Gán giá trị mặc định cho tenNguoiDung nếu null
         if (userDetails.getTenNguoiDung() == null) {
             userDetails.setTenNguoiDung(userDetails.getEmail().split("@")[0]);
         }
-        // Không gán giá trị cho so_dien_thoai, giữ NULL nếu không được cung cấp
         user.setTenNguoiDung(userDetails.getTenNguoiDung());
         user.setHoTen(userDetails.getHoTen());
         user.setEmail(userDetails.getEmail());
-        user.setMatKhau(userDetails.getMatKhau());
+        user.setMatKhau(userDetails.getMatKhau()); // Lưu mật khẩu dạng văn bản thô
         user.setVaiTro(userDetails.getVaiTro());
         user.setStatus(userDetails.getStatus());
+        user.setNgaySinh(userDetails.getNgaySinh());
+        user.setDiaChi(userDetails.getDiaChi());
+        user.setSoDienThoai(userDetails.getSoDienThoai());
         return userRepository.save(user);
     }
 
@@ -85,7 +93,6 @@ public class UserService {
         return userRepository.findByTenNguoiDung(username);
     }
 
-    // Thêm phương thức nhập Excel
     public String importUsersFromExcel(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File Excel không được để trống!");
@@ -134,8 +141,15 @@ public class UserService {
                     user.setTenNguoiDung(tenNguoiDung);
                     user.setHoTen(hoTen);
                     user.setEmail(email);
-                    user.setMatKhau(matKhau); // Lưu mật khẩu thô, vì không yêu cầu mã hóa
-                    user.setNgaySinh(ngaySinh);
+                    user.setMatKhau(passwordEncoder.encode(matKhau)); // Băm mật khẩu
+                    // Xử lý ngay_sinh
+                    if (ngaySinh != null && !ngaySinh.trim().isEmpty()) {
+                        try {
+                            user.setNgaySinh(parseDate(ngaySinh));
+                        } catch (DateTimeParseException e) {
+                            throw new IllegalArgumentException("Ngày sinh không hợp lệ tại dòng " + rowNum + ": " + ngaySinh);
+                        }
+                    }
                     user.setDiaChi(diaChi);
                     user.setSoDienThoai(soDienThoai);
 
@@ -149,7 +163,7 @@ public class UserService {
                             throw new IllegalArgumentException("Vai trò phải là 'Học viên' hoặc 'Quản trị viên' tại dòng " + rowNum);
                         }
                     } else {
-                        user.setVaiTro(false); // Mặc định là Học viên
+                        user.setVaiTro(false);
                     }
 
                     // Xử lý trạng thái
@@ -162,7 +176,7 @@ public class UserService {
                             throw new IllegalArgumentException("Trạng thái phải là 'Hoạt động' hoặc 'Không hoạt động' tại dòng " + rowNum);
                         }
                     } else {
-                        user.setStatus(true); // Mặc định là Hoạt động
+                        user.setStatus(true);
                     }
 
                     users.add(user);
@@ -177,7 +191,7 @@ public class UserService {
         int successCount = 0;
         for (User user : users) {
             try {
-                createUser(user); // Gọi createUser để lưu user
+                createUser(user);
                 successCount++;
             } catch (RuntimeException e) {
                 errors.add("Lỗi khi lưu user " + user.getEmail() + ": " + e.getMessage());
@@ -191,13 +205,11 @@ public class UserService {
         }
     }
 
-    // Thêm phương thức xuất Excel
     public byte[] exportUsersToExcel() throws IOException {
         List<User> users = userRepository.findAll();
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Users");
 
-        // Tạo header
         Row headerRow = sheet.createRow(0);
         String[] columns = {"ID", "Tên người dùng", "Họ tên", "Email", "Mật khẩu", "Vai trò", "Trạng thái", "Ngày sinh", "Địa chỉ", "Số điện thoại"};
         for (int i = 0; i < columns.length; i++) {
@@ -205,7 +217,6 @@ public class UserService {
             cell.setCellValue(columns[i]);
         }
 
-        // Điền dữ liệu
         int rowNum = 1;
         for (User user : users) {
             Row row = sheet.createRow(rowNum++);
@@ -216,24 +227,37 @@ public class UserService {
             row.createCell(4).setCellValue(""); // Không xuất mật khẩu
             row.createCell(5).setCellValue(user.getVaiTro() != null && user.getVaiTro() ? "Quản trị viên" : "Học viên");
             row.createCell(6).setCellValue(user.getStatus() != null && user.getStatus() ? "Hoạt động" : "Không hoạt động");
-            row.createCell(7).setCellValue(user.getNgaySinh() != null ? user.getNgaySinh() : "");
+            row.createCell(7).setCellValue(user.getNgaySinh() != null ? user.getNgaySinh().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "");
             row.createCell(8).setCellValue(user.getDiaChi() != null ? user.getDiaChi() : "");
             row.createCell(9).setCellValue(user.getSoDienThoai() != null ? user.getSoDienThoai() : "");
         }
 
-        // Tự động điều chỉnh độ rộng cột
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
-        // Ghi workbook vào byte array
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         workbook.write(out);
         workbook.close();
         return out.toByteArray();
     }
 
-    // Phương thức hỗ trợ để lấy giá trị ô trong Excel
+    private LocalDate parseDate(String dateStr) throws DateTimeParseException {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
+        }
+        String[] formats = {"dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
+        for (String format : formats) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+                return LocalDate.parse(dateStr, formatter);
+            } catch (DateTimeParseException e) {
+                // Thử định dạng tiếp theo
+            }
+        }
+        throw new DateTimeParseException("Không thể phân tích ngày: " + dateStr, dateStr, 0);
+    }
+
     private String getCellValue(Cell cell) {
         if (cell == null) {
             return null;
@@ -243,7 +267,14 @@ public class UserService {
                 return cell.getStringCellValue().trim();
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
-                    return new SimpleDateFormat("dd/MM/yyyy").format(cell.getDateCellValue());
+                    try {
+                        LocalDate date = cell.getDateCellValue().toInstant()
+                                .atZone(java.time.ZoneId.systemDefault())
+                                .toLocalDate();
+                        return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date);
+                    } catch (Exception e) {
+                        return null;
+                    }
                 }
                 return String.valueOf((long) cell.getNumericCellValue());
             case BOOLEAN:

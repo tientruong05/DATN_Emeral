@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 public class PaymentRouteController {
-    
+
     /**
      * Alias cho /payment/history để tương thích với URL trong header
      */
@@ -17,4 +17,4 @@ public class PaymentRouteController {
     public String historyPaymentAlias() {
         return "redirect:/payment/history";
     }
-} 
+}

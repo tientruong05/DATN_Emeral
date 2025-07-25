@@ -1,20 +1,24 @@
 package com.poly.controller;
 
-import java.util.Base64;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder; // Import Spring Security's PasswordEncoder
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.core.Authentication; // Thêm dòng này
+import org.springframework.security.core.context.SecurityContextHolder; // Thêm dòng này
+import org.springframework.security.core.userdetails.UserDetails; // Thêm dòng này (nếu bạn dùng UserDetails)
 
 import com.poly.entity.User;
 import com.poly.service.UserService;
@@ -27,6 +31,7 @@ import jakarta.validation.ConstraintViolationException;
 
 @Controller
 public class LoginController {
+
     @Autowired
     UserService usrSer;
 
@@ -36,10 +41,12 @@ public class LoginController {
     @Autowired
     JavaMailSender mailSender;
 
-    // Lưu mã xác nhận tạm thời
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Inject the PasswordEncoder bean
+
+    // Temporary storage for reset codes
     private final ConcurrentHashMap<String, ResetToken> resetTokens = new ConcurrentHashMap<>();
 
-    // Lớp nội bộ để lưu mã xác nhận và thời gian hết hạn
     private static class ResetToken {
         String code;
         LocalDateTime expiry;
@@ -53,36 +60,29 @@ public class LoginController {
     }
 
     @GetMapping("/Login_Sigin")
-    public String loginForm(Model model) {
-        model.addAttribute("error", null);
+    public String loginForm(Model model,
+            @RequestParam(value = "error", required = false) String error,
+            @RequestParam(value = "logout", required = false) String logout,
+            Authentication authentication) {
+        // Nếu đã đăng nhập thì chuyển về trang index
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+            return "redirect:/index";
+        }
+        if (error != null) {
+            model.addAttribute("error", "Email hoặc mật khẩu không đúng, hoặc tài khoản chưa được kích hoạt.");
+        }
+        if (logout != null) {
+            model.addAttribute("success", "Bạn đã đăng xuất thành công.");
+        }
         model.addAttribute("cartCount", 0);
         return "Login_Signin";
     }
 
-    @PostMapping("/login")
-    public String loginUser(@RequestParam("email") String email,
-            @RequestParam("password") String password,
-            Model model, HttpSession session) {
-        Optional<User> userLogin = usrSer.getUserByEmail(email);
-
-        if (userLogin.isPresent()) {
-            User user = userLogin.get();
-            if (BCrypt.checkpw(password, user.getMatKhau()) && user.getStatus()) {
-                session.setAttribute("user", user);
-                int cartCount = cartService.getCartItemsByUser(user.getIdNguoiDung()).size();
-                session.setAttribute("cartCount", cartCount);
-                model.addAttribute("cartCount", cartCount);
-                return "redirect:/index";
-            } else {
-                model.addAttribute("error", "Sai mật khẩu hoặc tài khoản chưa được kích hoạt.");
-                model.addAttribute("cartCount", 0);
-            }
-        } else {
-            model.addAttribute("error", "Email không tồn tại trong hệ thống.");
-            model.addAttribute("cartCount", 0);
-        }
-        return "Login_Signin";
-    }
+    // REMOVE THIS @PostMapping("/login") METHOD
+    // Spring Security's formLogin will handle the POST /login request
+    // automatically.
+    // It will redirect to defaultSuccessUrl on success or failureUrl on failure.
 
     @PostMapping("/register")
     public String registerUser(@RequestParam("fullName") String fullName,
@@ -106,10 +106,14 @@ public class LoginController {
             User newUser = new User();
             newUser.setHoTen(fullName);
             newUser.setEmail(email);
-            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-            newUser.setMatKhau(hashedPassword);
-            newUser.setVaiTroAsString("Học viên");
-            newUser.setStatus(true);
+            String generatedTenNguoiDung = email.split("@")[0];
+            newUser.setTenNguoiDung(generatedTenNguoiDung + "_" + new Random().nextInt(10000)); // Adds a number 0-9999
+                                                                                                // for uniqueness
+
+            // Use the injected PasswordEncoder to hash the password
+            newUser.setMatKhau(passwordEncoder.encode(password));
+            newUser.setVaiTro(false); // Default to "Học viên" (User)
+            newUser.setStatus(true); // Account is active by default
 
             usrSer.createUser(newUser);
 
@@ -129,7 +133,14 @@ public class LoginController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();
+        // Spring Security handles logout, this method will be intercepted by it.
+        // You can keep it if you need to add custom logic *before* Spring Security's
+        // logout
+        // or just rely entirely on Spring Security's logout. For simple cases, you can
+        // remove this method
+        // as Spring Security's SecurityConfig logout setup is sufficient.
+        // For now, we'll keep it as a placeholder and let Spring Security's
+        // SecurityFilterChain handle the actual invalidation.
         return "redirect:/index";
     }
 
@@ -200,7 +211,7 @@ public class LoginController {
         }
 
         User user = userOpt.get();
-        user.setMatKhau(BCrypt.hashpw(password, BCrypt.gensalt()));
+        user.setMatKhau(passwordEncoder.encode(password)); // Use PasswordEncoder here
         usrSer.updateUser(user.getIdNguoiDung(), user);
         resetTokens.remove(email);
 
@@ -249,12 +260,33 @@ public class LoginController {
     }
 
     @GetMapping("/change-password-authenticated")
-    public String showChangePasswordAuthenticatedForm(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
+    public String showChangePasswordAuthenticatedForm(Model model) { // Remove HttpSession session parameter
+        // Get authentication object from SecurityContextHolder
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if user is authenticated and is a UserDetails instance (which it should
+        // be if logged in via Spring Security)
+        if (authentication == null || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof UserDetails)) {
             model.addAttribute("error", "Vui lòng đăng nhập để đổi mật khẩu!");
+            return "Login_Signin"; // Redirect to login if not authenticated
+        }
+
+        // Get the email (username) from the authenticated principal
+        String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+        // Retrieve the full User object from your database using the email
+        Optional<User> userOpt = usrSer.getUserByEmail(userEmail);
+        if (!userOpt.isPresent()) {
+            // This scenario is unlikely if authentication succeeded, but good for
+            // robustness
+            model.addAttribute("error", "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.");
             return "Login_Signin";
         }
+        User user = userOpt.get(); // You now have the actual User object from the database
+
+        // You might want to pass the user's current email to the form if needed
+        model.addAttribute("userEmail", user.getEmail()); // For displaying purposes on the form if desired
         model.addAttribute("error", null);
         model.addAttribute("success", null);
         return "Change_Password_Authenticated";
@@ -264,14 +296,20 @@ public class LoginController {
     public String changePasswordAuthenticated(@RequestParam String currentPassword,
             @RequestParam String newPassword,
             @RequestParam String confirmPassword,
-            Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            model.addAttribute("error", "Vui lòng đăng nhập để đổi mật khẩu!");
-            return "Login_Signin";
+            Model model) { // Bỏ HttpSession session
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
+            return "redirect:/Login_Sigin";
         }
+        String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
-        if (!BCrypt.checkpw(currentPassword, user.getMatKhau())) {
+        Optional<User> userOpt = usrSer.getUserByEmail(userEmail);
+        if (!userOpt.isPresent()) {
+            return "redirect:/Login_Sigin"; // User không tồn tại sau khi xác thực
+        }
+        User user = userOpt.get();
+
+        if (!passwordEncoder.matches(currentPassword, user.getMatKhau())) {
             model.addAttribute("error", "Mật khẩu hiện tại không đúng!");
             return "Change_Password_Authenticated";
         }
@@ -286,10 +324,14 @@ public class LoginController {
             return "Change_Password_Authenticated";
         }
 
-        user.setMatKhau(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+        user.setMatKhau(passwordEncoder.encode(newPassword));
         usrSer.updateUser(user.getIdNguoiDung(), user);
-        session.invalidate(); // Đăng xuất người dùng
+
+        // Đặt lại Authentication trong SecurityContext để phản ánh mật khẩu mới băm
+        // (không bắt buộc nhưng là cách tốt)
+        // Hoặc đơn giản là buộc người dùng đăng xuất và đăng nhập lại
+        SecurityContextHolder.clearContext(); // Xóa context hiện tại sau khi đổi mật khẩu
         model.addAttribute("success", "Mật khẩu đã được đổi thành công! Vui lòng đăng nhập lại.");
-        return "Login_Signin";
+        return "Login_Signin"; // Chuyển hướng đến trang đăng nhập
     }
 }

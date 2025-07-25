@@ -27,9 +27,9 @@ public class Course {
 
     @Column(name = "ten_khoa_hoc", nullable = false)
     private String ten_khoa_hoc;
-    
+
     private String mo_ta;
-    
+
     @Column(name = "diem_dat", nullable = false)
     private Double diem_dat;
 
@@ -43,7 +43,6 @@ public class Course {
 
     @Column(name = "Status")
     private boolean status = true;
-
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonBackReference // Ngăn serialize ngược từ Course -> Questions
@@ -60,8 +59,8 @@ public class Course {
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<DiscountDetail> discountDetails;
-    
- // Tính giá sau khi giảm giá
+
+    // Tính giá sau khi giảm giá
     @Transient
     public Double getDiscountedPrice() {
         Double percent = getDiscountPercentage();
@@ -70,7 +69,6 @@ public class Course {
         }
         return gia_tien;
     }
-
 
     @Transient
     public Double getDiscountPercentage() {
@@ -116,11 +114,22 @@ public class Course {
         return latest != null ? latest.getDiscount().getDiscount_value() : null;
     }
 
-
     // Kiểm tra có giảm giá hay không
     @Transient
     public boolean isDiscounted() {
         return getDiscountPercentage() != null;
     }
-    
+
+    @Transient
+    public String getShortMo_ta() {
+        if (mo_ta != null) {
+            // Tìm vị trí của dấu chấm đầu tiên
+            int index = mo_ta.indexOf('.');
+            if (index != -1) {
+                return mo_ta.substring(0, index + 1); // Trả về từ đầu đến dấu chấm
+            }
+            return mo_ta; // Nếu không có dấu chấm, trả về toàn bộ mô tả
+        }
+        return ""; // Nếu mô tả null, trả về chuỗi rỗng
+    }
 }

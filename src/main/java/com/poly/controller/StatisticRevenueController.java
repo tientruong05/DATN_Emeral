@@ -16,7 +16,7 @@ public class StatisticRevenueController {
     @Autowired
     private RevenueService revenueService;
 
-    @GetMapping("/statistic-revenue")
+    @GetMapping("/Statistic_Revenue")
     public String statisticRevenue(
             @RequestParam(defaultValue = "7days") String period,
             Model model) {
