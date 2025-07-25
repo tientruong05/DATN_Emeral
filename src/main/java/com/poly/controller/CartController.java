@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -43,10 +46,23 @@ public class CartController {
     @Value("${payos.cancelUrl}")
     private String cancelUrl;
 
+    private User getAuthenticatedUser(HttpSession session) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof com.poly.service.CustomUserDetails customUserDetails) {
+                User user = customUserDetails.getUser();
+                session.setAttribute("user", user); // đồng bộ lại session nếu cần
+                return user;
+            }
+        }
+        return (User) session.getAttribute("user");
+    }
+
     @GetMapping
     public String viewCart(Model model, HttpSession session,
             @RequestParam(value = "logout", required = false) String logout) {
-        User user = (User) session.getAttribute("user");
+        User user = getAuthenticatedUser(session);
         List<Cart> cartItems = List.of();
         int cartCount = 0;
         double totalPrice = 0;
@@ -59,14 +75,7 @@ public class CartController {
                     .mapToDouble(Cart::getPrice)
                     .sum();
         } else {
-            if ("true".equals(logout)) {
-                session.setAttribute("cartCount", 0);
-                model.addAttribute("cartCount", 0);
-                model.addAttribute("message", "Bạn đã đăng xuất. Giỏ hàng đã được làm mới.");
-            } else {
-                session.setAttribute("cartCount", 0);
-                model.addAttribute("cartCount", 0);
-            }
+            session.setAttribute("cartCount", 0);
         }
 
         session.setAttribute("cartCount", cartCount);
@@ -75,19 +84,15 @@ public class CartController {
         model.addAttribute("totalPrice", totalPrice);
         model.addAttribute("suggestedCourses", courseService.getRandomCourses(4));
 
-        System.out.println("ViewCart - Session ID: " + session.getId() + ", User: "
-                + (user != null ? user.getIdNguoiDung() : "null") + ", CartCount: " + cartCount + ", Logout: "
-                + logout);
-
         return "Cart";
     }
 
     @PostMapping("/add/{courseId}")
-    public String addToCart(@PathVariable Long courseId, 
-                           HttpSession session, 
-                           Model model,
-                           @RequestParam(value = "returnUrl", required = false) String returnUrl) {
-        User user = (User) session.getAttribute("user");
+    public String addToCart(@PathVariable Long courseId,
+            HttpSession session,
+            Model model,
+            @RequestParam(value = "returnUrl", required = false) String returnUrl) {
+        User user = getAuthenticatedUser(session);
         if (user == null) {
             session.setAttribute("cartCount", 0);
             model.addAttribute("error", "Vui lòng đăng nhập để thêm vào giỏ hàng.");
@@ -104,12 +109,12 @@ public class CartController {
     }
 
     @PostMapping("/course/buy/{courseId}")
-    public String buyCoursePost(@PathVariable Long courseId, 
-                               HttpSession session, 
-                               Model model,
-                               @RequestParam(value = "returnUrl", required = false) String returnUrl,
-                               HttpServletRequest request) {
-        User user = (User) session.getAttribute("user");
+    public String buyCoursePost(@PathVariable Long courseId,
+            HttpSession session,
+            Model model,
+            @RequestParam(value = "returnUrl", required = false) String returnUrl,
+            HttpServletRequest request) {
+        User user = getAuthenticatedUser(session); // Sửa lại dòng này
         if (user == null) {
             session.setAttribute("cartCount", 0);
             model.addAttribute("error", "Vui lòng đăng nhập để mua khóa học.");
@@ -131,12 +136,12 @@ public class CartController {
     }
 
     @GetMapping("/course/buy/{courseId}")
-    public String buyCourseGet(@PathVariable Long courseId, 
-                              HttpSession session, 
-                              Model model,
-                              @RequestParam(value = "returnUrl", required = false) String returnUrl,
-                              HttpServletRequest request) {
-        User user = (User) session.getAttribute("user");
+    public String buyCourseGet(@PathVariable Long courseId,
+            HttpSession session,
+            Model model,
+            @RequestParam(value = "returnUrl", required = false) String returnUrl,
+            HttpServletRequest request) {
+        User user = getAuthenticatedUser(session); // Sửa lại dòng này
         if (user == null) {
             session.setAttribute("cartCount", 0);
             model.addAttribute("error", "Vui lòng đăng nhập để mua khóa học.");
@@ -146,7 +151,7 @@ public class CartController {
             cartService.addToCart(user.getIdNguoiDung(), courseId);
             int cartCount = cartService.getCartItemsByUser(user.getIdNguoiDung()).size();
             session.setAttribute("cartCount", cartCount);
-            
+
             // Lấy URL gốc từ request nếu không có returnUrl
             if (returnUrl == null || returnUrl.isEmpty()) {
                 String referer = request.getHeader("Referer");
@@ -156,29 +161,29 @@ public class CartController {
             } else {
                 return "redirect:" + returnUrl + "?addedToCart=true";
             }
-            
+
             // Mặc định trả về trang index
             return "redirect:/index?addedToCart=true";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            
+
             if (returnUrl != null && !returnUrl.isEmpty()) {
                 return "redirect:" + returnUrl + "?error=" + e.getMessage();
             }
-            
+
             // Lấy URL gốc từ request nếu không có returnUrl
             String referer = request.getHeader("Referer");
             if (referer != null && !referer.isEmpty()) {
                 return "redirect:" + referer + (referer.contains("?") ? "&" : "?") + "error=" + e.getMessage();
             }
-            
+
             return "redirect:/index?error=" + e.getMessage();
         }
     }
 
     @PostMapping("/remove/{id}")
     public String removeFromCart(@PathVariable Integer id, HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
+        User user = getAuthenticatedUser(session); // Sửa lại dòng này
         if (user == null) {
             session.setAttribute("cartCount", 0);
             model.addAttribute("error", "Vui lòng đăng nhập để xóa khỏi giỏ hàng.");
@@ -198,7 +203,7 @@ public class CartController {
     @PostMapping("/remove/all")
     @ResponseBody
     public ResponseEntity<String> removeAllItemsInCart(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        User user = getAuthenticatedUser(session); // Sửa lại dòng này
         if (user != null) {
             cartService.clearCartByUser(user.getIdNguoiDung());
             return ResponseEntity.ok("done");
@@ -207,70 +212,69 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public String checkout(@RequestParam(value = "selectedItems", required = false) String selectedItemsStr, 
-                          HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
+    public String checkout(@RequestParam(value = "selectedItems", required = false) String selectedItemsStr,
+            HttpSession session, Model model) {
+        User user = getAuthenticatedUser(session); // Sửa lại dòng này
         if (user == null) {
             session.setAttribute("cartCount", 0);
             model.addAttribute("error", "Vui lòng đăng nhập để thanh toán.");
             return "redirect:/Login_Sigin";
         }
-        
+
         // Kiểm tra và xử lý danh sách các item được chọn
         if (selectedItemsStr == null || selectedItemsStr.isEmpty()) {
             model.addAttribute("error", "Vui lòng chọn ít nhất một khóa học để thanh toán.");
             return "redirect:/cart";
         }
-        
+
         // Chuyển đổi chuỗi ID thành danh sách Integer
         List<Integer> selectedItemIds;
         try {
             selectedItemIds = java.util.Arrays.stream(selectedItemsStr.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(Integer::parseInt)
-                .toList();
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt)
+                    .toList();
         } catch (Exception e) {
             model.addAttribute("error", "Dữ liệu không hợp lệ.");
             return "redirect:/cart";
         }
-        
+
         if (selectedItemIds.isEmpty()) {
             model.addAttribute("error", "Vui lòng chọn ít nhất một khóa học để thanh toán.");
             return "redirect:/cart";
         }
-        
+
         // Lấy tất cả các item trong giỏ hàng
         List<Cart> allCartItems = cartService.getCartItemsByUser(user.getIdNguoiDung());
-        
+
         // Lọc ra các item đã được chọn
         List<Cart> selectedItems = allCartItems.stream()
-            .filter(item -> selectedItemIds.contains(item.getId()))
-            .toList();
-        
+                .filter(item -> selectedItemIds.contains(item.getId()))
+                .toList();
+
         if (selectedItems.isEmpty()) {
             model.addAttribute("error", "Không tìm thấy khóa học được chọn trong giỏ hàng.");
             return "redirect:/cart";
         }
-        
+
         int totalAmount = (int) selectedItems.stream().mapToDouble(Cart::getPrice).sum();
         long orderCode = System.currentTimeMillis(); // Hoặc sinh mã đơn hàng theo logic của bạn
         String description = ("Thanh toan khoa hoc");
         if (description.length() > 25) {
             description = description.substring(0, 25);
         }
-        List<ItemData> items = selectedItems.stream().map(cart ->
-                ItemData.builder()
-                        .name(cart.getCourse().getTen_khoa_hoc())
-                        .quantity(1)
-                        .price((int) Math.round(cart.getPrice()))
-                        .build()
-        ).toList();
-        
+        List<ItemData> items = selectedItems.stream().map(cart -> ItemData.builder()
+                .name(cart.getCourse().getTen_khoa_hoc())
+                .quantity(1)
+                .price((int) Math.round(cart.getPrice()))
+                .build()).toList();
+
         // Lưu thông tin đơn hàng để xử lý sau khi thanh toán
         cartService.saveOrderInfo(orderCode, user.getIdNguoiDung(), selectedItems);
-        
-        CheckoutResponseData response = payOSService.createPaymentLink(orderCode, totalAmount, description, items, returnUrl, cancelUrl);
+
+        CheckoutResponseData response = payOSService.createPaymentLink(orderCode, totalAmount, description, items,
+                returnUrl, cancelUrl);
         if (response == null || response.getCheckoutUrl() == null) {
             model.addAttribute("error", "Không thể tạo link thanh toán. Vui lòng thử lại hoặc liên hệ quản trị viên.");
             return "redirect:/cart";

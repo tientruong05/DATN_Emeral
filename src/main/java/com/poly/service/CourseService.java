@@ -1,4 +1,3 @@
-
 package com.poly.service;
 
 import com.poly.entity.Category;
@@ -43,20 +42,24 @@ public class CourseService {
 
     @Autowired
     private CourseRepository courseRepository;
-    
+
     @Autowired
     private CategoryService cateService;
 
     public Page<Course> getAllCategories(Pageable pageable) {
         return courseRepository.findAll(pageable);
     }
-    
+
     public List<Category> getAllCate() {
         return categoryRepository.findAll();
     }
 
     public List<Course> findAll() {
         return courseRepository.findAll();
+    }
+
+    public Page<Course> findSearchAll(String query, Pageable pageable) {
+        return courseRepository.findCoursesByTenKhoaHocAndStatusTrue(query, pageable);
     }
 
     public Course findById(Long id) {
@@ -71,40 +74,43 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
+    // Sử dụng phương thức repository đã được cập nhật
     public List<Course> getRandomCourses(int limit) {
         return courseRepository.findTopNByStatusTrue(limit);
     }
 
+    // Sử dụng phương thức repository đã được cập nhật
     public List<Course> getCoursesByType(String type) {
         if (type == null || type.equals("all")) {
-            return courseRepository.findTopNByStatusTrue(8);
+            return courseRepository.findTopNByStatusTrue(PAGE_SIZE);
         }
         return courseRepository.findByCategoryTenDanhMucAndStatusTrue(type);
     }
-    
+
+    // Sử dụng phương thức repository đã được cập nhật
     public List<Course> getCoursesByType(String type, int page) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
         Page<Course> coursePage;
-        
+
         if (type == null || type.equals("all")) {
             coursePage = courseRepository.findByStatusTrue(pageable);
         } else {
             coursePage = courseRepository.findByCategoryTenDanhMucAndStatusTrue(type, pageable);
         }
-        
+
         return coursePage.getContent();
     }
-    
+
     public int getTotalPages(String type) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
         Page<Course> coursePage;
-        
+
         if (type == null || type.equals("all")) {
             coursePage = courseRepository.findByStatusTrue(pageable);
         } else {
             coursePage = courseRepository.findByCategoryTenDanhMucAndStatusTrue(type, pageable);
         }
-        
+
         return coursePage.getTotalPages();
     }
 
@@ -117,37 +123,40 @@ public class CourseService {
     }
 
     public long getTotalInstructors() {
-        return userRepository.countByVaiTroAndStatusTrue(true); // Đếm chuyên gia (vai_tro = true)
+        return userRepository.countByVaiTroAndStatusTrue(true);
     }
-    
+
+    // Cập nhật xuất Excel để thêm cột số lượng người mua
     public ByteArrayInputStream exportCoursesToExcel() throws IOException {
         List<Course> courses = findAll();
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Courses");
 
-            // Create header row
+            // Tạo hàng tiêu đề
             Row headerRow = sheet.createRow(0);
-            String[] columns = {"ID", "Tên khóa học", "Mô tả","Điểm đạt", "Danh mục", "Giá tiền", "Ảnh đại diện", "Trạng thái"};
+            String[] columns = { "ID", "Tên khóa học", "Mô tả", "Điểm đạt", "Danh mục", "Giá tiền", "Ảnh đại diện",
+                    "Trạng thái", "Số lượng người mua" };
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
             }
 
-            // Create data rows
+            // Tạo hàng dữ liệu
             int rowNum = 1;
-            for (Course course: courses) {
+            for (Course course : courses) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(course.getID_khoa_hoc());
                 row.createCell(1).setCellValue(course.getTen_khoa_hoc());
-                row.createCell(2).setCellValue(course.getMo_ta()!= null ? course.getMo_ta() : "");
+                row.createCell(2).setCellValue(course.getMo_ta() != null ? course.getMo_ta() : "");
                 row.createCell(3).setCellValue(course.getDiem_dat());
                 row.createCell(4).setCellValue(course.getCategory().getTenDanhMuc());
                 row.createCell(5).setCellValue(course.getGia_tien());
                 row.createCell(6).setCellValue(course.getAnh_dai_dien() != null ? course.getAnh_dai_dien() : "");
                 row.createCell(7).setCellValue(course.isStatus() ? "Hoạt động" : "Không hoạt động");
+                row.createCell(8).setCellValue(course.getEnrollments() != null ? course.getEnrollments().size() : 0);
             }
 
-            // Auto-size columns
+            // Tự động điều chỉnh kích thước cột
             for (int i = 0; i < columns.length; i++) {
                 sheet.autoSizeColumn(i);
             }
@@ -157,7 +166,6 @@ public class CourseService {
         }
     }
 
- // Thêm phương thức nhập Excel
     public String importCoursesFromExcel(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File Excel không được để trống!");
@@ -173,19 +181,19 @@ public class CourseService {
             Iterator<Row> rowIterator = sheet.iterator();
 
             if (rowIterator.hasNext()) {
-                rowIterator.next(); // Bỏ qua header
+                rowIterator.next(); // Bỏ qua hàng tiêu đề
             }
 
             int rowNum = 1;
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 rowNum++;
-                
+
                 try {
-                	Course course = new Course();
-                	
-                	String tenKhoaHoc = getCellValue(row.getCell(1));
-                	String mo_ta = getCellValue(row.getCell(2));
+                    Course course = new Course();
+
+                    String tenKhoaHoc = getCellValue(row.getCell(1));
+                    String mo_ta = getCellValue(row.getCell(2));
                     String diem_dat = getCellValue(row.getCell(3));
                     String danh_muc = getCellValue(row.getCell(4));
                     String gia_tien = getCellValue(row.getCell(5));
@@ -203,38 +211,28 @@ public class CourseService {
                         throw new IllegalArgumentException("Tên danh mục không được để trống tại dòng " + rowNum);
                     }
                     if (gia_tien == null || gia_tien.trim().isEmpty()) {
-                    	throw new IllegalArgumentException("Giá tiền không được để trống tại dòng " + rowNum);
+                        throw new IllegalArgumentException("Giá tiền không được để trống tại dòng " + rowNum);
                     }
 
                     course.setTen_khoa_hoc(tenKhoaHoc);
                     course.setMo_ta(mo_ta);
                     course.setDiem_dat(Double.parseDouble(diem_dat));
-                   // course.setCategory(categoryRepository.findByTenDanhMuc(danh_muc));
+                    course.setCategory(cateService.getCateByTen(danh_muc));
                     course.setGia_tien(Double.parseDouble(gia_tien));
                     course.setAnh_dai_dien(anh_dai_dien);
-                    
-                 // Tìm danh mục theo tên
-                    course.setCategory(cateService.getCateByTen(danh_muc));
 
-                    //Category category = cateService.getCateByTen(danh_muc);
-                    //if (category.isEmpty()) {
-                      //  throw new IllegalArgumentException("Không tìm thấy danh mục '" + danh_muc + "' tại dòng " + rowNum);
-                    //}
-                    //course.setCategory(categoryOpt.get());
-
-                    
-                    if (trang_thai != null && ! trang_thai.trim().isEmpty()) {
+                    if (trang_thai != null && !trang_thai.trim().isEmpty()) {
                         if (trang_thai.equals("Hoạt động")) {
                             course.setStatus(true);
                         } else if (trang_thai.equals("Không hoạt động")) {
                             course.setStatus(false);
                         } else {
-                            throw new IllegalArgumentException("Trạng thái phải là 'Hoạt động' hoặc 'Không hoạt động' tại dòng " + rowNum);
+                            throw new IllegalArgumentException(
+                                    "Trạng thái phải là 'Hoạt động' hoặc 'Không hoạt động' tại dòng " + rowNum);
                         }
                     } else {
                         course.setStatus(true); // Mặc định là Hoạt động
                     }
-                    
 
                     courses.add(course);
                 } catch (IllegalArgumentException e) {
@@ -248,7 +246,7 @@ public class CourseService {
         int successCount = 0;
         for (Course course : courses) {
             try {
-                save(course); // Gọi createUser để lưu user
+                save(course);
                 successCount++;
             } catch (RuntimeException e) {
                 errors.add("Lỗi khi lưu khóa học " + course.getTen_khoa_hoc() + ": " + e.getMessage());
@@ -261,8 +259,7 @@ public class CourseService {
             return "Nhập thành công " + successCount + " khóa học. Lỗi: " + String.join("; ", errors);
         }
     }
-    
- // Phương thức hỗ trợ để lấy giá trị ô trong Excel
+
     private String getCellValue(Cell cell) {
         if (cell == null) {
             return null;
@@ -276,7 +273,7 @@ public class CourseService {
                 }
                 double numericValue = cell.getNumericCellValue();
                 if (numericValue == Math.floor(numericValue)) {
-                    return String.valueOf((long) numericValue); // Tránh .0 nếu là số nguyên
+                    return String.valueOf((long) numericValue);
                 } else {
                     return String.valueOf(numericValue);
                 }
@@ -286,5 +283,4 @@ public class CourseService {
                 return null;
         }
     }
-
 }
