@@ -8,5 +8,7 @@ public interface VideoService {
     Video findById(Long id);
     Video save(Video video);
     void delete(Long id);
-    List<Video> findByCourseID_khoa_hoc(Long courseId); // Method to fetch videos for a specific course
+    List<Video> findByCourseID_khoa_hoc(Long courseId);
+    void deleteOldVideos(Long courseId); // Add this method
+    void saveNewVideos(List<Video> videos); // Add this method
 }
