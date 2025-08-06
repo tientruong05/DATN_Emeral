@@ -1,5 +1,6 @@
 package com.poly.controller;
 
+import com.poly.entity.Category;
 import com.poly.entity.Course;
 import com.poly.entity.Video; // Import Video entity
 import com.poly.repository.QuestionRepository;
@@ -10,6 +11,8 @@ import com.poly.service.QuestionService; // Import QuestionService
 import com.poly.service.QuizExcelService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,7 +61,6 @@ public class CourseContentController {
             // Handle case where course is not found, e.g., redirect to an error page
             return "redirect:/Crud_Course?error=courseNotFound";
         }
-
         model.addAttribute("course", course);
         // Add actual videos and questions related to this course
         model.addAttribute("videos", videoService.findByCourseID_khoa_hoc(courseId));

@@ -120,4 +120,9 @@ public class testController {
 	public String Terms() {
 		return "Terms";
 	}
+	
+	@RequestMapping("chatAI")
+	public String chat() {
+		return "chatAI";
+	}
 }

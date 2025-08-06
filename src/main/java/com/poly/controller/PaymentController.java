@@ -2,10 +2,12 @@ package com.poly.controller;
 
 import com.poly.entity.Cart;
 import com.poly.entity.Course;
+import com.poly.entity.Enrollment;
 import com.poly.entity.User;
 import com.poly.repository.EnrollmentsRepository;
 import com.poly.service.UserService;
 import com.poly.service.CartService;
+import com.poly.service.EnrollmentService;
 import com.poly.service.PayOSService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -52,6 +54,9 @@ public class PaymentController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EnrollmentService enrollmentService;
+    
     // Xử lý webhook từ PayOS sau khi thanh toán thành công
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> handleWebhook(@RequestBody Webhook webhookBody) {
@@ -154,33 +159,30 @@ public class PaymentController {
         return "redirect:/cart";
     }
     
-    // Trang lịch sử thanh toán
     @GetMapping("/history")
-    public String paymentHistory(Model model) { // Removed HttpSession session
-        // --- Start of Spring Security integration ---
+    public String paymentHistory(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetails)) {
-            logger.warning("Người dùng chưa đăng nhập hoặc chưa được xác thực, chuyển hướng đến trang đăng nhập");
             return "redirect:/Login_Signin";
         }
+
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
         Optional<User> userOpt = userService.getUserByEmail(userEmail);
-
-        if (!userOpt.isPresent()) {
-            logger.severe("Không tìm thấy người dùng trong DB với email đã xác thực: " + userEmail);
+        if (userOpt.isEmpty()) {
             return "redirect:/Login_Signin";
         }
+
         User user = userOpt.get();
-        // --- End of Spring Security integration ---
-        
-        // Lấy lịch sử thanh toán của người dùng và hiển thị
-        List<Course> enrolledCourses = enrollmentsRepository.findCoursesByUserId(user.getIdNguoiDung());
-        logger.info("Found " + (enrolledCourses != null ? enrolledCourses.size() : 0) + " enrolled courses for user: " + user.getIdNguoiDung());
-        
-        model.addAttribute("enrolledCourses", enrolledCourses);
-        
-        return "History_Payment";
+        List<Enrollment> enrollments = enrollmentsRepository.findByUserId(user.getIdNguoiDung());
+
+        Map<String, Object> stats = enrollmentService.calculateUserStats(enrollments);
+
+        model.addAllAttributes(stats); // gán toàn bộ map vào model
+        model.addAttribute("enrollments",enrollments);
+        return "History_Payment_1";
     }
+
+
     
     // Cung cấp URL alias cho đường dẫn trong header
     @GetMapping("/history-payment")

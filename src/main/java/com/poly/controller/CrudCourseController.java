@@ -49,6 +49,11 @@ public class CrudCourseController {
         model.addAttribute("courses", coursePage);
         model.addAttribute("categories", categoryRepo.findAll());
         model.addAttribute("course", new Course());
+        model.addAttribute("currentPage", coursePage.getNumber());
+        model.addAttribute("totalPages", coursePage.getTotalPages());
+        model.addAttribute("pageSize", coursePage.getSize());
+        model.addAttribute("totalItems", coursePage.getTotalElements());
+        model.addAttribute("courses", coursePage.getContent());
         return "Crud_Course";
     }
 

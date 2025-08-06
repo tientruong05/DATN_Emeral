@@ -50,6 +50,7 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
             text-decoration: none;
+            white-space: nowrap;
         }
 
         .back-btn:hover {
@@ -149,6 +150,25 @@
         .excel-btn:hover {
             background-color: #218838;
         }
+
+.import-excel-btn {
+			background-color: #17a2b8;
+			color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+		}
+
+		.import-excel-btn:hover {
+			background-color: #138496;
+		}
 
         /* Table Styles */
         .video-table,
@@ -497,6 +517,8 @@
                 font-size: 1.2rem;
             }
         }
+        
+        
     </style>
 </head>
 
@@ -534,7 +556,7 @@
                 <div class="tab-content-header">
                     <h2><i class="fas fa-video"></i> Danh sách video</h2>
                     <div class="excel-actions">
-                        <button class="excel-btn" onclick="openModal('import-video-modal')">
+                        <button class="import-excel-btn" onclick="openModal('import-video-modal')">
                             <i class="fas fa-file-excel"></i> Nhập Excel
                         </button>
                         <a th:href="@{/course-content/{courseId}/videos/export(courseId=${course.ID_khoa_hoc})}" class="excel-btn">
@@ -548,15 +570,15 @@
                 <table class="video-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>STT</th>
                             <th>Tên video</th>
                             <th>URL</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="video : ${videos}">
-                            <td th:text="${video.ID_video}"></td>
+                        <tr th:each="video, iterStat : ${videos}">
+                            <td th:text="${iterStat.index + 1}"></td>
                             <td class="video-name" th:text="${video.ten_video}"></td>
                             <td class="video-url">
                                 <a th:href="${video.duong_dan_video}" target="_blank">Link</a>
@@ -585,7 +607,7 @@
                 <div class="tab-content-header">
                     <h2><i class="fas fa-question-circle"></i> Danh sách câu hỏi</h2>
                     <div class="excel-actions">
-                        <button class="excel-btn" onclick="openModal('import-quiz-modal')">
+                        <button class="import-excel-btn" onclick="openModal('import-quiz-modal')">
                             <i class="fas fa-file-excel"></i> Nhập Excel
                         </button>
                         <a th:href="@{/course-content/{courseId}/questions/export(courseId=${course.ID_khoa_hoc})}" class="excel-btn">
@@ -600,15 +622,15 @@
                 <table class="quiz-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>STT</th>
                             <th>Câu hỏi</th>
                             <th>Đáp án đúng</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="question : ${questions}">
-                            <td th:text="${question.ID_cau_hoi}"></td>
+                        <tr th:each="question, iterStat : ${questions}">
+                        <td th:text="${iterStat.index + 1}"></td>
                             <td class="quiz-question" th:text="${question.noi_dung_cau_hoi}"></td>
                             <td th:text="${question.dap_an_dung}"></td>
                             <td>

@@ -16,7 +16,7 @@ public class MenuController {
     @Autowired
     private CategoryService categoryService;
 
-    @ModelAttribute("categoriesList")
+    @ModelAttribute("activeCategories")
     public List<Category> getCategories() {
         return categoryService.getCategoriesByStatus();
     }

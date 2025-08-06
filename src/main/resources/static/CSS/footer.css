@@ -10,7 +10,7 @@
 .devnest-footer {
   background: linear-gradient(135deg, #002855 0%, #003d7a 100%);
   color: white;
-  margin-top: 3rem;
+ /* margin-top: 3rem;*/
   width: 100%;
 }
 

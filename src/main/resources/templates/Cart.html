@@ -272,7 +272,6 @@
         transform: translateX(-50%);
       }
 
-      /* Updated course-list styles - matching index.html courses-grid */
       .course-list {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -280,55 +279,39 @@
       }
 
       .course-item {
-        border: 1px solid #eee;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        height: 350px; /* Fixed height for all cards */
-        position: relative;
         background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
       }
 
       .course-item:hover {
         transform: translateY(-5px);
-      }
-
-      /* Discount Badge */
-      .discount-badge {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: #e74c3c;
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: bold;
-        z-index: 2;
-        text-transform: uppercase;
-        box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
       }
 
       .course-image {
         position: relative;
-        height: 150px; /* Fixed height for all images */
+        height: 160px;
         overflow: hidden;
-        flex-shrink: 0; /* Prevent shrinking */
       }
 
       .course-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      .course-image img:hover {
+        transform: scale(1.05);
       }
 
       .course-favorite {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 12px;
+        right: 12px;
         background-color: rgba(255, 255, 255, 0.9);
         border-radius: 50%;
         width: 32px;
@@ -338,66 +321,38 @@
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        z-index: 2;
       }
 
       .course-favorite:hover {
-        color: red;
+        color: #dc2626;
         background-color: white;
       }
 
       .course-details {
-        padding: 1rem;
-        text-align: left;
+        padding: 1.25rem;
         display: flex;
         flex-direction: column;
-        flex: 1; /* Take remaining space */
-        justify-content: space-between;
-      }
-
-      .course-info-section {
-        flex: 1; /* Take available space */
+        gap: 0.75rem;
       }
 
       .course-details h3 {
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
         font-weight: 600;
-        line-height: 1.3;
-        height: 2.6rem; /* Fixed height for 2 lines max */
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
         color: #1e3a8a;
+        margin-bottom: 0.5rem;
       }
 
-      .course-details .course-description {
+      .course-details p {
         color: #6b7280;
         font-size: 0.9rem;
-        line-height: 1.4;
-        display: -webkit-box;
-        -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
         margin-bottom: 0.75rem;
-        height: 3.36rem; /* Fixed height for 3 lines max */
       }
 
       .course-details .price-container {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-top: auto; /* Push to bottom */
-      }
-
-      .price-section {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
       }
 
       .course-details .discounted-price {
@@ -429,26 +384,11 @@
         text-align: center;
         transition: all 0.3s ease;
         align-self: flex-start;
-        border: none;
-        cursor: pointer;
       }
 
       .course-details .btn:hover {
         background-color: #1e40af;
         transform: translateY(-1px);
-      }
-
-      .price {
-        font-weight: bold;
-      }
-
-      .free {
-        color: #28a745;
-      }
-
-      .discounted-price-text {
-        color: #e74c3c;
-        font-weight: bold;
       }
 
       /* Responsive Design */
@@ -517,6 +457,17 @@
           width: 100%;
           text-align: center;
         }
+		.course-details .course-description {
+		  color: #6b7280;
+		  font-size: 0.9rem;
+		  line-height: 1.4;
+		  display: -webkit-box;
+		  -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+		  -webkit-box-orient: vertical;
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+		  margin-bottom: 0.75rem;
+		}
       }
     </style>
   </head>
@@ -642,14 +593,9 @@
       </div>
       <div class="suggested-courses">
         <h2>Có thể bạn quan tâm</h2>
-        <div class="course-list">
-          <div th:each="course : ${suggestedCourses}" class="course-item">
-            <!-- Discount Badge - chỉ hiển thị khi có giảm giá -->
-            <div class="discount-badge" th:if="${course.isDiscounted()}">
-              <span th:text="${course.getDiscountPercentage()} + '%'"></span>
-              <br />
-              <span style="font-size: 0.6rem">OFF</span>
-            </div>
+		<div class="course-list">
+		        <div th:each="course, iterStat : ${suggestedCourses}" th:if="${iterStat.index < 4}">
+       
             <div class="course-image">
               <img
                 th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
@@ -657,38 +603,23 @@
               />
               <div class="course-favorite">❤</div>
             </div>
-            <div class="course-details">
-              <div class="course-info-section">
-                <h3 th:text="${course.ten_khoa_hoc}">Tên khóa học</h3>
-                <p class="course-description" th:text="${course.mo_ta}">Mô tả khóa học</p>
-              </div>
-              
-              <div class="price-container">
-                <div class="price-section">
-                  <!-- Giá gốc (hiển thị khi có giảm giá) -->
-                  <div
-                    class="original-price"
-                    th:if="${course.isDiscounted() and course.gia_tien != null}"
-                    th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                  ></div>
-                  <!-- Giá sau giảm hoặc giá bình thường -->
-                  <span th:if="${course.gia_tien == null}" class="price free">Miễn phí</span>
-                  <span
-                    th:if="${course.gia_tien != null and !course.isDiscounted()}"
-                    class="price"
-                    th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                  ></span>
-                  <span
-                    th:if="${course.gia_tien != null and course.isDiscounted()}"
-                    class="price discounted-price-text"
-                    th:text="${#numbers.formatDecimal(course.getDiscountedPrice(), 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                  ></span>
-                </div>
-                <form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
-                  <button type="submit" class="btn">Thêm giỏ hàng</button>
-                </form>
-              </div>
-            </div>
+			<div class="course-details">
+			  <h3 th:text="${course.ten_khoa_hoc}">Tên khóa học</h3>
+			  
+			  <div class="price-container">
+			    <div th:if="${course.isDiscounted()}">
+			      <span class="discount-badge">
+			        <span th:text="${course.getDiscountPercentage()} + '%'"></span>
+			        <span style="font-size: 0.6rem;">OFF</span>
+			      </span>
+			      <p class="original-price" th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+			    </div>
+			    <p class="discounted-price" th:text="${course.gia_tien == null} ? 'Miễn phí' : ${#numbers.formatDecimal(course.isDiscounted() ? course.getDiscountedPrice() : course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+			    <form th:action="@{/cart/course/buy/{id}(id=${course.ID_khoa_hoc})}" method="post">
+			      <button type="submit" class="btn btn-primary">Thêm giỏ hàng</button>
+			    </form>
+			  </div>
+			</div>
           </div>
         </div>
       </div>

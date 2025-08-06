@@ -359,6 +359,43 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
       }
+      
+      .import-export-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Optional: style lại để đảm bảo cùng chiều cao, padding đẹp */
+.import-excel-btn,
+.export-excel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #28a745;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.import-excel-btn:hover,
+.export-excel-btn:hover {
+  background-color: #218838;
+}
+
+.export-excel-btn {
+  background-color: #007bff;
+}
+
+.export-excel-btn:hover {
+  background-color: #0069d9;
+}
+      
 
       /* Table Styles */
       .table-actions {
@@ -631,6 +668,7 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+		text-decoration: none !important;
         font-weight: 500;
         transition: background-color 0.3s ease;
         background-color: #dc3545;
@@ -899,8 +937,8 @@
                   class="form-control"
                   name="discountValue"
                   min="0"
-                  max="100"
-                  placeholder="0-100"
+                  max="99"
+                  placeholder="0-99"
                   th:value="${discountValue != null ? discountValue : ''}"
                   required
                 />
@@ -1268,17 +1306,19 @@
                   <option value="inactive">Không hoạt động</option>
                 </select>
               </div>
-              <div>
-                <button
-                  class="import-excel-btn"
-                  onclick="openModal('import-excel-modal')"
-                >
-                  Nhập Excel
-                </button>
-                <a th:href="@{/admin/discount/export}" class="export-excel-btn"
-                  >Xuất Excel</a
-                >
-              </div>
+              
+              <div class="import-export-btns">
+  <button
+    class="import-excel-btn"
+    onclick="openModal('import-excel-modal')"
+  >
+    <i class="fas fa-file-excel"></i> Nhập Excel
+  </button>
+  <a th:href="@{/admin/discount/export}" class="export-excel-btn">
+    <i class="fas fa-download"></i> Xuất Excel
+  </a>
+</div>
+
             </div>
           </div>
 

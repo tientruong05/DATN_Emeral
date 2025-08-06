@@ -7,7 +7,7 @@
           <div class="row align-items-center g-1">
     
             <!-- Logo -->
-            <div class="col-xl-2 col-lg-2 col-md-2 col-6 d-flex justify-content-start">
+            <div class="col-12 col-md-2 d-flex justify-content-start">
               <a href="/index" class="logo d-flex align-items-center">
                 <div class="logo-icon me-2"></div>
                 <div class="logo-text">
@@ -18,7 +18,7 @@
             </div>
     
             <!-- Search Bar -->
-            <div class="col-xl-3 col-lg-3 col-md-3 d-none d-md-block">
+            <div class="col-12 col-md-3 d-none d-md-block">
               <div class="search-container position-relative">
                 <i class="bi bi-search search-icon position-absolute" style="left:10px;top:50%;transform:translateY(-50%);color:#6c757d;"></i>
                 <input type="text" id="searchInput" name="searchAll" class="form-control search-input ps-5" placeholder="Tìm khóa học, giảng viên...">
@@ -27,19 +27,21 @@
     
                     
                                 <!-- Navigation Menu -->
-                                <div class="col-xl-4 col-lg-4 col-md-4">
-                                    <nav class="navbar navbar-expand-lg p-0">
+                                <div class="col-12 col-md-5 d-none d-md-block">
+    <nav class="navbar navbar-expand p-0 justify-content-center">
+      <ul class="navbar-nav">
+                               
                                         <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                                             <span class="navbar-toggler-icon"></span>
                                         </button>
                                         <div class="collapse navbar-collapse" id="navbarNav">
-                                            <ul class="navbar-nav w-100 justify-content-center">
+                                            <ul class="navbar-nav">
                     
                                                 <!-- Học tập (luôn hiện) -->
                                                 <li class="nav-item dropdown">
                                                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Học tập</a>
                                                     <ul class="dropdown-menu">
-                                                        <li th:each="a : ${categoriesList}">
+                                                        <li th:each="a : ${activeCategories}">
                                                             <a class="dropdown-item" th:href="@{/list(cateId=${a.id})}" th:text="${a.tenDanhMuc}"></a>
                                                         </li>
                                                     </ul>
@@ -72,9 +74,9 @@
                                                         <span>Học viên</span>
                                                     </a>
                                                     <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i> Hồ sơ</a></li>
+                                                        <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i> Hồ sơ tài khoản</a></li>
                                                         <li><a class="dropdown-item" href="/change-password-authenticated"><i class="bi bi-key me-2"></i> Đổi mật khẩu</a></li>
-                                                        <li><a class="dropdown-item" href="/CourseInProgess"><i class="bi bi-book-half me-2"></i> Khóa học đang học</a></li>
+                                                        <li><a class="dropdown-item" href="/CourseInProgess"><i class="bi bi-book-half me-2"></i> Khóa học của tôi</a></li>
                                                         <li><a class="dropdown-item" href="/history-payment"><i class="bi bi-credit-card me-2"></i> Lịch sử thanh toán</a></li>
                                                         <li><a class="dropdown-item text-danger" th:href="@{/logout}"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
                                                     </ul>
@@ -86,7 +88,9 @@
                                 </div>
                     
                                 <!-- Right Section (Auth + Cart) -->
-                                <div class="col-xl-3 col-lg-3 col-md-3 col-6">
+                                <div class="col-12 col-md-2 d-flex justify-content-end align-items-center gap-2">
+    <!-- Nếu chưa login -->
+                             
                                     <div class="d-flex align-items-center justify-content-end gap-2">
                     
                                         <!-- Chưa đăng nhập -->

@@ -253,6 +253,16 @@
       justify-content: center;
       font-weight: bold;
     }
+.cart-badge {
+  font-size: 0.75rem;
+  padding: 0.25em 0.5em;
+}
+.navbar-nav .nav-item {
+  margin: 0 0.5rem;
+}
+.btn-auth {
+  white-space: nowrap;
+}
 
     /* Auth Button - Combined Login/Register */
     .custom-header .btn-auth {

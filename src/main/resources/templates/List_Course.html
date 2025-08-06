@@ -8,8 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* Reset CSS */
         * {
@@ -127,7 +125,7 @@
             transition: transform 0.3s ease;
             display: flex;
             flex-direction: column;
-            height: 400px; /* Tăng chiều cao để chứa số lượng người mua */
+            height: 350px;
             position: relative;
             background-color: white;
         }
@@ -215,7 +213,7 @@
         .course-info {
             font-size: 0.8rem;
             color: #666;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             line-height: 1.4;
             height: 3.36rem;
             overflow: hidden;
@@ -224,25 +222,20 @@
             line-clamp: 3;
             -webkit-box-orient: vertical;
         }
+        
+        /* Định dạng cho thẻ <a> */
+.course-info-section a {
+    text-decoration: none; /* Bỏ gạch chân */
+    color: inherit; /* Kế thừa màu sắc từ cha */
+    display: block; /* Để thẻ <a> chiếm toàn bộ không gian của <h3> */
+    height: 40%; /* Đảm bảo thẻ <a> có chiều cao đầy đủ */
+}
 
-        .course-enrollments {
-            font-size: 0.8rem;
-            color: #333;
-            margin-bottom: 0.8rem;
-            font-weight: 500;
-        }
-
-        .course-info-section a {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            height: 100%;
-        }
-
-        .course-info-section a:hover {
-            text-decoration: underline;
-            color: #002855;
-        }
+/* Thay đổi màu khi hover */
+.course-info-section a:hover {
+    text-decoration: underline; /* Gạch chân khi hover */
+    color: #002855; /* Chọn màu cho hiệu ứng hover */
+}
 
         .course-price {
             display: flex;
@@ -369,110 +362,266 @@
                 align-items: center;
             }
         }
+        
+        /* Alert styling */
+      .alert {
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .alert-info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+      }
+
+      .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .alert .close {
+        background: none;
+        border: none;
+        float: right;
+        font-size: 1.2rem;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+
+      .alert-link {
+        color: inherit;
+        text-decoration: underline;
+        font-weight: bold;
+      }
     </style>
     <link rel="stylesheet" th:href="@{/css/header.css}" />
     <link rel="stylesheet" th:href="@{/css/footer.css}" />
 </head>
 <body>
-    <!-- Page Header -->
+    <!--<div th:replace="fragments/header :: header">MENU</div>-->
+    
+    <!-- Page Header 
     <section class="page-header">
-        <h1 th:text="${pageTitle}">Tất cả khóa học</h1>
-        <p th:if="${pageTitle == 'Tất cả khóa học'}">
-            Khám phá bộ sưu tập đầy đủ các khóa học lập trình chất lượng cao
-        </p>
-        <p th:if="${pageTitle != 'Tất cả khóa học'}">
-            Danh sách khóa học thuộc danh mục "<span th:text="${pageTitle}"></span>"
-        </p>
+        <h1>Tất cả khóa học</h1>
+        <p>Khám phá bộ sưu tập đầy đủ các khóa học lập trình chất lượng cao</p>
     </section>
+    <!-- Page Header -->
+<section class="page-header">
+    <h1 th:text="${pageTitle}">Tất cả khóa học</h1>
+    <p th:if="${pageTitle == 'Tất cả khóa học'}">
+        Khám phá bộ sưu tập đầy đủ các khóa học lập trình chất lượng cao
+    </p>
+    <p th:if="${pageTitle != 'Tất cả khóa học'}">
+        Danh sách khóa học thuộc danh mục "<span th:text="${pageTitle}"></span>"
+    </p>
+</section>
+    
 
     <!-- All Courses Section -->
+    <div
+        class="alert alert-success"
+        th:if="${param.addedToCart}"
+        style="
+          position: fixed;
+          top: 80px;
+          right: 20px;
+          z-index: 1000;
+          animation: fadeOut 4s forwards;
+        "
+      >
+        <i class="fas fa-check-circle"></i> Khóa học đã được thêm vào giỏ hàng!
+        <a th:href="@{/cart}" class="alert-link">Xem giỏ hàng</a>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          onclick="this.parentElement.style.display='none';"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div
+        class="alert alert-info"
+        th:if="${param.alreadyInCart}"
+        style="
+          position: fixed;
+          top: 80px;
+          right: 20px;
+          z-index: 1000;
+          animation: fadeOut 4s forwards;
+        "
+      >
+        <i class="fas fa-info-circle"></i> Khóa học đã có trong giỏ hàng!
+        <a th:href="@{/cart}" class="alert-link">Xem giỏ hàng</a>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          onclick="this.parentElement.style.display='none';"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div
+        class="alert alert-danger"
+        th:if="${param.error}"
+        style="
+          position: fixed;
+          top: 80px;
+          right: 20px;
+          z-index: 1000;
+          animation: fadeOut 4s forwards;
+        "
+      >
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${param.error}">Lỗi</span>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          onclick="this.parentElement.style.display='none';"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      
     <section class="all-courses">
         <h2 class="section-title">Danh sách khóa học</h2>
         
-        <div class="courses-grid" th:if="${courses.isEmpty()}">
-            <p>Không có khóa học nào trong danh mục này.</p>
+		<div class="courses-grid" id="courses-grid">
+        	<div th:each="course: ${courses}" >
+            <div class="course-card">
+                    <div class="discount-badge" th:if="${course.discountPercentage != null}">
+                        <span th:text="${course.discountPercentage}">40%</span>
+                        <br>
+                        <span style="font-size: 0.6rem;">OFF</span>
+                    </div>
+                    <div class="course-image">
+                        <img th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'" th:alt="${course.Ten_khoa_hoc}">                       
+                    </div>
+                    <div class="course-content">
+                        <div class="course-info-section">
+                        	<a th:href="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}">
+							    <h3 class="course-title" th:text="${course.Ten_khoa_hoc}">HTML &amp; CSS cơ bản</h3>
+							</a>                         
+                            <p class="course-info" th:text="${course.shortMo_ta}">Học HTML và CSS từ cơ bản đến nâng cao, xây dựng website responsive đẹp mắt</p>
+                        </div>
+                        <div class="course-price">
+                            <div class="price-section">
+                                <div th:if="${course.isDiscounted()}">
+                                  <div th:if ="${course.discountedPrice != 0}">
+                                    <div class="original-price" th:text="${#numbers.formatDecimal(course.Gia_tien, 0, 'COMMA', 0, 'POINT') + ' VND'}"></div>
+                                    <div class="price discounted-price" th:text="${#numbers.formatDecimal(course.discountedPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}"></div>
+                                  </div>
+                                  <div th:if ="${course.discountedPrice == 0}">
+                                    <div class="price free">Miễn phí</div>
+                                  </div>
+                                </div>
+                                <div th:unless="${course.isDiscounted()}" 
+								     class="price discounted-price'"
+								     th:text="${#numbers.formatDecimal(course.Gia_tien, 0, 'COMMA', 0, 'POINT') + ' VND'}">
+								</div>
+                            </div>
+                            <!-- Kiểm tra xem khóa học đã được đăng ký chưa -->
+              <!-- Nếu đã mua -->
+<div th:if="${enrolledCourses != null && enrolledCourses.contains(course)}">
+  <span class="btn btn-success">Đã mua</span>
+</div>
+              <div
+                th:unless="${enrolledCourses != null && enrolledCourses.contains(course)}"
+              >
+						    <form
+                  th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}"
+                  method="post"
+                >
+                 <!-- <input type="hidden" name="returnUrl" th:value="${returnUrl}" />
+ -->
+
+                  <button type="submit" class="buy-btn">
+                    Thêm giỏ hàng
+                  </button>
+                </form>
+                        </div>
+                        
+                    </div>
+                </div>
+              </div>  
         </div>
-        <div class="courses-grid" th:unless="${courses.isEmpty()}">
-            <div th:each="course : ${courses}" class="course-card">
-                <div class="discount-badge" th:if="${course.isDiscounted()}">
-                    <span th:text="${course.getDiscountPercentage()} + '%'"></span>
-                    <br>
-                    <span style="font-size: 0.6rem;">OFF</span>
-                </div>
-                <div class="course-image">
-                    <a th:href="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}">
-                        <img th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'" th:alt="${course.ten_khoa_hoc}">
-                    </a>
-                    <div class="wishlist-btn">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                </div>
-                <div class="course-content">
-                    <div class="course-info-section">
-                        <a th:href="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}">
-                            <h3 class="course-title" th:text="${course.ten_khoa_hoc}"></h3>
-                            <p class="course-info" th:text="${course.shortMo_ta}"></p>
-                            <!-- Thêm số lượng người mua -->
-                            <p class="course-enrollments" th:text="${course.enrollments != null ? course.enrollments.size() : 0} + ' người đã đăng ký'"></p>
-                        </a>
-                    </div>
-                    <div class="course-price">
-                        <div class="price-section">
-                            <!-- Giá gốc (hiển thị khi có giảm giá) -->
-                            <div class="original-price"
-                                 th:if="${course.isDiscounted() and course.gia_tien != null}"
-                                 th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></div>
-                            <!-- Giá sau giảm hoặc giá bình thường -->
-                            <span th:if="${course.gia_tien == null}" class="price free">Miễn phí</span>
-                            <span th:if="${course.gia_tien != null and !course.isDiscounted()}"
-                                  class="price"
-                                  th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
-                            <span th:if="${course.gia_tien != null and course.isDiscounted()}"
-                                  class="price discounted-price"
-                                  th:text="${#numbers.formatDecimal(course.getDiscountedPrice(), 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
-                        </div>
-                        <!-- Kiểm tra xem khóa học đã được đăng ký chưa -->
-                        <div th:if="${enrolledCourses != null && enrolledCourses.contains(course)}">
-                            <span class="btn btn-success">Đã mua</span>
-                        </div>
-                        <div th:unless="${enrolledCourses != null && enrolledCourses.contains(course)}">
-                            <form th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}" method="post">
-                                <input type="hidden" name="returnUrl" value="/list" />
-                                <button type="submit" class="buy-btn">Thêm giỏ hàng</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
+        
         <!-- Pagination -->
-        <div class="pagination-section" th:if="${totalPages > 1}">
-            <div class="pagination">
-                <button th:disabled="${currentPage == 0}"
-                        th:href="@{/list(cateId=${cateId}, page=${currentPage - 1})}"
-                        id="prev-btn">‹ Trước</button>
-                <button th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                        th:href="@{/list(cateId=${cateId}, page=${i})}"
-                        th:classappend="${i == currentPage} ? 'active'"
-                        th:text="${i + 1}"></button>
-                <button th:disabled="${currentPage == totalPages - 1}"
-                        th:href="@{/list(cateId=${cateId}, page=${currentPage + 1})}"
-                        id="next-btn">Sau ›</button>
-            </div>
-        </div>
+<div class="pagination-section" th:if="${totalPages > 1}">
+  <div class="pagination" 
+       th:with="baseUrl='/list' + (${cateId} != null ? '?cateId=' + ${cateId} : ''), 
+                hasCate=${cateId} != null ? true : false">
+
+    <!-- Nút Previous -->
+    <button
+      th:disabled="${currentPage == 0}"
+      th:onclick="'window.location.href=\'' 
+                  + ${baseUrl} 
+                  + (${hasCate} ? '&' : '?') 
+                  + 'page=' + (${currentPage - 1}) 
+                  + '&size=' + ${pageSize} 
+                  + '\''">
+      ‹ Trước
+    </button>
+
+    <!-- Các nút số trang -->
+    <button
+      th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+      th:onclick="'window.location.href=\'' 
+                  + ${baseUrl} 
+                  + (${hasCate} ? '&' : '?') 
+                  + 'page=' + ${i} 
+                  + '&size=' + ${pageSize} 
+                  + '\''"
+      th:classappend="${i == currentPage} ? 'active'"
+      th:text="${i + 1}">
+    </button>
+
+    <!-- Nút Next -->
+    <button
+      th:disabled="${currentPage == totalPages - 1}"
+      th:onclick="'window.location.href=\'' 
+                  + ${baseUrl} 
+                  + (${hasCate} ? '&' : '?') 
+                  + 'page=' + (${currentPage + 1}) 
+                  + '&size=' + ${pageSize} 
+                  + '\''">
+      Sau ›
+    </button>
+  </div>
+</div>
+
     </section>
 
+    <!--<div th:replace="fragments/footer :: footer">footer</div>-->
+    
     <script>
         // Data
         let cartItems = 0;
         let activeFilter = 'all';
         let currentPage = 1;
         const coursesPerPage = 12;
+        
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            updateCartDisplay();
-
+            renderCourses();
+            
             // Add event listeners for filter buttons
             const filterButtons = document.querySelectorAll('.filter-button');
             filterButtons.forEach(button => {
@@ -483,15 +632,26 @@
             });
         });
 
+
+        function getFilteredCourses() {
+            if (activeFilter === 'all') {
+                return courses;
+            }
+            return courses.filter(course => course.type === activeFilter);
+        }
+
         function setFilter(filterType, buttonElement) {
             activeFilter = filterType;
             currentPage = 1; // Reset to first page when filtering
-
+            
             // Update active button
             document.querySelectorAll('.filter-button').forEach(btn => {
                 btn.classList.remove('active');
             });
             buttonElement.classList.add('active');
+            
+            // Re-render courses
+            renderCourses();
         }
 
         function toggleWishlist(index) {
@@ -502,7 +662,7 @@
         function addToCart(courseTitle) {
             cartItems++;
             updateCartDisplay();
-
+            
             // Show notification
             alert(`Đã thêm "${courseTitle}" vào giỏ hàng!`);
         }
@@ -518,6 +678,7 @@
                 }
             }
         }
+
     </script>
 </body>
 </html>

@@ -165,36 +165,50 @@
             background: white;
         }
 
-        .process-step {
-            text-align: center;
-            margin-bottom: 50px;
-        }
+		/* Process Section - Chỉnh sửa phần này */
+		.process-section {
+		    padding: 100px 0;
+		    background: white;
+		    position: relative;
+		}
 
-        .step-number {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #00d4ff 0%, #00b8db 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px;
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            position: relative;
-        }
+		.process-section::before {
+		    content: '';
+		    position: absolute;
+		    top: 50%;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    width: 80%;
+		    height: 3px;
+		    background: linear-gradient(90deg, #00d4ff 0%, #00b8db 100%);
+		    z-index: 1;
+		}
 
-        .step-number::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 120px;
-            width: calc(100vw - 240px);
-            height: 3px;
-            background: linear-gradient(90deg, #00d4ff 0%, transparent 100%);
-            transform: translateY(-50%);
-        }
+		.process-step {
+		    text-align: center;
+		    margin-bottom: 50px;
+		    position: relative;
+		    z-index: 2;
+		}
+
+		.step-number {
+		    width: 80px;
+		    height: 80px;
+		    background: linear-gradient(135deg, #00d4ff 0%, #00b8db 100%);
+		    border-radius: 50%;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    margin: 0 auto 30px;
+		    font-size: 2rem;
+		    font-weight: 800;
+		    color: white;
+		    position: relative;
+		    z-index: 3;
+		    border: 5px solid white;
+		    box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+		}
+
 
         .step-title {
             font-size: 1.4rem;

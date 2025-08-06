@@ -89,7 +89,7 @@ public class SecurityConfig {
                         // Các tài nguyên công khai, ai cũng có thể truy cập
                         .requestMatchers("/", "/index", "/Login_Sigin", "/login", "/register",
                                 "/search**", "/forgot-password", "/changePass","/Policy", "/Terms","/About",
-                                "/css/**", "/js/**", "/images/**", "/course-detail/**", "/list/**", "/upload/**")
+                                "/css/**", "/js/**", "/images/**", "/course-detail/**", "/list/**", "/upload/**","/chatAI", "/api/chatbot/**")
                         .permitAll()
 
                         // Các URL chỉ ADMIN mới được truy cập

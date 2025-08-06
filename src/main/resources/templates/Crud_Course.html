@@ -1,592 +1,600 @@
 <!DOCTYPE html>
-<html
-  th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}"
-  xmlns:th="http://www.thymeleaf.org"
-  lang="vi"
->
-  <head>
-    <meta charset="UTF-8" />
-    <title>Quản Lý Khóa Học - EDU102</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
-      body {
-        background-color: #f7f9fc;
-        color: #333;
-      }
-      .manage-courses-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 1rem;
-      }
-      .manage-courses-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      .manage-courses-header h1 {
-        color: #002855;
-        font-size: 2rem;
-      }
-      .add-course-btn {
-        background-color: #002855;
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-      }
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
 
-      .import-excel-btn,
-      .export-excel-btn {
-        background-color: #002855;
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-        text-decoration: none;
-      }
+<head>
+  <meta charset="UTF-8">
+  <title>Quản Lý Khóa Học - EDU102</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f7f9fc;
+      color: #333;
+    }
+    .manage-courses-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .manage-courses-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .manage-courses-header h1 {
+      color: #002855;
+      font-size: 2rem;
+    }
+    .add-course-btn {
+      background-color: #002855;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .import-excel-btn, .export-excel-btn {
+      background-color: #002855;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+    }
 
-      .import-excel-btn:hover,
-      .export-excel-btn:hover {
-        background-color: #001f42;
-      }
+    .import-excel-btn:hover, .export-excel-btn:hover {
+      background-color: #001f42;
+    }
 
-      .import-excel-btn {
-        background-color: #17a2b8;
-      }
+    .import-excel-btn {
+      background-color: #17a2b8;
+    }
 
-      .import-excel-btn:hover {
-        background-color: #138496;
-      }
+    .import-excel-btn:hover {
+      background-color: #138496;
+    }
 
-      .export-excel-btn {
-        background-color: #28a745;
-      }
+    .export-excel-btn {
+      background-color: #28a745;
+    }
 
-      .export-excel-btn:hover {
-        background-color: #218838;
-      }
+    .export-excel-btn:hover {
+      background-color: #218838;
+    }
+    
+    
+    .add-course-btn:hover {
+      background-color: #001f42;
+    }
+    .courses-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .courses-table th, .courses-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .courses-table th {
+      background-color: #002855;
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+    
+    /* Căn giữa cột hành động */
+    .courses-table th:last-child,
+    .courses-table td:last-child {
+      text-align: center;
+    }
+	
+    .course-name {
+      color: #002855;
+      font-weight: 500;
+    }
+    .course-price {
+      font-weight: 500;
+    }
+    .course-status.active {
+      color: #28a745;
+    }
+    .course-status.inactive {
+      color: #dc3545;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn-action {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .edit-btn {
+      background-color: #ff6b00;
+      color: white;
+    }
+    .edit-btn:hover {
+      background-color: #e65c00;
+    }
+    .content-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .content-btn:hover {
+      background-color: #0056b3;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+    
+    .cancel-btn-2 {
+			background-color: #6c757d;
+			color: white;
+			padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+		}
 
-      .add-course-btn:hover {
-        background-color: #001f42;
-      }
-      .courses-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-      }
-      .courses-table th,
-      .courses-table td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-      }
-      .courses-table th {
-        background-color: #002855;
-        color: white;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-      }
+		.cancel-btn-2:hover {
+			background-color: #5a6268;
+		}
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 0;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
+    
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
 
-      /* Căn giữa cột hành động */
-      .courses-table th:last-child,
-      .courses-table td:last-child {
-        text-align: center;
+    .modal-header h2 {
+      color: #002855;
+      margin: 0;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .close-btn:hover {
+      color: #000;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .form-group textarea {
+      padding: 0.5rem;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #002855;
+    }
+    
+    .cancel-btn, .save-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+	.cancel-btn {
+	  background-color: #dc3545;
+	  color: white;
+	}
+	.cancel-btn:hover {
+	  background-color: #c82333;
+	}
+    
+    .save-btn {
+      background-color: #002855;
+      color: white;
+    }
+    
+    .save-btn:hover {
+      background-color: #001f42;
+    }
+    
+    /* ===== CSS CẢI THIỆN CHO DELETE MODAL ===== */
+    .delete-modal-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      text-align: center;
+      animation: modalFadeIn 0.3s ease-out;
+      position: relative;
+    }
+    
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
       }
-
-      .course-name {
-        color: #002855;
-        font-weight: 500;
+      to {
+        opacity: 1;
+        transform: scale(1);
       }
-      .course-price {
-        font-weight: 500;
-      }
-      .course-status.active {
-        color: #28a745;
-      }
-      .course-status.inactive {
-        color: #dc3545;
-      }
-      .action-buttons {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-        align-items: center;
-      }
-      .btn-action {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem;
-        border: none;
-        cursor: pointer;
-        text-decoration: none;
-      }
-      .edit-btn {
-        background-color: #ff6b00;
-        color: white;
-      }
-      .edit-btn:hover {
-        background-color: #e65c00;
-      }
-      .content-btn {
-        background-color: #007bff;
-        color: white;
-      }
-      .content-btn:hover {
-        background-color: #0056b3;
-      }
-      .delete-btn {
-        background-color: #dc3545;
-        color: white;
-      }
-      .delete-btn:hover {
-        background-color: #c82333;
-      }
-
-      /* Modal Styles */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        align-items: center;
-        justify-content: center;
-      }
-
-      .modal-content {
-        background-color: white;
-        padding: 0;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        border-bottom: 1px solid #eee;
-        flex-shrink: 0;
-      }
-
-      .modal-footer {
-        padding: 1.5rem;
-        border-top: 1px solid #eee;
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        flex-shrink: 0;
-      }
-
-      .modal-body {
-        padding: 1.5rem;
-        flex-grow: 1;
-        overflow-y: auto;
-      }
-
-      .modal-header h2 {
-        color: #002855;
-        margin: 0;
-      }
-
-      .close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #666;
-        padding: 0;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .close-btn:hover {
-        color: #000;
-      }
-
-      .form-group {
-        margin-bottom: 1rem;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: #333;
-      }
-
-      .form-group input,
-      .form-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 1rem;
-      }
-      .form-group textarea {
-        padding: 0.5rem;
-        width: 100%;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-      }
-      .form-group input:focus,
-      .form-group select:focus {
-        outline: none;
-        border-color: #002855;
-      }
-
-      .cancel-btn,
-      .save-btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 500;
-      }
-
-      .cancel-btn {
-        background-color: #dc3545;
-        color: white;
-      }
-      .cancel-btn:hover {
-        background-color: #c82333;
-      }
-
-      .save-btn {
-        background-color: #002855;
-        color: white;
-      }
-
-      .save-btn:hover {
-        background-color: #001f42;
-      }
-
-      /* ===== CSS CẢI THIỆN CHO DELETE MODAL ===== */
+    }
+    
+    /* Thêm icon cảnh báo */
+    .delete-modal-content::before {
+      content: "⚠️";
+      display: block;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #ffc107;
+    }
+    
+    .delete-modal-content p {
+      margin-bottom: 2rem;
+      color: #333;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+    
+    /* Cải thiện modal-footer trong delete modal */
+    .delete-modal-content .modal-footer {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      padding: 0;
+      border: none;
+    }
+    
+    /* Cải thiện buttons trong delete modal */
+    .delete-modal-content .cancel-btn,
+    .delete-modal-content .delete-btn {
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 1rem;
+      min-width: 100px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Button Hủy - màu xám trong delete modal */
+    .delete-modal-content .cancel-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .delete-modal-content .cancel-btn:hover {
+      background-color: #5a6268;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Button Xóa - màu đỏ trong delete modal */
+    .delete-modal-content .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    
+    .delete-modal-content .delete-btn:hover {
+      background-color: #c82333;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+    
+    /* Responsive cho delete modal */
+    @media (max-width: 480px) {
       .delete-modal-content {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 400px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        text-align: center;
-        animation: modalFadeIn 0.3s ease-out;
-        position: relative;
+        width: 95%;
+        padding: 1.5rem;
       }
-
-      @keyframes modalFadeIn {
-        from {
-          opacity: 0;
-          transform: scale(0.9);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-
-      /* Thêm icon cảnh báo */
-      .delete-modal-content::before {
-        content: "⚠️";
-        display: block;
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: #ffc107;
-      }
-
-      .delete-modal-content p {
-        margin-bottom: 2rem;
-        color: #333;
-        font-size: 1.1rem;
-        line-height: 1.5;
-        font-weight: 500;
-      }
-
-      /* Cải thiện modal-footer trong delete modal */
+      
       .delete-modal-content .modal-footer {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 1.5rem;
-        padding: 0;
-        border: none;
+        flex-direction: column;
+        gap: 0.75rem;
       }
-
-      /* Cải thiện buttons trong delete modal */
+      
       .delete-modal-content .cancel-btn,
       .delete-modal-content .delete-btn {
-        padding: 0.75rem 2rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        font-size: 1rem;
-        min-width: 100px;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      /* Button Hủy - màu xám trong delete modal */
-      .delete-modal-content .cancel-btn {
-        background-color: #6c757d;
-        color: white;
-      }
-
-      .delete-modal-content .cancel-btn:hover {
-        background-color: #5a6268;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-      }
-
-      /* Button Xóa - màu đỏ trong delete modal */
-      .delete-modal-content .delete-btn {
-        background-color: #dc3545;
-        color: white;
-      }
-
-      .delete-modal-content .delete-btn:hover {
-        background-color: #c82333;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-      }
-
-      /* Responsive cho delete modal */
-      @media (max-width: 480px) {
-        .delete-modal-content {
-          width: 95%;
-          padding: 1.5rem;
-        }
-
-        .delete-modal-content .modal-footer {
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .delete-modal-content .cancel-btn,
-        .delete-modal-content .delete-btn {
-          width: 100%;
-          padding: 0.875rem;
-        }
-      }
-      /* ===== KẾT THÚC CSS DELETE MODAL ===== */
-
-      /* Phần avatar */
-      .profile-avatar {
-        flex: 1;
-      }
-
-      .avatar-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        position: relative;
-      }
-
-      .avatar-icon {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        background-color: #f8f9fa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: 3px solid #e6eaf0;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .user-icon {
-        font-size: 4rem;
-        color: #95a5a6;
-      }
-
-      .avatar-upload {
         width: 100%;
-        text-align: center;
+        padding: 0.875rem;
       }
+    }
+    /* ===== KẾT THÚC CSS DELETE MODAL ===== */
+    
+    /* Phần avatar */
+    .profile-avatar {
+      flex: 1;
+    }
 
-      .upload-btn {
-        background-color: #f8f9fa;
-        color: #1a3b5d;
-        border: 1px solid #e6eaf0;
-        padding: 0.6rem 1.2rem;
-        border-radius: 8px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-block;
-        text-decoration: none;
-      }
+    .avatar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+    }
 
-      .upload-btn:hover {
-        background-color: #e6eaf0;
-      }
+    .avatar-icon {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 3px solid #e6eaf0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
 
-      .pagination {
-        margin-top: 1rem;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+    .user-icon {
+      font-size: 4rem;
+      color: #95a5a6;
+    }
 
-      .pagination a {
-        margin: 0 8px;
-        text-decoration: none;
-        color: #002855;
-        font-weight: bold;
-      }
+    .avatar-upload {
+      width: 100%;
+      text-align: center;
+    }
 
-      .pagination span {
-        margin: 0 8px;
-      }
+    .upload-btn {
+      background-color: #f8f9fa;
+      color: #1a3b5d;
+      border: 1px solid #e6eaf0;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-block;
+      text-decoration: none;
+    }
 
-      .video-btn {
-        background-color: #28a745;
-        color: white;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="manage-courses-container">
-      <div class="manage-courses-header">
-        <h1>Quản lý khóa học</h1>
-        <div class="button-group">
-          <button
-            class="add-course-btn"
-            onclick="openModal('add-course-modal')"
-          >
-            Thêm khóa học
-          </button>
-          <button
-            class="import-excel-btn"
-            onclick="openModal('import-course-modal')"
-          >
-            Nhập Excel
-          </button>
-          <a th:href="@{/Crud_Course/export}" class="export-excel-btn"
-            >Xuất Excel</a
-          >
-        </div>
+    .upload-btn:hover {
+      background-color: #e6eaf0;
+    }
+    
+    /* Pagination */
+        .pagination-section {
+            display: flex;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .pagination button.active {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button:disabled:hover {
+            background-color: white;
+            color: #333;
+            border-color: #ddd;
+        }
+    
+	.video-btn {
+	  background-color: #28a745;
+	  color: white;
+	}
+</style>
+</head>
+<body>
+  <div class="manage-courses-container">
+    <div class="manage-courses-header">
+      <h1>Quản lý khóa học</h1>
+      <div class="button-group">
+		<button class="add-course-btn" onclick="openModal('add-course-modal')"> <i class="fas fa-plus"></i> Thêm khóa học</button>
+        <button class="import-excel-btn" onclick="openModal('import-course-modal')"> <i class="fas fa-file-excel"></i> Nhập Excel</button>
+        <a th:href="@{/Crud_Course/export}" class="export-excel-btn"><i class="fas fa-download"></i> Xuất Excel</a>
       </div>
+      
+    </div>
 
-      <table class="courses-table">
-        <thead>
-          <tr>
-            <th>STT</th>
-            <th>Tên khóa học</th>
-            <th>Điểm đạt</th>
-            <th>Danh mục</th>
-
-            <th>Phần trăm giảm</th>
-            <th>Giá</th>
-            <th>Số lượng bài học</th>
-            <th>Ảnh đại diện</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="course, iterStat : ${courses}">
-            <td th:text="${iterStat.index + 1}"></td>
-            <td class="course-name" th:text="${course.ten_khoa_hoc}"></td>
-            <td th:text="${course.diem_dat}"></td>
-            <td th:text="${course.category.tenDanhMuc}"></td>
-
-            <td
-              th:text="${course.discountPercentage != null ? course.discountPercentage + '%' : ''}"
-            ></td>
-            <!-- <td th:text="${#numbers.formatDecimal(course.getDiscountedPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}"></td> -->
-
-            <td>
-              <span
-                th:if="${course.discounted}"
-                style="color: red; font-weight: bold"
-              >
-                <span
-                  style="text-decoration: line-through; color: gray"
-                  th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                >
-                </span>
-                <br />
-                <span
-                  th:text="${#numbers.formatDecimal(course.discountedPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                ></span>
-              </span>
-              <span th:if="${!course.discounted}">
-                <span
-                  th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"
-                ></span>
-              </span>
-            </td>
-
-            <!-- 
+    <table class="courses-table">
+      <thead>
+        <tr>
+        <th>STT</th>
+          <th>Tên khóa học</th>
+          <th>Điểm đạt</th>
+          <th>Danh mục</th>
+          
+          <th>Phần trăm giảm</th>
+          <th>Giá</th>
+          <th>Số lượng bài học</th>
+          <th>Ảnh đại diện</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+  <tr th:each="course, iterStat : ${courses}">
+    <td th:text="${(currentPage * pageSize) + iterStat.index + 1}"></td>
+    <td class="course-name" th:text="${course.ten_khoa_hoc}"></td>
+    <td th:text="${course.diem_dat}"></td>
+    <td th:text="${course.category.tenDanhMuc}"></td>
+    
+   <td th:text="${course.discountPercentage != null ? course.discountPercentage + '%' : ''}"></td>
+   <!-- <td th:text="${#numbers.formatDecimal(course.getDiscountedPrice, 0, 'COMMA', 0, 'POINT') + ' VND'}"></td> -->
+   
+   <td>
+    <span th:if="${course.discounted}" style="color: red; font-weight: bold;">
+        
+        
+        <span style="text-decoration: line-through; color: gray;"
+              th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+        </span>
+        <br>
+        <span th:text="${#numbers.formatDecimal(course.discountedPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+    </span>
+    <span th:if="${!course.discounted}">
+        <span th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+    </span>
+</td>
+   
+    <!-- 
     <td th:text="${course.gia_tien != null ? #numbers.formatDecimal(course.gia_tien, 0, 'COMMA', '.', '') + ' VND' : '0 VND'}"></td>
     
     <td th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', '.', '') + ' VND'}"></td> -->
-            <td th:text="${#lists.size(course.videos)} + ' bài'"></td>
-            <td>
-              <img
-                th:if="${course.anh_dai_dien != null}"
-                th:src="@{/upload/{img}(img=${course.anh_dai_dien})}"
-                alt="Ảnh đại diện"
-                width="80"
-                height="60"
-              />
+    <td th:text="${#lists.size(course.videos)} + ' bài'"></td>
+    <td>
+    <img th:if="${course.anh_dai_dien != null}" 
+     th:src="@{/upload/{img}(img=${course.anh_dai_dien})}" 
+     alt="Ảnh đại diện" width="80" height="60">
 
-              <!--     
+ <!--     
       <img th:src="@{'/uploads/' + ${course.anh_dai_dien}}" alt="Ảnh đại diện" width="80" height="60">-->
-            </td>
-            <td
-              th:text="${course.status ? 'Hoạt động' : 'Không hoạt động'}"
-              class="course-status"
-              th:classappend="${course.status} ? ' active' : ' inactive'"
-            ></td>
+    </td>
+    <td th:text="${course.status ? 'Hoạt động' : 'Không hoạt động'}"
+    class="course-status"
+    th:classappend="${course.status} ? ' active' : ' inactive'">
+</td>
 
-            <td>
-              <div class="action-buttons">
-                <!-- Nút chỉnh sửa -->
-                <!-- data-bs-toggle="modal" data-bs-target="#edit-course-modal" -->
-                <button
-                  class="btn-action edit-btn"
-                  onclick="openEditCourseModal(this)"
-                  th:attr="data-id=${course.ID_khoa_hoc},
+
+    <td>
+      <div class="action-buttons">
+        <!-- Nút chỉnh sửa -->
+         <!-- data-bs-toggle="modal" data-bs-target="#edit-course-modal" -->
+        <button class="btn-action edit-btn" 
+              
+               onclick="openEditCourseModal(this)"
+              th:attr="data-id=${course.ID_khoa_hoc},
                        data-title=${course.ten_khoa_hoc},
                        data-category=${course.category.id},
                        data-price=${course.gia_tien},
@@ -594,43 +602,38 @@
                        data-description=${course.mo_ta},
                        data-status=${course.status},
                        data-anh_dai_dien=${course.anh_dai_dien}"
-                  title="Chỉnh sửa"
-                >
-                  <i class="fas fa-edit"></i>
-                </button>
+                title="Chỉnh sửa">
+          <i class="fas fa-edit"></i>
+        </button>
 
-                <!-- Nút nội dung khóa học -->
-                <a
-                  th:href="@{'/course-content/' + ${course.ID_khoa_hoc}}"
-                  class="btn-action content-btn"
-                  title="Nội dung"
-                >
-                  <i class="fas fa-book"></i>
-                </a>
-                <a
-                  th:href="@{'/video-learning/' + ${course.ID_khoa_hoc}}"
-                  class="btn-action video-btn"
-                  title="Học video"
-                >
-                  <i class="fas fa-play-circle"></i>
-                </a>
+        <!-- Nút nội dung khóa học -->
+        <a th:href="@{'/course-content/' + ${course.ID_khoa_hoc}}"
+		   class="btn-action content-btn"
+		   title="Nội dung">
+		  <i class="fas fa-book"></i>
+		</a>
+		<a
+		                 th:href="@{'/video-learning/' + ${course.ID_khoa_hoc}}"
+		                 class="btn-action video-btn"
+		                 title="Học video"
+		               >
+		                 <i class="fas fa-play-circle"></i>
+		               </a>
 
-                <!-- Nút xóa -->
-                <!-- Nút mở modal xác nhận xóa -->
-                <button
-                  class="btn-action delete-btn"
-                  onclick="openDeleteModal(this)"
-                  th:attr="data-id=${course.ID_khoa_hoc}"
-                  title="Xóa"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
+        <!-- Nút xóa -->
+        <!-- Nút mở modal xác nhận xóa -->
+<button class="btn-action delete-btn"
+        onclick="openDeleteModal(this)"
+        	 th:attr="data-id=${course.ID_khoa_hoc}"
+        title="Xóa">
+  <i class="fas fa-trash"></i>
+</button>
+      </div>
+    </td>
+  </tr>
+</tbody>
 
-        <!-- 
+      <!-- 
       <tbody>
         <tr>
           <td class="course-name">Phân tích dữ liệu với Python</td>
@@ -647,355 +650,239 @@
           </td>
         </tr>
       </tbody> -->
-      </table>
-      <!-- -->
-      <div class="pagination">
-        <a
-          th:if="${courses.hasPrevious()}"
-          th:href="@{/Crud_Course(page=${courses.number - 1}, size=${courses.size})}"
-          >« Trước</a
-        >
-        <span
-          >Trang <span th:text="${courses.number + 1}"></span> /
-          <span th:text="${courses.totalPages}"></span
-        ></span>
-        <a
-          th:if="${courses.hasNext()}"
-          th:href="@{/Crud_Course(page=${courses.number + 1}, size=${course.size})}"
-          >Sau »</a
-        >
-      </div>
-    </div>
+    </table>
+<!-- Pagination -->
+<div class="pagination-section" th:if="${totalPages > 1}">
+    <div class="pagination">
+        <!-- Nút Previous -->
+        <button th:disabled="${currentPage == 0}"
+                th:onclick="'window.location.href=\'' + @{/Crud_Course(page=${currentPage - 1}, size=${pageSize})} + '\''"
+                id="prev-btn">‹ Trước</button>
 
-    <!-- Add Course Modal -->
-    <div class="modal" id="add-course-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Thêm khóa học mới</h2>
-          <button class="close-btn" onclick="closeModal('add-course-modal')">
-            ✕
-          </button>
-        </div>
-        <div class="modal-body">
-          <form
-            id="add-course-form"
-            th:action="@{/Crud_Course/add}"
-            th:object="${course}"
-            method="post"
-            enctype="multipart/form-data"
-          >
-            <div class="form-group">
-              <label for="add-course-name">Tên khóa học</label>
-              <input
-                type="text"
-                id="add-course-name"
-                placeholder="Nhập tên khóa học"
-                th:field="*{ten_khoa_hoc}"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="add-category-description">Mô tả</label>
-              <textarea
-                id="add-category-description"
-                th:field="*{mo_ta}"
-              ></textarea>
-            </div>
-            <div class="form-group">
-              <label for="add-course-point">Điểm đạt</label>
-              <input
-                type="number"
-                id="add-course-point"
-                placeholder="Nhập điểm để đậu khóa học"
-                th:field="*{diem_dat}"
-                min="0"
-                max="10"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="add-course-category">Danh mục</label>
-              <select id="add-course-category" th:field="*{category.id}">
-                <option value="">Chọn danh mục</option>
-                <option
-                  th:each="category : ${categories}"
-                  th:value="${category.id}"
-                  th:text="${category.tenDanhMuc}"
-                >
-                  <!-- th:selected="${category.tenDanhMuc == selectedCategory}" -->
-                </option>
-              </select>
-              <!-- <select id="edit-course-category" required>
+        <!-- Các nút số trang -->
+        <button th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:onclick="'window.location.href=\'' + @{/Crud_Course(page=${i}, size=${pageSize})} + '\''"
+                th:classappend="${i == currentPage} ? 'active'"
+                th:style="${i < totalPages} ? 'display: block' : 'display: none'"
+                th:text="${i + 1}"></button>
+
+        <!-- Nút Next -->
+        <button id="next-btn"
+                th:onclick="'window.location.href=\'' + @{/Crud_Course(page=${currentPage + 1}, size=${pageSize})} + '\''"
+                th:disabled="${currentPage == totalPages - 1}"
+                th:classappend="${currentPage == totalPages - 1} ? 'disabled'">Sau ›</button>
+    </div>
+</div>
+        
+        
+  </div>
+  
+  <!-- Add Course Modal -->
+  <div class="modal" id="add-course-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Thêm khóa học mới</h2>
+        <button class="close-btn" onclick="closeModal('add-course-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-course-form"
+      th:action="@{/Crud_Course/add}"
+      th:object="${course}"
+      method="post"
+      enctype="multipart/form-data">
+
+          <div class="form-group">
+            <label for="add-course-name">Tên khóa học</label>
+            <input type="text" id="add-course-name" placeholder="Nhập tên khóa học" th:field="*{ten_khoa_hoc}" required>
+          </div>
+          <div class="form-group">
+            <label for="add-category-description">Mô tả</label>
+            <textarea id="add-category-description" th:field="*{mo_ta}"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="add-course-point">Điểm đạt</label>
+            <input type="number" id="add-course-point" placeholder="Nhập điểm để đậu khóa học" th:field="*{diem_dat}" min="0" max="10" required>
+          </div>
+          <div class="form-group">
+            <label for="add-course-category">Danh mục</label>
+            <select id="add-course-category" th:field="*{category.id}">
+            <option value="">Chọn danh mục</option>
+                        <option th:each="category : ${categories}" 
+                                th:value="${category.id}" 
+                                th:text="${category.tenDanhMuc}" >
+                                <!-- th:selected="${category.tenDanhMuc == selectedCategory}" -->
+                                
+                        </option>
+            </select>
+            <!-- <select id="edit-course-category" required>
               <option value="">Chọn danh mục</option>
               <option value="finance">Tài chính</option>
               <option value="technology">Công nghệ</option>
               <option value="business">Kinh doanh</option>
             </select> -->
-            </div>
-            <div class="form-group">
-              <label for="add-course-price">Giá (VND)</label>
-              <input
-                type="number"
-                id="add-course-price"
-                placeholder="Nhập giá khóa học"
-                th:field="*{gia_tien}"
-                min="1000"
-                required
-              />
-            </div>
-
-            <div class="profile-avatar">
-              <div class="avatar-container">
-                <div class="avatar-icon">
-                  <i class="user-icon">👤</i>
+          </div>
+          <div class="form-group">
+            <label for="add-course-price">Giá (VND)</label>
+            <input type="number" id="add-course-price" placeholder="Nhập giá khóa học"  th:field="*{gia_tien}" min="1000" required>
+          </div>
+           
+                 <div class="profile-avatar">
+                <div class="avatar-container">
+                    <div class="avatar-icon">
+                        <i class="user-icon">👤</i>
+                    </div>
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-file"  name="fileAnhDaiDien" accept="image/*" style="display: none;">
+                        <label for="avatar-file" class="upload-btn">Chọn ảnh</label>
+                    </div>
                 </div>
-                <div class="avatar-upload">
-                  <input
-                    type="file"
-                    id="avatar-file"
-                    name="fileAnhDaiDien"
-                    accept="image/*"
-                    style="display: none"
-                  />
-                  <label for="avatar-file" class="upload-btn">Chọn ảnh</label>
+            </div>
+                <div class="form-group">
+                    <label for="add-category-status">Trạng thái</label>
+                    <select id="add-category-status"  th:field="*{status}" required>
+                        <option value="true">Hoạt động</option>
+                        <option value="false">Không hoạt động</option>
+                    </select>
                 </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="add-category-status">Trạng thái</label>
-              <select id="add-category-status" th:field="*{status}" required>
-                <option value="true">Hoạt động</option>
-                <option value="false">Không hoạt động</option>
-              </select>
-            </div>
-            <div class="modal-footer">
-              <button
-                class="cancel-btn"
-                onclick="closeModal('add-course-modal')"
-              >
-                Hủy
-              </button>
-              <button class="save-btn" type="submit">Thêm</button>
-            </div>
-          </form>
-        </div>
+                <div class="modal-footer">
+        <button class="cancel-btn" onclick="closeModal('add-course-modal')">Hủy</button>
+        <button class="save-btn" type="submit">Thêm</button>
       </div>
+        </form>
+      </div>
+      
     </div>
+  </div>
 
-    <!-- Edit Course Modal -->
-    <div class="modal" id="edit-course-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Chỉnh sửa khóa học</h2>
-          <button class="close-btn" onclick="closeModal('edit-course-modal')">
-            ✕
-          </button>
-        </div>
-        <div class="modal-body">
-          <form
-            id="edit-course-form"
+  <!-- Edit Course Modal -->
+<div class="modal" id="edit-course-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Chỉnh sửa khóa học</h2>
+      <button class="close-btn" onclick="closeModal('edit-course-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="edit-course-form"
             th:action="@{/Crud_Course/update}"
             th:object="${course}"
             method="post"
-            enctype="multipart/form-data"
-          >
-            <input
-              type="hidden"
-              name="ID_khoa_hoc"
-              id="edit-course-id"
-              th:field="*{ID_khoa_hoc}"
-            />
+            enctype="multipart/form-data">
 
-            <div class="form-group">
-              <label for="edit-course-name">Tên khóa học</label>
-              <input
-                type="text"
-                id="edit-course-name"
-                th:field="*{ten_khoa_hoc}"
-                placeholder="Nhập tên khóa học"
-                required
-              />
-            </div>
+        <input type="hidden" name="ID_khoa_hoc" id="edit-course-id" th:field="*{ID_khoa_hoc}">
 
-            <div class="form-group">
-              <label for="edit-course-description">Mô tả</label>
-              <textarea
-                id="edit-course-description"
-                th:field="*{mo_ta}"
-                placeholder="Nhập mô tả khóa học"
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="edit-course-point">Điểm đạt</label>
-              <input
-                type="number"
-                id="edit-course-point"
-                th:field="*{diem_dat}"
-                min="0"
-                max="10"
-                required
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="edit-course-category">Danh mục</label>
-              <select
-                id="edit-course-category"
-                th:field="*{category.id}"
-                required
-              >
-                <option value="">-- Chọn danh mục --</option>
-                <option
-                  th:each="cat : ${categories}"
-                  th:value="${cat.id}"
-                  th:text="${cat.tenDanhMuc}"
-                ></option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="edit-course-price">Giá (VND)</label>
-              <input
-                type="number"
-                id="edit-course-price"
-                th:field="*{gia_tien}"
-                min="1000"
-                required
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Ảnh đại diện</label>
-              <div class="avatar-container">
-                <div class="current-avatar">
-                  <img
-                    th:src="@{/upload/{img}(img=${course.anh_dai_dien})}"
-                    alt="Ảnh hiện tại"
-                    style="max-height: 100px"
-                  />
-                </div>
-                <input
-                  type="hidden"
-                  name="oldImage"
-                  th:value="${course.anh_dai_dien}"
-                />
-                <input
-                  type="file"
-                  id="avatar-file"
-                  name="imageFile"
-                  accept="image/*"
-                />
-                <label for="avatar-file" class="upload-btn">Chọn ảnh mới</label>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="edit-course-status">Trạng thái</label>
-              <select id="edit-course-status" th:field="*{status}" required>
-                <option th:value="true" th:selected="${course.status} == true">
-                  Hoạt động
-                </option>
-                <option
-                  th:value="false"
-                  th:selected="${course.status} == false"
-                >
-                  Không hoạt động
-                </option>
-              </select>
-            </div>
-
-            <div class="modal-footer">
-              <button
-                class="cancel-btn"
-                type="button"
-                onclick="closeModal('edit-course-modal')"
-              >
-                Hủy
-              </button>
-              <button class="save-btn" type="submit">Lưu</button>
-            </div>
-          </form>
+        <div class="form-group">
+          <label for="edit-course-name">Tên khóa học</label>
+          <input type="text" id="edit-course-name" th:field="*{ten_khoa_hoc}" placeholder="Nhập tên khóa học" required>
         </div>
-      </div>
-    </div>
 
-    <!-- Modal xác nhận xóa -->
-    <div class="modal" id="delete-course-modal">
-      <div class="delete-modal-content">
-        <form id="deleteCourseForm" method="get">
-          <p>Xóa khóa học này sẽ không thể khôi phục. Bạn có chắc chắn?</p>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="cancel-btn"
-              onclick="closeModal('delete-course-modal')"
-            >
-              Hủy
-            </button>
-            <button type="submit" class="delete-btn">Xóa</button>
+        <div class="form-group">
+          <label for="edit-course-description">Mô tả</label>
+          <textarea id="edit-course-description" th:field="*{mo_ta}" placeholder="Nhập mô tả khóa học"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-point">Điểm đạt</label>
+          <input type="number" id="edit-course-point" th:field="*{diem_dat}" min="0" max="10" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-category">Danh mục</label>
+          <select id="edit-course-category" th:field="*{category.id}" required>
+            <option value="">-- Chọn danh mục --</option>
+            <option th:each="cat : ${categories}"
+                    th:value="${cat.id}"
+                    th:text="${cat.tenDanhMuc}">
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course-price">Giá (VND)</label>
+          <input type="number" id="edit-course-price" th:field="*{gia_tien}" min="1000" required>
+        </div>
+
+        <div class="form-group">
+          <label>Ảnh đại diện</label>
+          <div class="avatar-container">
+            <div class="current-avatar">
+              <img th:src="@{/upload/{img}(img=${course.anh_dai_dien})}" alt="Ảnh hiện tại" style="max-height: 100px;">
+            </div>
+            <input type="hidden" name="oldImage" th:value="${course.anh_dai_dien}">
+            <input type="file" id="avatar-file" name="imageFile" accept="image/*">
+            <label for="avatar-file" class="upload-btn">Chọn ảnh mới</label>
           </div>
-        </form>
-      </div>
-    </div>
-    <!-- Import Excel Modal -->
-    <div class="modal" id="import-course-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Nhập danh mục từ Excel</h2>
-          <button class="close-btn" onclick="closeModal('import-course-modal')">
-            ✕
-          </button>
         </div>
-        <div class="modal-body">
-          <form
-            th:action="@{/Crud_Course/import}"
-            method="post"
-            enctype="multipart/form-data"
-          >
-            <div class="form-group">
-              <label for="import-file">Chọn file Excel</label>
-              <input
-                type="file"
-                id="import-file"
-                name="file"
-                accept=".xlsx,.xls"
-                required
-              />
-              <div class="error" id="error-import-file"></div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="cancel-btn"
-                onclick="closeModal('import-course-modal')"
-              >
-                Hủy
-              </button>
-              <button type="submit" class="save-btn">Nhập</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
 
-    <!-- JavaScript for Modal -->
-    <script>
-      /* function openDeleteModal(courseId) {
+        <div class="form-group">
+          <label for="edit-course-status">Trạng thái</label>
+          <select id="edit-course-status" th:field="*{status}" required>
+            <option th:value="true" th:selected="${course.status} == true">Hoạt động</option>
+            <option th:value="false" th:selected="${course.status} == false">Không hoạt động</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button class="cancel-btn" type="button" onclick="closeModal('edit-course-modal')">Hủy</button>
+          <button class="save-btn" type="submit">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Modal xác nhận xóa -->
+<div class="modal" id="delete-course-modal">
+  <div class="delete-modal-content">
+    <form id="deleteCourseForm" method="get">
+      <p>Xóa khóa học này sẽ không thể khôi phục. Bạn có chắc chắn?</p>
+      <div class="modal-footer">
+        <button type="button" class="cancel-btn" onclick="closeModal('delete-course-modal')">Hủy</button>
+        <button type="submit" class="delete-btn">Xóa</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Import Excel Modal -->
+        <div class="modal" id="import-course-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Nhập danh mục từ Excel</h2>
+                    <button class="close-btn" onclick="closeModal('import-course-modal')">✕</button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/Crud_Course/import}" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="import-file">Chọn file Excel</label>
+                            <input type="file" id="import-file" name="file" accept=".xlsx,.xls" required>
+                            <div class="error" id="error-import-file"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="cancel-btn-2" onclick="closeModal('import-course-modal')">Hủy</button>
+                            <button type="submit" class="save-btn">Nhập</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+  
+  <!-- JavaScript for Modal -->
+  <script>
+ /* function openDeleteModal(courseId) {
 	  const id = button.getAttribute('data-id');
 	  document.getElementById('edit-course-id').value = id;
 	  openModal('delete-course-modal');
 	  }*/
-      function openModal(modalId) {
-        document.getElementById(modalId).style.display = "flex";
-      }
-      function openDeleteModal(button) {
-        const id = button.getAttribute("data-id");
-        const form = document.getElementById("deleteCourseForm");
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'flex';
+    }
+    function openDeleteModal(button) {
+        const id = button.getAttribute('data-id');
+        const form = document.getElementById('deleteCourseForm');
         form.action = `/Crud_Course/delete/${id}`;
-        openModal("delete-course-modal");
+        openModal('delete-course-modal');
       }
-      /*function openModal(modalId) {
+   /*function openModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
 
@@ -1008,130 +895,130 @@
   }
 }*/
 
-      function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) modal.style.display = "none";
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.style.display = 'none';
 
-        const backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) backdrop.remove();
+  const backdrop = document.querySelector('.modal-backdrop');
+  if (backdrop) backdrop.remove();
+}
+
+
+
+    //function closeModal(modalId) {
+//      document.getElementById(modalId).style.display = 'none';
+  //  }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const addModal = document.getElementById('add-course-modal');
+      const editModal = document.getElementById('edit-course-modal');
+      const deleteModal = document.getElementById('delete-course-modal');
+      
+      if (event.target === addModal) {
+        addModal.style.display = 'none';
       }
-
-      //function closeModal(modalId) {
-      //      document.getElementById(modalId).style.display = 'none';
-      //  }
-
-      // Close modal when clicking outside
-      window.onclick = function (event) {
-        const addModal = document.getElementById("add-course-modal");
-        const editModal = document.getElementById("edit-course-modal");
-        const deleteModal = document.getElementById("delete-course-modal");
-
-        if (event.target === addModal) {
-          addModal.style.display = "none";
-        }
-        if (event.target === editModal) {
-          editModal.style.display = "none";
-        }
-        if (event.target === deleteModal) {
-          deleteModal.style.display = "none";
-        }
-      };
-
-      // Function to handle adding new course
-      function addCourse() {
-        if (courseName && courseCategory && coursePrice) {
-          // TODO: Call backend API to add course
-          console.log("Thêm khóa học:", {
-            name: courseName,
-            category: courseCategory,
-            price: coursePrice,
-          });
-
-          // Close modal and reset form
-          closeModal("add-course-modal");
-          document.getElementById("add-course-form").reset();
-
-          // TODO: Refresh course list or add new row to table
-          alert("Đã thêm khóa học thành công!");
-        } else {
-          alert("Vui lòng điền đầy đủ thông tin!");
-        }
+      if (event.target === editModal) {
+        editModal.style.display = 'none';
       }
-      function openEditCourseModal(button) {
-        const id = button.getAttribute("data-id");
-        const title = button.getAttribute("data-title");
-        const category = button.getAttribute("data-category");
-        const price = button.getAttribute("data-price");
-        const point = button.getAttribute("data-point");
-        const description = button.getAttribute("data-description");
-        const status = button.getAttribute("data-status");
-        const anhDaiDien = button.getAttribute("data-anh_dai_dien"); // thêm thuộc tính ảnh
+      if (event.target === deleteModal) {
+        deleteModal.style.display = 'none';
+      }
+    };
 
-        document.getElementById("edit-course-id").value = id;
-        document.getElementById("edit-course-name").value = title;
-        document.getElementById("edit-course-description").value = description;
-        document.getElementById("edit-course-point").value = point;
-        document.getElementById("edit-course-category").value = category;
-        document.getElementById("edit-course-price").value = price;
-        document.getElementById("edit-course-status").value = status;
+    // Function to handle adding new course
+    function addCourse() {
+
+      
+      if (courseName && courseCategory && coursePrice) {
+        // TODO: Call backend API to add course
+        console.log('Thêm khóa học:', {
+          name: courseName,
+          category: courseCategory,
+          price: coursePrice
+        });
+        
+        // Close modal and reset form
+        closeModal('add-course-modal');
+        document.getElementById('add-course-form').reset();
+        
+        // TODO: Refresh course list or add new row to table
+        alert('Đã thêm khóa học thành công!');
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin!');
+      }
+    }
+    function openEditCourseModal(button) {
+        const id = button.getAttribute('data-id');
+        const title = button.getAttribute('data-title');
+        const category = button.getAttribute('data-category');
+        const price = button.getAttribute('data-price');
+        const point = button.getAttribute('data-point');
+        const description = button.getAttribute('data-description');
+        const status = button.getAttribute('data-status');
+        const anhDaiDien = button.getAttribute('data-anh_dai_dien'); // thêm thuộc tính ảnh
+
+        document.getElementById('edit-course-id').value = id;
+        document.getElementById('edit-course-name').value = title;
+        document.getElementById('edit-course-description').value = description;
+        document.getElementById('edit-course-point').value = point;
+        document.getElementById('edit-course-category').value = category;
+        document.getElementById('edit-course-price').value = price;
+        document.getElementById('edit-course-status').value = status;
 
         // Set ảnh đại diện (nếu có)
-        const avatarImg = document.querySelector(
-          "#edit-course-modal .current-avatar img"
-        );
+        const avatarImg = document.querySelector("#edit-course-modal .current-avatar img");
         if (anhDaiDien && anhDaiDien.trim() !== "") {
-          avatarImg.src = "/upload/" + anhDaiDien;
+            avatarImg.src = "/upload/" + anhDaiDien;
         } else {
-          avatarImg.src = "/upload/default.png"; // hoặc ảnh mặc định
+            avatarImg.src = "/upload/default.png"; // hoặc ảnh mặc định
         }
 
         // Set oldImage hidden input
-        const oldImageInput = document.querySelector(
-          "#edit-course-modal input[name='oldImage']"
-        );
-        if (oldImageInput) {
-          oldImageInput.value = anhDaiDien || "";
+        const oldImageInput = document.querySelector("#edit-course-modal input[name='oldImage']");
+        if(oldImageInput){
+            oldImageInput.value = anhDaiDien || "";
         }
 
-        openModal("edit-course-modal");
+        openModal('edit-course-modal');
+    }
+
+
+    // Function to handle updating course
+    function updateCourse() {
+      
+      if (courseName && courseCategory && coursePrice) {
+        // TODO: Call backend API to update course
+        console.log('Cập nhật khóa học:', {
+          name: courseName,
+          category: courseCategory,
+          price: coursePrice
+        });
+        
+        // Close modal and reset form
+        closeModal('edit-course-modal');
+        document.getElementById('edit-course-form').reset();
+        
+        // TODO: Refresh course list or update existing row
+        alert('Đã cập nhật khóa học thành công!');
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin!');
       }
+    }
 
-      // Function to handle updating course
-      function updateCourse() {
-        if (courseName && courseCategory && coursePrice) {
-          // TODO: Call backend API to update course
-          console.log("Cập nhật khóa học:", {
-            name: courseName,
-            category: courseCategory,
-            price: coursePrice,
-          });
-
-          // Close modal and reset form
-          closeModal("edit-course-modal");
-          document.getElementById("edit-course-form").reset();
-
-          // TODO: Refresh course list or update existing row
-          alert("Đã cập nhật khóa học thành công!");
-        } else {
-          alert("Vui lòng điền đầy đủ thông tin!");
-        }
-      }
-
-      // Function to populate edit form with course data
-      function editCourse(courseId, courseName, courseCategory, coursePrice) {
-        // Populate form fields
-        document.getElementById("edit-course-name").value = courseName;
-        document.getElementById("edit-course-category").value = courseCategory;
-        document.getElementById("edit-course-price").value = coursePrice;
-
-        // Store course ID for update
-        document
-          .getElementById("edit-course-form")
-          .setAttribute("data-course-id", courseId);
-
-        // Open modal
-        openModal("edit-course-modal");
-      }
-    </script>
-  </body>
+    // Function to populate edit form with course data
+    function editCourse(courseId, courseName, courseCategory, coursePrice) {
+      // Populate form fields
+      document.getElementById('edit-course-name').value = courseName;
+      document.getElementById('edit-course-category').value = courseCategory;
+      document.getElementById('edit-course-price').value = coursePrice;
+      
+      // Store course ID for update
+      document.getElementById('edit-course-form').setAttribute('data-course-id', courseId);
+      
+      // Open modal
+      openModal('edit-course-modal');
+    }
+  </script>
+</body>
 </html>

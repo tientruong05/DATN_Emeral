@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.poly.entity.User;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -149,6 +150,26 @@ public class EnrollmentService {
         }
     }
 
+    public Map<String, Object> calculateUserStats(List<Enrollment> enrollments) {
+        int totalCourses = enrollments.size();
+        int completedCourses = (int) enrollments.stream()
+                                                .filter(e -> e.getFinishDate() != null)
+                                                .count();
+        int inProgressCourses = totalCourses - completedCourses;
+        double totalSpent = enrollments.stream()
+                                       .mapToDouble(e -> e.getPrice() != null ? e.getPrice() : 0)
+                                       .sum();
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalCourses", totalCourses);
+        stats.put("completedCourses", completedCourses);
+        stats.put("inProgressCourses", inProgressCourses);
+        stats.put("totalSpent", totalSpent);
+
+        return stats;
+    }
+
+    
     /**
      * Lấy progress hiện tại của user cho khóa học
      */

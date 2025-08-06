@@ -311,36 +311,50 @@
             display: none;
         }
 
-        .pagination {
-            margin-top: 1rem;
+        /* Pagination - Giống như trong Crud_Course */
+        .pagination-section {
             display: flex;
             justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .pagination {
+            display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .pagination a,
-        .pagination span {
+        .pagination button {
             padding: 0.5rem 1rem;
-            text-decoration: none;
-            color: #002855;
-            font-weight: 500;
-            border-radius: 6px;
-            transition: background-color 0.3s ease;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .pagination a:hover {
-            background-color: #e9ecef;
-        }
-
-        .pagination .disabled {
-            color: #6c757d;
-            pointer-events: none;
-        }
-
-        .pagination .current {
+        .pagination button:hover {
             background-color: #002855;
             color: white;
+            border-color: #002855;
+        }
+
+        .pagination button.active {
+            background-color: #002855;
+            color: white;
+            border-color: #002855;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button:disabled:hover {
+            background-color: white;
+            color: #333;
+            border-color: #ddd;
         }
 
         @media (max-width: 768px) {
@@ -456,13 +470,26 @@
             </tbody>
         </table>
 
-        <div class="pagination">
-            <a th:if="${userPage.hasPrevious()}" th:href="@{/Crud_User(page=${userPage.number - 1}, size=${userPage.size})}" class="page-link">« Trước</a>
-            <span th:class="${userPage.number == i} ? 'current'" th:each="i : ${#numbers.sequence(0, userPage.totalPages - 1)}">
-                <a th:href="@{/Crud_User(page=${i}, size=${userPage.size})}" th:text="${i + 1}"></a>
-            </span>
-            <a th:if="${userPage.hasNext()}" th:href="@{/Crud_User(page=${userPage.number + 1}, size=${userPage.size})}" class="page-link">Sau »</a>
-        </div>
+		<div class="pagination-section" th:if="${userPage.totalPages > 1}">
+			<div class="pagination">
+				<!-- Nút Previous -->
+				<button th:disabled="${userPage.number == 0}"
+					th:onclick="'window.location.href=\'' + @{/Crud_User(page=${userPage.number - 1}, size=${userPage.size})} + '\''"
+					id="prev-btn">‹ Trước</button>
+		
+				<!-- Các nút số trang -->
+				<button th:each="i : ${#numbers.sequence(0, userPage.totalPages - 1)}"
+					th:onclick="'window.location.href=\'' + @{/Crud_User(page=${i}, size=${userPage.size})} + '\''"
+					th:classappend="${i == userPage.number} ? 'active'"
+					th:style="${i < userPage.totalPages} ? 'display: block' : 'display: none'" th:text="${i + 1}"></button>
+		
+				<!-- Nút Next -->
+				<button id="next-btn"
+					th:onclick="'window.location.href=\'' + @{/Crud_User(page=${userPage.number + 1}, size=${userPage.size})} + '\''"
+					th:disabled="${userPage.number == userPage.totalPages - 1}"
+					th:classappend="${userPage.number == userPage.totalPages - 1} ? 'disabled'">Sau ›</button>
+			</div>
+		</div>
 
         <!-- Add User Modal -->
         <div class="modal" id="add-user-modal">
