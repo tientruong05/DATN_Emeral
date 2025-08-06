@@ -1,4 +1,3 @@
-
 package com.poly.repository;
 
 import com.poly.entity.Course;
@@ -12,19 +11,33 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    @Query(value = "SELECT TOP (:limit) * FROM Course c WHERE c.status = 1 ORDER BY NEWID()", nativeQuery = true)
+    // Sắp xếp theo số lượng đăng ký giảm dần
+    @Query("SELECT c FROM Course c LEFT JOIN c.enrollments e WHERE c.status = true GROUP BY c ORDER BY COUNT(e) DESC")
     List<Course> findTopNByStatusTrue(@Param("limit") int limit);
 
-    @Query("SELECT c FROM Course c WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc")
+    // Sắp xếp theo số lượng đăng ký giảm dần
+    @Query("SELECT c FROM Course c LEFT JOIN c.enrollments e WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc GROUP BY c ORDER BY COUNT(e) DESC")
     List<Course> findByCategoryTenDanhMucAndStatusTrue(@Param("tenDanhMuc") String tenDanhMuc);
 
-    @Query("SELECT c FROM Course c WHERE c.status = true")
+    // Sắp xếp theo số lượng đăng ký giảm dần
+    @Query("SELECT c FROM Course c LEFT JOIN c.enrollments e WHERE c.status = true GROUP BY c ORDER BY COUNT(e) DESC")
     Page<Course> findByStatusTrue(Pageable pageable);
 
-    @Query("SELECT c FROM Course c WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc")
+    // Sắp xếp theo số lượng đăng ký giảm dần
+    @Query("SELECT c FROM Course c LEFT JOIN c.enrollments e WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc GROUP BY c ORDER BY COUNT(e) DESC")
     Page<Course> findByCategoryTenDanhMucAndStatusTrue(@Param("tenDanhMuc") String tenDanhMuc, Pageable pageable);
 
-    List<Course> findByStatusTrueAndCategoryTenDanhMuc(String tenDanhMuc);
+    // Sắp xếp theo số lượng đăng ký giảm dần
+    @Query("SELECT c FROM Course c LEFT JOIN c.enrollments e WHERE c.status = true AND c.category.tenDanhMuc = :tenDanhMuc GROUP BY c ORDER BY COUNT(e) DESC")
+    List<Course> findByStatusTrueAndCategoryTenDanhMuc(@Param("tenDanhMuc") String tenDanhMuc);
+
+    // Cập nhật phương thức findAll để sắp xếp theo số lượng đăng ký
+    @Query("SELECT c FROM Course c LEFT JOIN c.enrollments e GROUP BY c ORDER BY COUNT(e) DESC")
+    Page<Course> findAll(Pageable pageable);
+
+    // Cập nhật phương thức findByIdCate để sắp xếp theo số lượng đăng ký
+    @Query("SELECT c FROM Course c LEFT JOIN c.enrollments e WHERE c.category.id = :idCate GROUP BY c ORDER BY COUNT(e) DESC")
+    Page<Course> findByIdCate(@Param("idCate") Integer idCate, Pageable pageable);
 
     long countByStatusTrue();
 
@@ -33,4 +46,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT c FROM Course c WHERE c.ten_khoa_hoc = :tenKhoaHoc")
     Optional<Course> findByTen_khoa_hoc(@Param("tenKhoaHoc") String tenKhoaHoc);
+
+    @Query("SELECT c FROM Course c WHERE LOWER(c.ten_khoa_hoc) LIKE LOWER(CONCAT('%', :tenKhoaHoc, '%')) AND c.status = true")
+    Page<Course> findCoursesByTenKhoaHocAndStatusTrue(@Param("tenKhoaHoc") String tenKhoaHoc, Pageable pageable);
+    @Query("SELECT c FROM Course c WHERE c.status = true AND c.ID_khoa_hoc NOT IN :courseIds ORDER BY RAND()")
+    List<Course> findTopNByStatusTrueAndIdNotIn(@Param("courseIds") List<Long> courseIds, @Param("limit") int limit);
+
+    
 }

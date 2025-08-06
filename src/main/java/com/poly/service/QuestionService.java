@@ -3,6 +3,9 @@ package com.poly.service;
 import com.poly.entity.Question;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface QuestionService {
     List<Question> findAll();
     Question findById(Long id);

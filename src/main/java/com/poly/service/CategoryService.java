@@ -129,4 +129,8 @@ public class CategoryService {
                 return "";
         }
     }
+
+    public List<Category> getCategoriesByStatus(){
+    	return categoryRepository.findByStatus(true);
+    }
 }

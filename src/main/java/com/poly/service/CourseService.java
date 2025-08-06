@@ -29,12 +29,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
 
     private static final int PAGE_SIZE = 8;
-
+  
+  
+    private CartService cartService;
     @Autowired
     private UserRepository userRepository;
 
@@ -44,9 +47,11 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
     
+    
     @Autowired
     private CategoryService cateService;
-
+    
+    
     public Page<Course> getAllCategories(Pageable pageable) {
         return courseRepository.findAll(pageable);
     }
@@ -57,6 +62,9 @@ public class CourseService {
 
     public List<Course> findAll() {
         return courseRepository.findAll();
+    }
+    public Page<Course> findSearchAll(String query, Pageable pageable) {
+        return courseRepository.findCoursesByTenKhoaHocAndStatusTrue(query, pageable);
     }
 
     public Course findById(Long id) {
@@ -71,8 +79,22 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
+  
+    
     public List<Course> getRandomCourses(int limit) {
-        return courseRepository.findTopNByStatusTrue(limit);
+        List<Course> courses = courseRepository.findTopNByStatusTrue(limit);
+        System.out.println("getRandomCourses: Returned " + courses.size() + " courses");
+        return courses;
+    }
+
+    public List<Course> findRandomCoursesNotInCart(Long userId, int limit) {
+        List<Long> cartCourseIds = cartService.getCoursesInCart(userId)
+                .stream()
+                .map(Course::getID_khoa_hoc)
+                .collect(Collectors.toList());
+        List<Course> courses = courseRepository.findTopNByStatusTrueAndIdNotIn(cartCourseIds, limit);
+        System.out.println("findRandomCoursesNotInCart: Returned " + courses.size() + " courses for userId " + userId);
+        return courses;
     }
 
     public List<Course> getCoursesByType(String type) {
@@ -286,5 +308,6 @@ public class CourseService {
                 return null;
         }
     }
+    
 
 }

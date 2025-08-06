@@ -4,6 +4,8 @@ import com.poly.entity.Question;
 import com.poly.repository.QuestionRepository;
 import com.poly.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,4 +58,6 @@ public class QuestionServiceImp implements QuestionService {
     public void saveNewQuestions(List<Question> questions) {
         questionRepository.saveAll(questions);
     }
+
+
 }

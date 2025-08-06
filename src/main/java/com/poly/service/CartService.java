@@ -5,6 +5,7 @@ import com.poly.entity.Course;
 import com.poly.entity.Enrollment;
 import com.poly.entity.User;
 import com.poly.repository.CartRepository;
+import com.poly.repository.CourseRepository;
 import com.poly.repository.EnrollmentsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -22,6 +24,9 @@ public class CartService {
     
     @Autowired
     private CartRepository cartRepository;
+    
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Autowired
     private CourseService courseService;
@@ -46,7 +51,28 @@ public class CartService {
     public Cart save(Cart cart) {
         return cartRepository.save(cart);
     }
-
+    public List<Course> getCoursesInCart(Long userId) {
+        return getCartItemsByUser(userId)
+                .stream()
+                .map(Cart::getCourse)
+                .collect(Collectors.toList());
+    }
+    public List<Course> findRandomCoursesNotInCart(Long userId, int limit) {
+        if (userId == null) {
+            logger.warning("Attempted to find random courses with null userId");
+            List<Course> courses = courseRepository.findTopNByStatusTrue(limit);
+            logger.info("Returned " + courses.size() + " random courses for null userId");
+            return courses.stream().limit(4).collect(Collectors.toList());
+        }
+        List<Long> cartCourseIds = getCoursesInCart(userId)
+                .stream()
+                .map(Course::getID_khoa_hoc)
+                .filter(id -> id != null)
+                .collect(Collectors.toList());
+        List<Course> courses = courseRepository.findTopNByStatusTrueAndIdNotIn(cartCourseIds, limit);
+        logger.info("Returned " + courses.size() + " random courses not in cart for userId " + userId);
+        return courses.stream().limit(4).collect(Collectors.toList());
+    }
     public boolean addToCart(Long userId, Long courseId) {
         User user = null;
         try {
@@ -199,5 +225,6 @@ public class CartService {
     public void clearCartByUser(Long userId) {
         cartRepository.deleteByUserId(userId);
     }
+    
 
 }

@@ -553,10 +553,271 @@
                 font-size: 0.9rem;
             }
         }
+		
+		/* CSS cho Result Modal - Thêm vào phần <style> trong file HTML */
+
+			/* Modal Overlay */
+			.modal-backdrop {
+			    background: rgba(0, 0, 0, 0.7);
+			    backdrop-filter: blur(5px);
+			}
+
+			/* Modal Dialog */
+			#resultModal .modal-dialog {
+			    max-width: 500px;
+			    margin: 5rem auto;
+			    animation: modalSlideIn 0.5s ease-out;
+			}
+
+			@keyframes modalSlideIn {
+			    from {
+			        opacity: 0;
+			        transform: translateY(-50px) scale(0.95);
+			    }
+			    to {
+			        opacity: 1;
+			        transform: translateY(0) scale(1);
+			    }
+			}
+
+			/* Modal Content */
+			#resultModal .modal-content {
+			    border: none;
+			    border-radius: 20px;
+			    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+			    overflow: hidden;
+			    background: white;
+			}
+
+			/* Modal Header */
+			#resultModal .modal-header {
+			    background: linear-gradient(135deg, #002855 0%, #001f42 100%);
+			    color: white;
+			    padding: 2rem 2rem 1.5rem;
+			    border-bottom: none;
+			    position: relative;
+			}
+
+			#resultModal .modal-header::before {
+			    content: '';
+			    position: absolute;
+			    top: -50%;
+			    right: -20%;
+			    width: 200%;
+			    height: 200%;
+			    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+			    animation: float 6s ease-in-out infinite;
+			}
+
+			#resultModal .modal-title {
+			    font-size: 1.5rem;
+			    font-weight: 700;
+			    display: flex;
+			    align-items: center;
+			    gap: 0.75rem;
+			    position: relative;
+			    z-index: 1;
+			}
+
+			#resultModal .modal-title::before {
+			    content: '🏆';
+			    font-size: 1.8rem;
+			}
+
+			/* Close button với dấu X rõ ràng */
+			#resultModal .btn-close {
+			    background: rgba(255, 255, 255, 0.2);
+			    border-radius: 50%;
+			    width: 40px;
+			    height: 40px;
+			    backdrop-filter: blur(10px);
+			    border: 2px solid rgba(255, 255, 255, 0.3);
+			    position: relative;
+			    z-index: 1;
+			    opacity: 1;
+			}
+
+			#resultModal .btn-close::before {
+			    content: '✕';
+			    color: #fff;
+			    font-size: 18px;
+			    font-weight: bold;
+			    position: absolute;
+			    top: 50%;
+			    left: 50%;
+			    transform: translate(-50%, -50%);
+			}
+
+			#resultModal .btn-close:hover {
+			    background: rgba(255, 255, 255, 0.3);
+			    transform: scale(1.1);
+			}
+
+			/* Modal Body - Layout cải thiện */
+			#resultModal .modal-body {
+			    padding: 2.5rem 2rem;
+			    text-align: center;
+			    font-size: 1.1rem;
+			    line-height: 1.6;
+			    color: #333;
+			    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 50%, #f0f7ff 100%);
+			    display: flex;
+			    flex-direction: column;
+			    align-items: center;
+			    gap: 1.5rem;
+			}
+
+			/* Message text styling */
+			#resultModal .modal-body .result-message {
+			    margin: 0;
+			    font-weight: 500;
+			}
+
+			/* Success case - message với tick xanh */
+			#resultModal .modal-body:has-text("Chúc mừng") {
+			    background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 50%, #f0fff0 100%);
+			}
+
+			#resultModal .modal-body:has-text("Chúc mừng") .result-message::before {
+			    content: '✅ ';
+			    font-size: 1.2rem;
+			    margin-right: 0.5rem;
+			}
+
+			/* Failed case - message với X đỏ */
+			#resultModal .modal-body:has-text("chưa đủ điều kiện") {
+			    background: linear-gradient(135deg, #ffeee8 0%, #ffffff 50%, #fff5f0 100%);
+			}
+
+			#resultModal .modal-body:has-text("chưa đủ điều kiện") .result-message::before {
+			    content: '❌ ';
+			    font-size: 1.2rem;
+			    margin-right: 0.5rem;
+			}
+
+			/* Timeout case - message với clock */
+			#resultModal .modal-body:has-text("Hết thời gian") .result-message::before {
+			    content: '⏰ ';
+			    font-size: 1.2rem;
+			    margin-right: 0.5rem;
+			}
+
+			/* Links styling - button style */
+			#resultModal .modal-body a {
+			    color: white !important;
+			    text-decoration: none !important;
+			    font-weight: 600;
+			    padding: 0.875rem 2rem;
+			    border-radius: 25px;
+			    display: inline-flex;
+			    align-items: center;
+			    justify-content: center;
+			    gap: 0.5rem;
+			    min-width: 180px;
+			    transition: all 0.3s ease;
+			    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+			    margin: 0;
+			}
+
+			#resultModal .modal-body a:hover {
+			    transform: translateY(-2px);
+			    text-decoration: none !important;
+			    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+			}
+
+			/* Link cho trường hợp đạt (xem chứng chỉ) */
+			#resultModal .modal-body a[href*="/certificate/"] {
+			    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+			}
+
+			#resultModal .modal-body a[href*="/certificate/"]:before {
+			    content: '🏆';
+			    font-size: 1.1rem;
+			}
+
+			/* Link cho trường hợp không đạt (quay lại video) */
+			#resultModal .modal-body a[href*="/video-learning/"] {
+			    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+			}
+
+			#resultModal .modal-body a[href*="/video-learning/"]:before {
+			    content: '📹';
+			    font-size: 1.1rem;
+			}
+
+			/* Link cho trường hợp làm lại (quiz) */
+			#resultModal .modal-body a[href*="/quiz/"] {
+			    background: linear-gradient(135deg, #ff6b00 0%, #e55a00 100%);
+			}
+
+			#resultModal .modal-body a[href*="/quiz/"]:before {
+			    content: '🔄';
+			    font-size: 1.1rem;
+			}
+
+			/* Modal Footer */
+			#resultModal .modal-footer {
+			    border-top: 1px solid #e9ecef;
+			    padding: 1.5rem 2rem 2rem;
+			    background: #fafbfc;
+			    justify-content: center;
+			}
+
+			/* OK Button */
+			#resultModal #okButton {
+			    background: linear-gradient(135deg, #002855 0%, #001f42 100%);
+			    color: white;
+			    border: none;
+			    border-radius: 25px;
+			    padding: 0.75rem 2rem;
+			    font-weight: 600;
+			    font-size: 1rem;
+			    min-width: 120px;
+			    transition: all 0.3s ease;
+			    box-shadow: 0 4px 15px rgba(0, 40, 85, 0.2);
+			}
+
+			#resultModal #okButton:hover {
+			    transform: translateY(-2px);
+			    box-shadow: 0 8px 25px rgba(0, 40, 85, 0.3);
+			}
+
+			/* Responsive cho mobile */
+			@media (max-width: 576px) {
+			    #resultModal .modal-dialog {
+			        margin: 2rem 1rem;
+			        max-width: none;
+			    }
+			    
+			    #resultModal .modal-header {
+			        padding: 1.5rem 1.5rem 1rem;
+			    }
+			    
+			    #resultModal .modal-body {
+			        padding: 2rem 1.5rem;
+			        font-size: 1rem;
+			    }
+			    
+			    #resultModal .modal-body a {
+			        padding: 0.75rem 1.5rem;
+			        font-size: 0.95rem;
+			        min-width: 160px;
+			    }
+			    
+			    #resultModal .modal-footer {
+			        padding: 1rem 1.5rem 1.5rem;
+			    }
+			    
+			    #resultModal .modal-title {
+			        font-size: 1.25rem;
+			    }
+			}
+		
     </style>
 </head>
 <body>
 <div class="page-wrapper">
+	
     <div class="exam-container">
         <!-- Error Message -->
         <div id="errorMessage" class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
@@ -652,7 +913,7 @@
                 <div class="question-info">
                     <div class="question-title" id="question-title">Câu hỏi 1</div>
                     <div class="question-meta" id="question-meta">
-                        <span><i class="fas fa-star"></i> Mức độ: Cơ bản</span>
+                        
                         <span><i class="fas fa-tag"></i> <span th:text="${course?.ten_khoa_hoc ?: 'Khóa học'}">Khóa học</span></span>
                     </div>
                 </div>
@@ -685,6 +946,7 @@
                 <i class="fas fa-paper-plane"></i>
                 Nộp bài
             </button>
+		
         </div>
 
         <!-- Result Modal -->
@@ -712,6 +974,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
+        const passScore10 = /*[[${course.diem_dat}]]*/ 7.0;
         const courseId = /*[[${course?.ID_khoa_hoc ?: 0}]]*/ 0;
         const userId = /*[[${user?.idNguoiDung ?: 0}]]*/ 0;
         const hasCompletedCourse = /*[[${hasCompletedCourse ?: false}]]*/ false;
@@ -878,27 +1141,46 @@
                 const minutes = Math.floor(timeLeft / 60);
                 const secs = timeLeft % 60;
                 document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                if (timeLeft <= 30) { // Cảnh báo khi còn 30 giây
+                if (timeLeft <= 30) {
                     document.querySelector('.timer-container').style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
-                } else if (timeLeft <= 60) { // Cảnh báo khi còn 1 phút
+                } else if (timeLeft <= 60) {
                     document.querySelector('.timer-container').style.background = 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)';
                 }
                 timeLeft--;
             }, 1000);
         }
 
-        function showResult(message, redirectUrl) {
-            clearInterval(timerInterval);
-            const modal = new bootstrap.Modal(document.getElementById('resultModal'));
-            const resultMessage = document.getElementById('resultMessage');
-            const okButton = document.getElementById('okButton');
-            resultMessage.innerHTML = message;
-            okButton.onclick = function() {
-                modal.hide();
-                window.location.href = redirectUrl;
-            };
-            modal.show();
-        }
+		// THAY THẾ function showResult trong JavaScript với code này:
+
+		function showResult(message, redirectUrl = null) {
+		    clearInterval(timerInterval);
+
+		    const modalElement = document.getElementById('resultModal');
+		    const resultMessage = document.getElementById('resultMessage');
+		    const oldOkButton = document.getElementById('okButton');
+
+		    // Clone để gỡ bỏ sự kiện cũ
+		    const newOkButton = oldOkButton.cloneNode(true);
+		    oldOkButton.parentNode.replaceChild(newOkButton, oldOkButton);
+
+		    // Tạo HTML với cấu trúc mới
+		    resultMessage.innerHTML = `
+		        <div class="result-message">${message}</div>
+		    `;
+
+		    newOkButton.addEventListener('click', function () {
+		        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+		        modalInstance.hide();
+		        if (redirectUrl) {
+		            window.location.href = redirectUrl;
+		        } else {
+		            window.location.href = `/quiz/${courseId}`;
+		        }
+		    });
+
+		    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+		    modal.show();
+		}
 
         function showError(message) {
             clearInterval(timerInterval);
@@ -912,58 +1194,62 @@
             }
         }
 
-        function submitQuiz() {
-            console.log("Bắt đầu nộp bài tại", new Date().toLocaleString(), { courseId: courseId, answers: answers, timeLeft: timeLeft });
-            clearInterval(timerInterval);
+		function submitQuiz() {
+		    console.log("Bắt đầu nộp bài tại", new Date().toLocaleString(), { courseId: courseId, answers: answers, timeLeft: timeLeft });
+		    clearInterval(timerInterval);
 
-            if (!courseId || courseId <= 0) {
-                console.error("Course ID không hợp lệ:", courseId);
-                showError("Mã khóa học không hợp lệ. Vui lòng thử lại.");
-                return;
-            }
+		    if (!courseId || courseId <= 0) {
+		        console.error("Course ID không hợp lệ:", courseId);
+		        showError("Mã khóa học không hợp lệ. Vui lòng thử lại.");
+		        return;
+		    }
 
-            const payload = { courseId: courseId, answers: answers, timeLeft: timeLeft || 0 };
-            console.log("Gửi đến server với courseId:", courseId, "và payload:", JSON.stringify(payload));
+		    const payload = { courseId: courseId, answers: answers, timeLeft: timeLeft || 0 };
+		    console.log("Gửi đến server với courseId:", courseId, "và payload:", JSON.stringify(payload));
 
-            fetch('/submit-quiz', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    console.error("Lỗi HTTP:", response.status, response.statusText);
-                    return response.json().then(err => { throw new Error(err.message || `HTTP error! status: ${response.status}`); });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Phản hồi từ server:", data);
-                const percentage = data.score;
-                const passScore = parseFloat(/*[[${course?.diem_dat ?: 70}]]*/ 70);
-                const score10 = (percentage / 100 * 10).toFixed(1);
+		    fetch('/submit-quiz', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		            'Accept': 'application/json'
+		        },
+		        body: JSON.stringify(payload)
+		    })
+		    .then(response => {
+		        if (!response.ok) {
+		            console.error("Lỗi HTTP:", response.status, response.statusText);
+		            return response.json().then(err => { throw new Error(err.message || `HTTP error! status: ${response.status}`); });
+		        }
+		        return response.json();
+		    })
+		    .then(data => {
+		        const percentage = data.score; // Ví dụ 50%
+		        const score10 = (percentage / 100 * 10).toFixed(1); // 5.0
+		        const score10Float = parseFloat(score10); // ✅ Ép về số để so sánh
 
-                if (percentage >= passScore) {
-                    showResult(
-                        `Chúc mừng! Điểm của bạn: ${score10}. <a href="/certificate/${courseId}/${userId}">Xem chứng chỉ</a>`,
-                        `/certificate/${courseId}/${userId}`
-                    );
-                } else {
-                    showResult(
-                        `Bạn không đạt. Điểm của bạn: ${score10}. <a href="/quiz/${courseId}">Làm lại</a>`,
-                        `/quiz/${courseId}`
-                    );
-                }
-            })
-            .catch(error => {
-                console.error("Lỗi nộp bài:", error);
-                showError("Có lỗi khi nộp bài: " + (error.message || "Không xác định"));
-            });
-        }
-
+		        // Kiểm tra thông báo "Hết thời gian, vui lòng làm lại"
+				if (data.message === "Hết thời gian, vui lòng làm lại.") {
+				    showResult(`
+				        Hết thời gian làm bài!<br>
+				        <a href="/quiz/${courseId}">Làm lại bài kiểm tra</a>
+				    `, `/quiz/${courseId}`);
+				} else if (score10Float >= passScore10) {
+				    showResult(`
+				        Chúc mừng! Bạn đã đạt ${score10} điểm.<br>
+				        <a href="/certificate/${courseId}/${userId}">Xem chứng chỉ</a>
+				    `, `/certificate/${courseId}/${userId}`);
+				} else {
+				    showResult(`
+				        Bạn đạt ${score10} điểm. Chưa đủ điều kiện nhận chứng chỉ.<br>
+				        <a href="/video-learning/${courseId}">Quay lại trang video</a>
+				    `, `/quiz/${courseId}`);
+				}
+		    })
+		    .catch(error => {
+		        console.error("Lỗi nộp bài:", error);
+		        showError("Có lỗi khi nộp bài: " + (error.message || "Không xác định"));
+		    });
+		}
         document.getElementById('prev-btn')?.addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;

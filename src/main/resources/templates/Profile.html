@@ -150,14 +150,22 @@
 		}
 
 		.cancel-btn {
-			background-color: transparent;
-			color: #7f8c8d;
-			border: 1px solid #e6eaf0;
+			background-color: #95a5a6;
+			color: white;
+			border: none;
+			text-decoration: none;
 		}
 
 		.cancel-btn:hover {
-			background-color: #f8f9fa;
-			color: #34495e;
+			background-color: #7f8c8d;
+			transform: translateY(-2px);
+			box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
+			text-decoration: none;
+		}
+
+		.cancel-btn:visited {
+			color: white;
+			text-decoration: none;
 		}
 
 		@media (max-width: 992px) {
@@ -207,19 +215,15 @@
 			<form th:action="@{/profile}" th:object="${user}" method="post">
 				<div class="form-row">
 					<div class="form-group">
-						<label for="ho">Họ <span class="required">*</span></label>
-						<input type="text" id="ho" name="ho" th:value="${ho}" placeholder="Nhập họ" required>
-					</div>
-					<div class="form-group">
-						<label for="ten">Tên <span class="required">*</span></label>
-						<input type="text" id="ten" name="ten" th:value="${ten}" placeholder="Nhập tên" required>
+						<label for="hoTen">Họ tên <span class="required">*</span></label>
+						<input type="text" id="hoTen" th:field="*{hoTen}" placeholder="Nhập họ tên" required>
 					</div>
 				</div>
 				<div class="form-row">
 					<div class="form-group">
 						<label for="soDienThoai">Số điện thoại <span class="required">*</span></label>
 						<input type="tel" id="soDienThoai" th:field="*{soDienThoai}" placeholder="Nhập số điện thoại"
-							required pattern="[0-9]{10}">
+							required>
 					</div>
 					<div class="form-group">
 						<label for="email">Email <span class="required">*</span></label>
@@ -229,7 +233,10 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="ngaySinh">Ngày sinh <span class="required">*</span></label>
-						<input type="date" id="ngaySinh" th:field="*{ngaySinh}" max="2018-12-31" required>
+						<input type="date" id="ngaySinh" name="ngaySinh"
+							th:value="${user.ngaySinh != null ? #temporals.format(user.ngaySinh, 'yyyy-MM-dd') : ''}"
+							max="2018-12-31" required>
+
 					</div>
 				</div>
 				<div class="form-actions">

@@ -1,5 +1,6 @@
 package com.poly.controller;
 
+import com.poly.entity.Category;
 import com.poly.entity.Course;
 import com.poly.entity.Video; // Import Video entity
 import com.poly.repository.QuestionRepository;
@@ -10,6 +11,8 @@ import com.poly.service.QuestionService; // Import QuestionService
 import com.poly.service.QuizExcelService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // For RedirectAttributes
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType; // Import MediaType
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.List; // For List type if not already imported
@@ -44,6 +48,8 @@ public class CourseContentController {
     private QuestionRepository questionRepository;
     @Autowired
     private QuizExcelService quizExcelService;
+    @Autowired
+    private com.poly.service.VideoExcelService videoExcelService;
 
 
     // --- Course Content Page Display ---
@@ -55,7 +61,6 @@ public class CourseContentController {
             // Handle case where course is not found, e.g., redirect to an error page
             return "redirect:/Crud_Course?error=courseNotFound";
         }
-
         model.addAttribute("course", course);
         // Add actual videos and questions related to this course
         model.addAttribute("videos", videoService.findByCourseID_khoa_hoc(courseId));
@@ -126,7 +131,60 @@ public class CourseContentController {
         redirectAttributes.addFlashAttribute("successMessage", "Video deleted successfully!");
         return "redirect:/course-content/" + courseId + "#video-tab"; // Redirect back to video tab
     }
+    // ...existing code...
 
+    // Method to handle importing videos from an Excel file
+
+    @PostMapping("/{courseId}/videos/import")
+    public String importVideos(@PathVariable Long courseId,
+                              @RequestParam("file") MultipartFile file,
+                              RedirectAttributes redirectAttributes) {
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng chọn một file Excel để tải lên.");
+            return "redirect:/course-content/" + courseId + "#video-tab";
+        }
+
+        try {
+            List<Video> importedVideos = videoExcelService.importVideosFromExcel(file.getInputStream(), courseId);
+            // Xóa video cũ và lưu video mới
+            videoService.deleteOldVideos(courseId);
+            for (Video video : importedVideos) {
+                video.setID_video(null); // Đặt ID về null để tạo bản ghi mới
+            }
+            videoService.saveNewVideos(importedVideos);
+            redirectAttributes.addFlashAttribute("message", "Đã nhập thành công " + importedVideos.size() + " video từ file Excel.");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi đọc file Excel: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi nhập video: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/course-content/" + courseId + "#video-tab";
+    }
+    @GetMapping("/{courseId}/videos/export")
+    public ResponseEntity<byte[]> exportVideos(@PathVariable Long courseId) {
+        List<Video> videos = videoService.findByCourseID_khoa_hoc(courseId);
+        try {
+            byte[] excelBytes = videoExcelService.exportVideosToExcel(videos);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            String filename = "danh_sach_video_khoa_hoc_" + courseId + ".xlsx";
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelBytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
     // --- Question CRUD Operations ---
 
     // Method to handle adding a new question

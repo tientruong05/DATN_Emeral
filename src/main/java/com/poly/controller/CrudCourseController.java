@@ -49,9 +49,15 @@ public class CrudCourseController {
         model.addAttribute("courses", coursePage);
         model.addAttribute("categories", categoryRepo.findAll());
         model.addAttribute("course", new Course());
+        model.addAttribute("currentPage", coursePage.getNumber());
+        model.addAttribute("totalPages", coursePage.getTotalPages());
+        model.addAttribute("pageSize", coursePage.getSize());
+        model.addAttribute("totalItems", coursePage.getTotalElements());
+        model.addAttribute("courses", coursePage.getContent());
         return "Crud_Course";
     }
 
+  
     @PostMapping("/add")
     public String addCourse(@ModelAttribute Course course,
                             @RequestParam("fileAnhDaiDien") MultipartFile file) throws IOException {
@@ -110,7 +116,6 @@ public class CrudCourseController {
 
 
 
-
     @GetMapping("/edit/{id}")
     public String editCourse(@PathVariable Long id, Model model) {
         Course course = courseService.findById(id);
@@ -134,7 +139,6 @@ public class CrudCourseController {
         Path filePath = uploadPath.resolve(fileName);
         file.transferTo(filePath.toFile());
     }
-    
  // Thêm endpoint xuất Excel
     @GetMapping("/export")
     public ResponseEntity<InputStreamResource> exportCourses() throws IOException {

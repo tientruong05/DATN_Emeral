@@ -2,15 +2,20 @@ package com.poly.controller;
 
 import com.poly.entity.Cart;
 import com.poly.entity.Course;
+import com.poly.entity.Enrollment;
 import com.poly.entity.User;
 import com.poly.repository.EnrollmentsRepository;
+import com.poly.service.UserService;
 import com.poly.service.CartService;
+import com.poly.service.EnrollmentService;
 import com.poly.service.PayOSService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +28,13 @@ import vn.payos.type.WebhookData;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Controller
 @RequestMapping("/payment")
@@ -40,7 +50,13 @@ public class PaymentController {
     
     @Autowired
     private EnrollmentsRepository enrollmentsRepository;
+    
+    @Autowired
+    private UserService userService;
 
+    @Autowired
+    private EnrollmentService enrollmentService;
+    
     // Xử lý webhook từ PayOS sau khi thanh toán thành công
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> handleWebhook(@RequestBody Webhook webhookBody) {
@@ -96,7 +112,19 @@ public class PaymentController {
         // Tuy nhiên, trong trường hợp webhook không được gọi (local dev, NAT issues, v.v.)
         // chúng ta có thể xử lý thủ công tại đây
         
-        User user = (User) session.getAttribute("user");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetails)) {
+            logger.warning("Người dùng chưa đăng nhập hoặc chưa được xác thực, chuyển hướng đến trang đăng nhập");
+            return "redirect:/Login_Signin";
+        }
+        String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+        Optional<User> userOpt = userService.getUserByEmail(userEmail);
+
+        if (!userOpt.isPresent()) {
+            logger.severe("Không tìm thấy người dùng trong DB với email đã xác thực: " + userEmail);
+            return "redirect:/Login_Signin";
+        }
+        User user = userOpt.get();
         if (user != null) {
             logger.info("Trying manual payment processing for user: " + user.getIdNguoiDung());
             
@@ -131,27 +159,42 @@ public class PaymentController {
         return "redirect:/cart";
     }
     
-    // Trang lịch sử thanh toán
     @GetMapping("/history")
-    public String paymentHistory(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
+    public String paymentHistory(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetails)) {
             return "redirect:/Login_Signin";
         }
-        
-        // Lấy lịch sử thanh toán của người dùng và hiển thị
-        List<Course> enrolledCourses = enrollmentsRepository.findCoursesByUserId(user.getIdNguoiDung());
-        logger.info("Found " + (enrolledCourses != null ? enrolledCourses.size() : 0) + " enrolled courses for user: " + user.getIdNguoiDung());
-        
-        model.addAttribute("enrolledCourses", enrolledCourses);
-        
-        return "History_Payment";
+
+        String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+        Optional<User> userOpt = userService.getUserByEmail(userEmail);
+        if (userOpt.isEmpty()) {
+            return "redirect:/Login_Signin";
+        }
+
+        User user = userOpt.get();
+        List<Enrollment> enrollments = enrollmentsRepository.findByUserId(user.getIdNguoiDung());
+
+        Map<String, Object> stats = enrollmentService.calculateUserStats(enrollments);
+
+        model.addAllAttributes(stats); // gán toàn bộ map vào model
+        model.addAttribute("enrollments",enrollments);
+        return "History_Payment_1";
     }
+
+
     
     // Cung cấp URL alias cho đường dẫn trong header
     @GetMapping("/history-payment")
-    public String historyPaymentAlias(Model model, HttpSession session) {
-        return paymentHistory(model, session);
+    public String historyPaymentAlias(Model model) { // Removed HttpSession session
+        // It's better to just call the direct history method or redirect,
+        // but if you want to explicitly ensure authentication here before redirecting
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetails)) {
+            return "redirect:/Login_Signin"; // Or throw AccessDeniedException, depending on SecurityConfig
+        }
+        // If authenticated, redirect to the actual history page
+        return "redirect:/payment/history";
     }
 
     // Phương thức xử lý thanh toán thành công

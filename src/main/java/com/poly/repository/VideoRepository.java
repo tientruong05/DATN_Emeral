@@ -1,6 +1,9 @@
 package com.poly.repository;
 
 import com.poly.entity.Video;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query; // Import Query
 import org.springframework.data.repository.query.Param;
@@ -15,4 +18,5 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     // 'v.course.ID_khoa_hoc' directly references the field in the entity
     @Query("SELECT v FROM Video v WHERE v.course.ID_khoa_hoc = :courseId")
     List<Video> findVideosByCourseId(@Param("courseId") Long courseId); // Method name can be anything now, but descriptive is best
+
 }

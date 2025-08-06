@@ -1,610 +1,696 @@
 <!DOCTYPE html>
-<html
-  th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}"
-  xmlns:th="http://www.thymeleaf.org"
-  lang="vi"
->
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="${course.ten_khoa_hoc} + ' - DEVNEST LEARNING'"></title>
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Bootstrap Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
-    />
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <style>
-      /* Reset CSS */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
 
-      body {
-        color: #333;
-        line-height: 1.6;
-        background-color: #f5f5f5;
-      }
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title th:text="${course.ten_khoa_hoc} + ' - DEVNEST LEARNING'"></title>
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<!-- Bootstrap Icons -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+	<!-- Font Awesome for icons -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+	<style>
+		/* Reset CSS */
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+		}
 
-      /* Course Header */
-      .course-header {
-        background-color: #002855;
-        color: white;
-        padding: 3rem 5%;
-        position: relative;
-      }
+		body {
+			color: #333;
+			line-height: 1.6;
+			background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+			min-height: 100vh;
+		}
 
-      .course-header-content {
-        display: flex;
-        justify-content: space-between;
-        gap: 2rem;
-      }
+		/* Course Header */
+		.course-header {
+			background: linear-gradient(135deg, #002855 0%, #004080 100%);
+			color: white;
+			padding: 3rem 5%;
+			position: relative;
+			overflow: hidden;
+		}
 
-      .course-info {
-        width: 60%;
-      }
+		.course-header::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+			opacity: 0.1;
+		}
 
-      .course-title {
-        font-size: 2.2rem;
-        margin-bottom: 1rem;
-        font-weight: 700;
-      }
+		.course-header-content {
+		    display: flex;
+		    justify-content: space-between;
+		    gap: 3rem;
+		    position: relative;
+		    z-index: 2;
+		    align-items: flex-start; /* ← THÀNH flex-start */
+		}
 
-      .course-description {
-        margin-bottom: 1.5rem;
-        font-size: 1.1rem;
-        opacity: 0.9;
-      }
+		.course-info {
+			flex: 1;
+			max-width: 60%;
+		}
 
-      .course-meta {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-      }
+		.course-title {
+			font-size: 2.8rem;
+			margin-bottom: 1.2rem;
+			font-weight: 700;
+			text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+			line-height: 1.2;
+		}
 
-      .course-meta-item {
-        display: flex;
-        align-items: center;
-      }
+		.course-description {
+			margin-bottom: 2rem;
+			font-size: 1.1rem;
+			opacity: 0.95;
+			line-height: 1.6;
+			color: #e8f0ff;
+		}
 
-      .course-meta-item i {
-        margin-right: 0.5rem;
-      }
+		/* Compact Meta Info Layout */
+		.course-meta-compact {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 1rem;
+			margin-bottom: 1.5rem;
+		}
 
-      .course-image-container {
-        width: 40%;
-        position: relative;
-      }
+		.course-meta-item {
+			display: flex;
+			align-items: center;
+			background: rgba(255,255,255,0.12);
+			padding: 0.7rem 1rem;
+			border-radius: 8px;
+			backdrop-filter: blur(10px);
+			transition: all 0.3s ease;
+			font-size: 0.9rem;
+			border: 1px solid rgba(255,255,255,0.1);
+		}
 
-      .course-image {
-        width: 100%;
-        max-width: 400px;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        border: 3px solid white;
-      }
+		.course-meta-item:hover {
+			background: rgba(255,255,255,0.2);
+			transform: translateY(-2px);
+		}
 
-      /* Course Content */
-      .course-content-container {
-        padding: 3rem 5%;
-        display: flex;
-        justify-content: space-between;
-        gap: 3rem;
-      }
+		.course-meta-item i {
+			margin-right: 0.7rem;
+			font-size: 1rem;
+			opacity: 0.9;
+			width: 16px;
+		}
 
-      .course-details {
-        width: 70%;
-      }
+		.course-meta-secondary {
+			display: flex;
+			gap: 1rem;
+			flex-wrap: wrap;
+		}
 
-      .course-sidebar {
-        width: 30%;
-      }
+		.course-meta-secondary .course-meta-item {
+			background: rgba(255,255,255,0.08);
+			border: 1px solid rgba(255,255,255,0.15);
+		}
 
-      .section-title {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #eee;
-      }
+		.course-image-container {
+			flex: 0 0 400px;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			margin-top: 0.5rem;
+		}
 
-      .section-title::after {
-        content: "";
-        position: absolute;
-        width: 50px;
-        height: 3px;
-        background-color: #002855;
-        bottom: -2px;
-        left: 0;
-      }
+		.course-image {
+			width: 100%;
+			max-width: 380px;
+			height: 250px;
+			object-fit: cover;
+			border-radius: 12px;
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+			border: 3px solid rgba(255,255,255,0.2);
+			transition: transform 0.3s ease;
+		}
 
-      /* What You'll Learn */
-      .features-list {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
+		.course-image:hover {
+			transform: translateY(-8px) scale(1.02);
+		}
 
-      .feature-item {
-        display: flex;
-        align-items: flex-start;
-      }
+		/* Course Content */
+		.course-content-container {
+			padding: 3rem 5%;
+			display: flex;
+			justify-content: space-between;
+			gap: 3rem;
+			max-width: 1400px;
+			margin: 0 auto;
+		}
 
-      .feature-item i {
-        margin-right: 0.5rem;
-        color: #28a745;
-        margin-top: 0.3rem;
-      }
+		.course-details {
+			width: 70%;
+		}
 
-      /* Course Content */
-      .accordion-button {
-        font-weight: 600;
-        padding: 1rem;
-      }
+		.course-sidebar {
+			width: 30%;
+			position: relative;
+		}
 
-      .accordion-button:not(.collapsed) {
-        background-color: #e7f1ff;
-        color: #002855;
-      }
+		.section-title {
+			font-size: 1.8rem;
+			margin-bottom: 1.5rem;
+			position: relative;
+			padding-bottom: 0.5rem;
+			color: #002855;
+			font-weight: 600;
+		}
 
-      .accordion-body {
-        padding: 0;
-      }
+		.section-title::after {
+			content: "";
+			position: absolute;
+			width: 60px;
+			height: 4px;
+			background: linear-gradient(45deg, #002855, #0056b3);
+			bottom: 0;
+			left: 0;
+			border-radius: 2px;
+		}
 
-      .lesson-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
+		/* What You'll Learn */
+		.what-youll-learn {
+			background: white;
+			border-radius: 15px;
+			padding: 2rem;
+			margin-bottom: 2rem;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+			border: 1px solid rgba(0,40,85,0.1);
+		}
 
-      .lesson-item {
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+		.features-list {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.5rem;
+			margin-top: 1rem;
+		}
 
-      .lesson-title {
-        display: flex;
-        align-items: center;
-      }
+		.feature-item {
+			display: flex;
+			align-items: flex-start;
+			padding: 1rem;
+			background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+			border-radius: 10px;
+			transition: all 0.3s ease;
+		}
 
-      .lesson-title i {
-        margin-right: 0.75rem;
-        color: #666;
-      }
+		.feature-item:hover {
+			transform: translateX(10px);
+			box-shadow: 0 5px 15px rgba(0,40,85,0.1);
+		}
 
-      .lesson-meta {
-        font-size: 0.85rem;
-        color: #777;
-      }
+		.feature-item i {
+			margin-right: 1rem;
+			color: #28a745;
+			margin-top: 0.3rem;
+			font-size: 1.2rem;
+		}
 
-      /* Course Sidebar */
-      .course-card {
-        background-color: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        position: sticky;
-        top: 1rem;
-      }
+		/* Course Content */
+		.course-curriculum {
+			background: white;
+			border-radius: 15px;
+			padding: 2rem;
+			margin-bottom: 2rem;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+			border: 1px solid rgba(0,40,85,0.1);
+		}
 
-      .course-card-header {
-        padding: 1.5rem;
-        text-align: center;
-      }
+		.accordion-button {
+			font-weight: 600;
+			padding: 1.5rem;
+			background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+			border: none;
+			border-radius: 10px !important;
+		}
 
-      .course-card-price {
-        font-size: 2rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-      }
+		.accordion-button:not(.collapsed) {
+			background: linear-gradient(135deg, #002855 0%, #004080 100%);
+			color: white;
+			box-shadow: 0 5px 15px rgba(0,40,85,0.2);
+		}
 
-      .course-card-button {
-        display: block;
-        width: 100%;
-        padding: 1rem;
-        background-color: #002855;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 600;
-        text-align: center;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
+		.accordion-body {
+			padding: 0;
+			border-radius: 0 0 10px 10px;
+		}
 
-      .course-card-button:hover {
-        background-color: #001f42;
-      }
+		.lesson-list {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
 
-      .course-card-button.purchased {
-        background-color: #28a745;
-      }
+		.lesson-item {
+			padding: 1.2rem;
+			border-bottom: 1px solid #eee;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			transition: all 0.3s ease;
+		}
 
-      .course-card-button.purchased:hover {
-        background-color: #218838;
-      }
+		.lesson-item:hover {
+			background: #f8f9ff;
+			transform: translateX(10px);
+		}
 
-      .course-card-details {
-        padding: 1.5rem;
-        border-top: 1px solid #eee;
-      }
+		.lesson-item:last-child {
+			border-bottom: none;
+		}
 
-      .course-detail-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-      }
+		.lesson-title {
+			display: flex;
+			align-items: center;
+		}
 
-      .course-detail-label {
-        color: #777;
-      }
+		.lesson-title i {
+			margin-right: 1rem;
+			color: #002855;
+			font-size: 1.1rem;
+		}
 
-      .course-detail-value {
-        font-weight: 600;
-      }
+		.lesson-meta {
+			font-size: 0.9rem;
+			color: #777;
+			background: #f0f7ff;
+			padding: 0.3rem 0.8rem;
+			border-radius: 15px;
+		}
 
-      /* Instructor */
-      .instructor-card {
-        background-color: white;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
+		/* Course Sidebar */
+		.course-card {
+			background: white;
+			border-radius: 15px;
+			overflow: hidden;
+			box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+			position: sticky;
+			top: 2rem;
+			border: 1px solid rgba(0,40,85,0.1);
+		}
 
-      .instructor-info {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
+		.course-card-header {
+			padding: 2.5rem 2rem 2rem 2rem;
+			text-align: center;
+			background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+			position: relative;
+			overflow: hidden;
+		}
 
-      .instructor-avatar {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        margin-right: 1rem;
-        object-fit: cover;
-      }
+		/* Discount Badge */
+		/* Phiên bản thay thế - Badge hình thẻ tag */
+		.discount-badge-modern {
+		    position: absolute;
+		    top: 10px;            
+		    right: 15px;            
+		    background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+		    color: white;
+		    padding: 10px 16px;     
+		    font-size: 0.75rem;     
+		    font-weight: 600;
+		    border-radius: 25px;
+		    box-shadow: 
+		        0 8px 25px rgba(255, 107, 107, 0.3),
+		        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+		    z-index: 10;
+		    text-transform: uppercase;
+		    letter-spacing: 0.5px;
+		    border: 1px solid rgba(255, 255, 255, 0.2);
+		    backdrop-filter: blur(10px);
+		    animation: floatBadge 3s ease-in-out infinite;
+		}
 
-      .instructor-name {
-        font-size: 1.2rem;
-        margin-bottom: 0.25rem;
-      }
+		@keyframes floatBadge {
+		    0%, 100% { transform: translateY(0px); }
+		    50% { transform: translateY(-5px); }
+		}
+		
 
-      .instructor-title {
-        color: #666;
-        font-size: 0.9rem;
-      }
+		/*@keyframes pulse {
+			0%, 100% { transform: rotate(-5deg) scale(1); }
+			50% { transform: rotate(-5deg) scale(1.05); }
+		}
+ 		*/
+		.course-card-price {
+			font-size: 2.5rem;
+			font-weight: bold;
+			margin-bottom: 1rem;
+			color: #002855;
+		}
 
-      .instructor-stats {
-        display: flex;
-        gap: 1.5rem;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-      }
+		.original-price {
+			font-size: 1rem;
+			color: #999;
+			text-decoration: line-through;
+			margin-bottom: 8px;
+			margin-top: 8px;  
+			opacity: 0.7;
+		}
 
-      .instructor-stat-item {
-        display: flex;
-        align-items: center;
-      }
+		.price {
+			font-weight: bold;
+		}
 
-      .instructor-stat-item i {
-        margin-right: 0.5rem;
-        color: #002855;
-      }
+		.free {
+			color: #28a745;
+			background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+			padding: 0.5rem 1rem;
+			border-radius: 25px;
+			display: inline-block;
+		}
 
-      /* Responsive Design */
-      @media (max-width: 991px) {
-        .course-header-content {
-          flex-direction: column;
-        }
+		.discounted-price {
+			color: #e74c3c;
+			font-weight: bold;
+		}
 
-        .course-info,
-        .course-image-container {
-          width: 100%;
-        }
+		.course-card-button {
+			display: block;
+			width: 100%;
+			padding: 1.2rem;
+			background: linear-gradient(135deg, #002855 0%, #004080 100%);
+			color: white;
+			border: none;
+			border-radius: 10px;
+			font-size: 1.1rem;
+			font-weight: 600;
+			text-align: center;
+			text-decoration: none;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			position: relative;
+			overflow: hidden;
+		}
 
-        .course-image {
-          max-width: 100%;
-          margin-top: 1.5rem;
-        }
+		.course-card-button::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+			transition: left 0.5s;
+		}
 
-        .course-content-container {
-          flex-direction: column-reverse;
-        }
+		.course-card-button:hover::before {
+			left: 100%;
+		}
 
-        .course-details,
-        .course-sidebar {
-          width: 100%;
-        }
+		.course-card-button:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 10px 25px rgba(0,40,85,0.3);
+		}
 
-        .features-list {
-          grid-template-columns: 1fr;
-        }
-      }
+		.course-card-button.purchased {
+			background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+		}
 
-      @media (max-width: 576px) {
-        .course-meta {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.5rem;
-        }
-      }
-    </style>
-    <link rel="stylesheet" th:href="@{/css/header.css}" />
-    <link rel="stylesheet" th:href="@{/css/footer.css}" />
-  </head>
-  <body>
-    <!-- Course Header -->
-    <section class="course-header">
-      <div class="course-header-content">
-        <div class="course-info">
-          <h1 class="course-title" th:text="${course.ten_khoa_hoc}"></h1>
-          <p class="course-description" th:text="${course.mo_ta}"></p>
-          <div class="course-meta">
-            <div class="course-meta-item">
-              <i class="fas fa-user"></i>
-              <span>Chuyên gia DEVNEST LEARNING</span>
-            </div>
-            <div class="course-meta-item">
-              <i class="fas fa-calendar-alt"></i>
-              <span>Cập nhật thường xuyên</span>
-            </div>
-            <div class="course-meta-item">
-              <i class="fas fa-language"></i>
-              <span>Tiếng Việt</span>
-            </div>
-            <div class="course-meta-item">
-              <i class="fas fa-infinity"></i>
-              <span>Truy cập trọn đời</span>
-            </div>
-          </div>
-          <div class="course-meta">
-            <div class="course-meta-item">
-              <i class="fas fa-video"></i>
-              <span th:text="${videoCount} + ' video bài giảng'"></span>
-            </div>
-            <div class="course-meta-item">
-              <i class="fas fa-certificate"></i>
-              <span>Chứng chỉ hoàn thành</span>
-            </div>
-          </div>
-        </div>
-        <div class="course-image-container">
-          <img
-            th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
-            alt="Course thumbnail"
-            class="course-image"
-          />
-        </div>
-      </div>
-    </section>
+		.course-card-button.purchased:hover {
+			background: linear-gradient(135deg, #218838 0%, #1ea87a 100%);
+		}
 
-    <!-- Course Content -->
-    <section class="course-content-container">
-      <div class="course-details">
-        <!-- What You'll Learn -->
-        <div class="what-youll-learn">
-          <h2 class="section-title">Bạn sẽ học được gì</h2>
-          <div class="features-list">
-            <div class="feature-item">
-              <i class="fas fa-check"></i>
-              <span>Hiểu sâu các khái niệm cốt lõi của lĩnh vực này</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check"></i>
-              <span>Áp dụng kiến thức vào các tình huống thực tế</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check"></i>
-              <span>Phát triển kỹ năng giải quyết vấn đề</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check"></i>
-              <span>Xây dựng nền tảng vững chắc cho sự nghiệp</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check"></i>
-              <span>Nâng cao năng lực chuyên môn</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check"></i>
-              <span>Tự tin thực hành các kỹ thuật đã học</span>
-            </div>
-          </div>
-        </div>
+		/* Responsive Design */
+		@media (max-width: 1200px) {
+			.course-meta-compact {
+				grid-template-columns: repeat(2, 1fr);
+			}
+			
+			.course-image-container {
+				flex: 0 0 350px;
+			}
+			
+			.course-image {
+				max-width: 330px;
+				height: 220px;
+			}
+		}
 
-        <!-- Course Content -->
-        <div class="course-curriculum">
-          <h2 class="section-title">Nội dung khóa học</h2>
-          <div class="accordion" id="accordionExample">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button
-                  class="accordion-button"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseOne"
-                  aria-expanded="true"
-                  aria-controls="collapseOne"
-                >
-                  Danh sách video bài giảng
-                </button>
-              </h2>
-              <div
-                id="collapseOne"
-                class="accordion-collapse collapse show"
-                aria-labelledby="headingOne"
-                data-bs-parent="#accordionExample"
-              >
-                <div class="accordion-body">
-                  <ul class="lesson-list">
-                    <li th:each="video : ${videos}" class="lesson-item">
-                      <div class="lesson-title">
-                        <i class="fas fa-play-circle"></i>
-                        <span th:text="${video.ten_video}"></span>
-                      </div>
-                      <div class="lesson-meta">
-                        <span>Video bài giảng</span>
-                      </div>
-                    </li>
-                    <li th:if="${videos.isEmpty()}" class="lesson-item">
-                      <div class="lesson-title">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Chưa có video bài giảng cho khóa học này</span>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+		@media (max-width: 991px) {
+			.course-header-content {
+				flex-direction: column;
+			}
 
-        <!-- Requirements -->
-        <div class="requirements mt-4">
-          <h2 class="section-title">Yêu cầu</h2>
-          <ul>
-            <li>
-              Không có yêu cầu đặc biệt - khóa học phù hợp cho mọi trình độ
-            </li>
-            <li>Chỉ cần máy tính có kết nối internet để học trực tuyến</li>
-            <li>Sẵn sàng học hỏi và thực hành kiến thức mới</li>
-          </ul>
-        </div>
+			.course-info {
+				max-width: 100%;
+			}
 
-        <!-- Instructor -->
-        <div class="instructor mt-4">
-          <h2 class="section-title">Giảng viên</h2>
-          <div class="instructor-card">
-            <div class="instructor-info">
-              <img
-                src="/upload/default.png"
-                alt="Instructor"
-                class="instructor-avatar"
-              />
-              <div>
-                <h3 class="instructor-name">
-                  Đội ngũ giảng viên DEVNEST LEARNING
-                </h3>
-                <p class="instructor-title">Chuyên gia trong lĩnh vực</p>
-              </div>
-            </div>
-            <div class="instructor-stats">
-              <div class="instructor-stat-item">
-                <i class="fas fa-star"></i>
-                <span>4.8 Điểm đánh giá</span>
-              </div>
-              <div class="instructor-stat-item">
-                <i class="fas fa-user-graduate"></i>
-                <span>500+ Học viên</span>
-              </div>
-              <div class="instructor-stat-item">
-                <i class="fas fa-book"></i>
-                <span>5+ Khóa học</span>
-              </div>
-            </div>
-            <p>
-              Đội ngũ giảng viên của DEVNEST LEARNING là những chuyên gia hàng
-              đầu với nhiều năm kinh nghiệm trong lĩnh vực. Với phương pháp
-              giảng dạy hiệu quả và thực tiễn, họ sẽ giúp bạn tiếp thu kiến thức
-              một cách nhanh chóng và dễ dàng áp dụng vào thực tế.
-            </p>
-          </div>
-        </div>
-      </div>
+			.course-image-container {
+				flex: none;
+				margin-top: 2rem;
+			}
 
-      <div class="course-sidebar">
-        <div class="course-card">
-          <div class="course-card-header">
-            <div
-              class="course-card-price"
-              th:text="${course.gia_tien != null ? #numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT') + ' VND' : 'Miễn phí'}"
-            ></div>
-            <!-- Thông báo lỗi nếu không có video -->
-            <div
-              th:if="${errorMessage != null}"
-              class="alert alert-warning text-center"
-              style="margin-bottom: 1rem; font-size: 1rem"
-            >
-              <i class="fas fa-exclamation-triangle"></i>
-              <span th:text="${errorMessage}"></span>
-            </div>
-            <div th:if="${isEnrolled}">
-              <a
-                th:href="@{/video-learning/{id}(id=${course.ID_khoa_hoc})}"
-                class="course-card-button purchased"
-                th:if="${!videos.isEmpty()}"
-                >Xem ngay</a
-              >
-              <button
-                class="course-card-button purchased disabled"
-                th:if="${videos.isEmpty()}"
-                disabled
-                style="cursor: not-allowed; opacity: 0.7"
-              >
-                Xem ngay
-              </button>
-            </div>
-            <div th:unless="${isEnrolled}">
-              <form
-                th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}"
-                method="post"
-              >
-                <input
-                  type="hidden"
-                  name="returnUrl"
-                  th:value="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}"
-                />
-                <button type="submit" class="course-card-button">
-                  Thêm vào giỏ hàng
-                </button>
-              </form>
-            </div>
-          </div>
-          <div class="course-card-details">
-            <div class="course-detail-item">
-              <span class="course-detail-label">Tổng số video</span>
-              <span class="course-detail-value" th:text="${videoCount}"></span>
-            </div>
-            <div class="course-detail-item">
-              <span class="course-detail-label">Cấp độ</span>
-              <span class="course-detail-value">Tất cả trình độ</span>
-            </div>
-            <div class="course-detail-item">
-              <span class="course-detail-label">Truy cập</span>
-              <span class="course-detail-value">Trọn đời</span>
-            </div>
-            <div class="course-detail-item">
-              <span class="course-detail-label">Chứng chỉ</span>
-              <span class="course-detail-value">Có</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+			.course-image {
+				max-width: 100%;
+				height: auto;
+			}
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+			.course-content-container {
+				flex-direction: column-reverse;
+			}
+
+			.course-details,
+			.course-sidebar {
+				width: 100%;
+			}
+
+			.features-list {
+				grid-template-columns: 1fr;
+			}
+
+			.course-title {
+				font-size: 2.2rem;
+			}
+
+			.course-meta-compact {
+				grid-template-columns: 1fr;
+				gap: 0.8rem;
+			}
+		}
+
+		@media (max-width: 576px) {
+			.course-header {
+				padding: 2rem 3%;
+			}
+
+			.course-content-container {
+				padding: 2rem 3%;
+			}
+
+			.course-title {
+				font-size: 1.8rem;
+			}
+
+			.section-title {
+				font-size: 1.5rem;
+			}
+
+			.course-meta-item {
+				font-size: 0.85rem;
+				padding: 0.6rem 0.8rem;
+			}
+		}
+
+		/* Notification styles */
+		.alert {
+			border-radius: 10px;
+			border: none;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+		}
+
+		.alert-warning {
+			background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+			color: #856404;
+			border-left: 4px solid #ffc107;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Course Header -->
+	<section class="course-header">
+		<div class="course-header-content">
+			<div class="course-info">
+				<h1 class="course-title" th:text="${course.ten_khoa_hoc}"></h1>
+				<p class="course-description" th:text="${course.mo_ta}"></p>
+				<div class="course-meta">
+					<div class="course-meta-item">
+						<i class="fas fa-user"></i>
+						<span>Chuyên gia DEVNEST LEARNING</span>
+					</div>
+					<div class="course-meta-item">
+						<i class="fas fa-calendar-alt"></i>
+						<span>Cập nhật thường xuyên</span>
+					</div>
+					<div class="course-meta-item">
+						<i class="fas fa-language"></i>
+						<span>Tiếng Việt</span>
+					</div>
+					<div class="course-meta-item">
+						<i class="fas fa-infinity"></i>
+						<span>Truy cập trọn đời</span>
+					</div>
+				</div>
+				<div class="course-meta">
+					<div class="course-meta-item">
+						<i class="fas fa-video"></i>
+						<span th:text="${videoCount} + ' video bài giảng'"></span>
+					</div>
+					<div class="course-meta-item">
+						<i class="fas fa-certificate"></i>
+						<span>Chứng chỉ hoàn thành</span>
+					</div>
+				</div>
+			</div>
+			<div class="course-image-container">
+				<img th:src="${course.anh_dai_dien} ? '/upload/' + ${course.anh_dai_dien} : '/upload/default.png'"
+					alt="Course thumbnail" class="course-image" />
+			</div>
+		</div>
+	</section>
+
+	<!-- Course Content -->
+	<section class="course-content-container">
+		<div class="course-details">
+			<!-- What You'll Learn -->
+			<div class="what-youll-learn">
+				<h2 class="section-title">Bạn sẽ học được gì</h2>
+				<div class="features-list">
+					<div class="feature-item">
+						<i class="fas fa-check"></i>
+						<span>Hiểu sâu các khái niệm cốt lõi của lĩnh vực này</span>
+					</div>
+					<div class="feature-item">
+						<i class="fas fa-check"></i>
+						<span>Áp dụng kiến thức vào các tình huống thực tế</span>
+					</div>
+					<div class="feature-item">
+						<i class="fas fa-check"></i>
+						<span>Phát triển kỹ năng giải quyết vấn đề</span>
+					</div>
+					<div class="feature-item">
+						<i class="fas fa-check"></i>
+						<span>Xây dựng nền tảng vững chắc cho sự nghiệp</span>
+					</div>
+					<div class="feature-item">
+						<i class="fas fa-check"></i>
+						<span>Nâng cao năng lực chuyên môn</span>
+					</div>
+					<div class="feature-item">
+						<i class="fas fa-check"></i>
+						<span>Tự tin thực hành các kỹ thuật đã học</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Course Content -->
+			<div class="course-curriculum">
+				<h2 class="section-title">Nội dung khóa học</h2>
+				<div class="accordion" id="accordionExample">
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="headingOne">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+								<i class="fas fa-play-circle me-2"></i>
+								Danh sách video bài giảng
+							</button>
+						</h2>
+						<div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+							data-bs-parent="#accordionExample">
+							<div class="accordion-body">
+								<ul class="lesson-list">
+									<li th:each="video : ${videos}" class="lesson-item">
+										<div class="lesson-title">
+											<i class="fas fa-play-circle"></i>
+											<span th:text="${video.ten_video}"></span>
+										</div>
+										<div class="lesson-meta">
+											<span>Video bài giảng</span>
+										</div>
+									</li>
+									<li th:if="${videos.isEmpty()}" class="lesson-item">
+										<div class="lesson-title">
+											<i class="fas fa-exclamation-circle"></i>
+											<span>Chưa có video bài giảng cho khóa học này</span>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="course-sidebar">
+			<div class="course-card">
+				<div class="course-card-header">
+					<!-- Discount Badge - chỉ hiển thị khi có giảm giá -->
+					<div class="discount-badge-modern" th:if="${course.isDiscounted()}">
+						<div th:text="${course.getDiscountPercentage()} + '% OFF'"></div>
+					</div>
+					
+					<div class="course-card-price">
+						<div class="original-price" th:if="${course.isDiscounted() and course.gia_tien != null}"
+							th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></div>
+						<!-- Giá sau giảm hoặc giá bình thường -->
+						<span th:if="${course.gia_tien == null}" class="price free">Miễn phí</span>
+						<span th:if="${course.gia_tien != null and !course.isDiscounted()}" class="price"
+							th:text="${#numbers.formatDecimal(course.gia_tien, 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
+						<span th:if="${course.gia_tien != null and course.isDiscounted()}" class="price discounted-price"
+							th:text="${#numbers.formatDecimal(course.getDiscountedPrice(), 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
+					</div>
+				</div>
+				
+				<!-- Thông báo lỗi nếu không có video -->
+				<div th:if="${errorMessage != null}" class="alert alert-warning text-center"
+					style="margin: 1rem; font-size: 1rem">
+					<i class="fas fa-exclamation-triangle"></i>
+					<span th:text="${errorMessage}"></span>
+				</div>
+				
+				<div style="padding: 0 2rem 2rem;">
+					<div th:if="${isEnrolled}">
+						<a th:href="@{/video-learning/{id}(id=${course.ID_khoa_hoc})}" class="course-card-button purchased"
+							th:if="${!videos.isEmpty()}">
+							<i class="fas fa-play me-2"></i>Xem ngay
+						</a>
+						<button class="course-card-button purchased disabled" th:if="${videos.isEmpty()}" disabled
+							style="cursor: not-allowed; opacity: 0.7">
+							<i class="fas fa-lock me-2"></i>Xem ngay
+						</button>
+					</div>
+					<div th:unless="${isEnrolled}">
+						<form th:action="@{/cart/add/{id}(id=${course.ID_khoa_hoc})}" method="post">
+							<input type="hidden" name="returnUrl"
+								th:value="@{/course-detail/{id}(id=${course.ID_khoa_hoc})}" />
+							<button type="submit" class="course-card-button">
+								<i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>

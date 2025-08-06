@@ -170,7 +170,7 @@
         transition: transform 0.3s ease;
         display: flex;
         flex-direction: column;
-        height: 350px; /* Fixed height for all cards */
+        height: 400px; /* Tăng chiều cao để chứa số lượng người mua */
         position: relative;
       }
 
@@ -196,9 +196,9 @@
 
       .course-image {
         position: relative;
-        height: 150px; /* Fixed height for all images */
+        height: 150px;
         overflow: hidden;
-        flex-shrink: 0; /* Prevent shrinking */
+        flex-shrink: 0;
       }
 
       .course-image img {
@@ -233,12 +233,12 @@
         text-align: left;
         display: flex;
         flex-direction: column;
-        flex: 1; /* Take remaining space */
+        flex: 1;
         justify-content: space-between;
       }
 
       .course-info-section {
-        flex: 1; /* Take available space */
+        flex: 1;
       }
 
       .course-title {
@@ -246,7 +246,7 @@
         margin-bottom: 0.5rem;
         font-weight: 600;
         line-height: 1.3;
-        height: 2.6rem; /* Fixed height for 2 lines max */
+        height: 2.6rem;
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -257,9 +257,9 @@
       .course-info {
         font-size: 0.8rem;
         color: #666;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.5rem;
         line-height: 1.4;
-        height: 3.36rem; /* Fixed height for 3 lines max */
+        height: 3.36rem;
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 3;
@@ -267,11 +267,18 @@
         -webkit-box-orient: vertical;
       }
 
+      .course-enrollments {
+        font-size: 0.8rem;
+        color: #333;
+        margin-bottom: 0.8rem;
+        font-weight: 500;
+      }
+
       .course-price {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: auto; /* Push to bottom */
+        margin-top: auto;
       }
 
       .price-section {
@@ -315,22 +322,56 @@
         background-color: #001f42;
       }
 
-      .see-more-btn {
-        display: inline-block;
-        padding: 0.7rem 1.5rem;
-        border: 1px solid #002855;
-        border-radius: 4px;
-        color: #002855;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: none;
-      }
+	  .see-more-btn {
+	    display: inline-block;
+	    padding: 12px 24px;
+	    border: 2px solid #002855;
+	    border-radius: 6px;
+	    color: #002855;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.3s ease;
+	    background: none;
+	    text-decoration: none !important; /* Bỏ dấu gạch dưới */
+	    font-size: 0.95rem;
+	    letter-spacing: 0.5px;
+	    position: relative;
+	    overflow: hidden;
+	  }
 
-      .see-more-btn:hover {
-        background-color: #002855;
-        color: white;
-      }
+	  .see-more-btn::before {
+	    content: '';
+	    position: absolute;
+	    top: 0;
+	    left: -100%;
+	    width: 100%;
+	    height: 100%;
+	    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+	    transition: left 0.5s;
+	  }
+
+	  .see-more-btn:hover::before {
+	    left: 100%;
+	  }
+
+	  .see-more-btn:hover {
+	    background-color: #002855;
+	    color: white;
+	    text-decoration: none !important; /* Đảm bảo không có gạch dưới khi hover */
+	    transform: translateY(-2px);
+	    box-shadow: 0 4px 12px rgba(0, 40, 85, 0.3);
+	  }
+
+	  .see-more-btn:active {
+	    transform: translateY(0);
+	    box-shadow: 0 2px 6px rgba(0, 40, 85, 0.2);
+	  }
+
+	  .see-more-btn:focus {
+	    outline: none;
+	    box-shadow: 0 0 0 3px rgba(0, 40, 85, 0.1);
+	    text-decoration: none !important;
+	  }
 
       /* Stats Section */
       .stats {
@@ -465,7 +506,7 @@
 
         .hero-content,
         .hero-image {
-          width: 50%;
+          width: 100%;
         }
 
         .hero-image {
@@ -518,6 +559,12 @@
         color: #155724;
       }
 
+      .alert-info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+      }
+
       .alert-danger {
         background-color: #f8d7da;
         border-color: #f5c6cb;
@@ -566,7 +613,7 @@
           aria-label="Close"
           onclick="this.parentElement.style.display='none';"
         >
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">×</span>
         </button>
       </div>
       <div
@@ -589,7 +636,7 @@
           aria-label="Close"
           onclick="this.parentElement.style.display='none';"
         >
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">×</span>
         </button>
       </div>
       <div
@@ -612,7 +659,7 @@
           aria-label="Close"
           onclick="this.parentElement.style.display='none';"
         >
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">×</span>
         </button>
       </div>
 
@@ -624,49 +671,24 @@
           nghệ.
         </p>
         <div class="hero-buttons">
-          <a th:href="@{/courses}" class="btn primary-btn">Khám phá ngay</a>
-          <a th:href="@{/courses}" class="btn secondary-btn">Xem khóa học</a>
+          <a href="#featured-courses-section" class="btn primary-btn">Khám phá ngay</a>
+          <a th:href="@{/list}" class="btn secondary-btn">Xem khóa học</a>
         </div>
       </div>
       <div class="hero-image">
-        <img th:src="@{/upload/học.png}" alt="Học trực tuyến" />
+        <img th:src="@{/upload/e-learning.jpg}" alt="Học trực tuyến" />
       </div>
     </section>
 
     <!-- Featured Courses Section -->
-    <section class="featured-courses">
+    <section class="featured-courses" id="featured-courses-section">
       <h2 class="section-title">Các khóa học nổi bật</h2>
-      <div class="course-filters">
-        <a
-          th:href="@{/index(type='all',page=0)}"
-          th:class="${activeType == 'all' ? 'filter-button active' : 'filter-button'}"
-        >
-          <i class="fas fa-book"></i> 📚 Tất cả <span></span>
-        </a>
-        <a
-          th:each="category, iterStat : ${categories}"
-          th:if="${iterStat.index < 4}"
-          th:href="@{/index(type=${category.tenDanhMuc},page=0)}"
-          th:class="${activeType == category.tenDanhMuc ? 'filter-button active' : 'filter-button'}"
-        >
-          <i
-            th:class="${category.tenDanhMuc == 'Tài chính' ? 'fas fa-dollar-sign' : 'fas fa-laptop'}"
-          ></i>
-          <span
-            th:text="${category.tenDanhMuc == 'Tài chính' ? '💰' : '💻'}"
-          ></span>
-          <span th:text="${category.tenDanhMuc}"></span>
-          <span
-            th:text="${category.tenDanhMuc == 'Tài chính' ? '' : ''}"
-          ></span>
-        </a>
-      </div>
       <div class="courses-grid" th:if="${courses.isEmpty()}">
         <p>Không có khóa học nào trong danh mục này.</p>
       </div>
       <div class="courses-grid" th:unless="${courses.isEmpty()}">
         <div th:each="course : ${courses}" class="course-card">
-          <!-- Discount Badge - chỉ hiển thị khi có giảm giá -->
+          <!-- Discount Badge -->
           <div class="discount-badge" th:if="${course.isDiscounted()}">
             <span th:text="${course.getDiscountPercentage()} + '%'"></span>
             <br />
@@ -680,7 +702,7 @@
               />
             </a>
             <div class="wishlist-btn">
-              <i class="fas fa-heart"></i>
+              
             </div>
           </div>
           <div class="course-content">
@@ -690,7 +712,9 @@
                 style="text-decoration: none; color: inherit"
               >
                 <h3 class="course-title" th:text="${course.ten_khoa_hoc}"></h3>
-                <p class="course-info" th:text="${course.mo_ta}"></p>
+                <p class="course-info" th:text="${course.shortMo_ta}"></p>
+                <!-- Thêm số lượng người mua -->
+                <p class="course-enrollments" th:text="${course.enrollments != null ? course.enrollments.size() : 0} + ' người đã đăng ký'"></p>
               </a>
             </div>
             <div class="course-price">
@@ -730,7 +754,7 @@
                   method="post"
                 >
                   <input type="hidden" name="returnUrl" value="/index" />
-                  <button type="submit" class="btn btn-primary">
+                  <button type="submit" class="buy-btn">
                     Thêm giỏ hàng
                   </button>
                 </form>
@@ -739,49 +763,7 @@
           </div>
         </div>
       </div>
-      <!-- Pagination -->
-      <div class="pagination-container" th:if="${totalPages > 1}">
-        <nav aria-label="Course pagination">
-          <ul class="pagination">
-            <li
-              class="page-item"
-              th:class="${currentPage == 0 ? 'disabled' : ''}"
-            >
-              <a
-                class="page-link"
-                th:href="@{/index(type=${activeType},page=${currentPage - 1})}"
-                aria-label="Previous"
-              >
-                <span aria-hidden="true">«</span>
-              </a>
-            </li>
-            <li
-              class="page-item"
-              th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-              th:class="${i == currentPage ? 'active' : ''}"
-            >
-              <a
-                class="page-link"
-                th:href="@{/index(type=${activeType},page=${i})}"
-                th:text="${i + 1}"
-              ></a>
-            </li>
-            <li
-              class="page-item"
-              th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}"
-            >
-              <a
-                class="page-link"
-                th:href="@{/index(type=${activeType},page=${currentPage + 1})}"
-                aria-label="Next"
-              >
-                <span aria-hidden="true">»</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <a th:href="@{/courses}" class="see-more-btn">Xem thêm khóa học</a>
+      <a th:href="@{/list}" class="see-more-btn">Xem thêm khóa học</a>
     </section>
 
     <!-- Stats Section -->
@@ -851,32 +833,31 @@
       <div class="benefits">
         <div class="benefit-item">
           <div class="benefit-icon">
-            <img th:src="@{/upload/khoa-hoc-4-1.jpg}" alt="Chuyên gia" />
+            <img th:src="@{/upload/OIP (1).jpg}" alt="Chuyên gia" />
           </div>
           <h3>Học cùng chuyên gia hàng đầu</h3>
           <p>Đội ngũ giảng viên là những chuyên gia dày dặn kinh nghiệm</p>
         </div>
         <div class="benefit-item">
           <div class="benefit-icon">
-            <img
-              th:src="@{upload/chi-phi-khoa-hoc-online-2.png}"
-              alt="Chi phí hợp lý"
-            />
+            <img th:src="@{/upload/OIP.jpg}" alt="Chi phí hợp lý" />
           </div>
           <h3>Chi phí hợp lý, giá trị vượt trội</h3>
           <p>Cung cấp các khóa học chất lượng cao với mức giá phải chăng</p>
         </div>
         <div class="benefit-item">
           <div class="benefit-icon">
-            <img
-              th:src="@{/upload/khoa-hoc-online-va-truyen-thong.2.jpg}"
-              alt="Học linh hoạt"
-            />
+            <img th:src="@{/upload/e-learning.jpg}" alt="Học linh hoạt" />
           </div>
           <h3>Học tập linh hoạt, mọi lúc mọi nơi</h3>
           <p>Hệ thống học trực tuyến hiện đại, cho phép bạn học mọi lúc</p>
         </div>
       </div>
     </section>
+
+    <script>
+      
+    </script>
+    <script th:src="@{/css/header.js}"></script>
   </body>
 </html>

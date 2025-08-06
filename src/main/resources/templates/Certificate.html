@@ -257,40 +257,40 @@
             z-index: 0;
             font-family: 'Playfair Display', serif;
         }
-        .download {
-    text-align: right; /* Căn chỉnh nội dung bên phải */
-    margin-bottom: 20px; /* Khoảng cách phía dưới */
-    width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+        .action-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
-.download a {
-    display: inline-block; /* Đảm bảo nút có kích thước */
-    padding: 10px 20px; /* Thêm khoảng cách bên trong */
-    border: 2px solid #D4AF37; /* Đường viền */
-    background-color: #D4AF37; /* Màu nền */
-    color: white; /* Màu chữ */
-    text-decoration: none; /* Bỏ gạch chân */
-    border-radius: 5px; /* Bo tròn góc */
-    font-weight: 600; /* Đậm chữ */
-    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển tiếp */
+.action-bar a {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 2px solid #D4AF37;
+    background-color: #D4AF37;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.download a:hover {
-    background-color: transparent; /* Màu nền khi hover */
-    color: #D4AF37; /* Màu chữ khi hover */
+.action-bar a:hover {
+    background-color: transparent;
+    color: #D4AF37;
 }
+
     </style>
 </head>
 <body>
-	<div class="download">
-		<!-- <a th:href="@{'/certificate/download/' + ${course.ID_khoa_hoc} + '/' + ${user.idNguoiDung}}" class="btn btn-primary">
-    Tải chứng chỉ PDF
-</a> -->
-<a th:href="@{'/certificate/download/' + ${course.ID_khoa_hoc} + '/' + ${user.idNguoiDung}}" download>
-    Tải PDF
-</a>
+<div class="action-bar">
+    <a href="/index">Quay về trang chủ</a>
+    <a th:href="@{'/certificate/download/' + ${course.ID_khoa_hoc} + '/' + ${user.idNguoiDung}}" download>
+        Tải PDF
+    </a>
+</div>
 
-	</div>
     <div class="certificate">
         <div class="border-decoration"></div>
         

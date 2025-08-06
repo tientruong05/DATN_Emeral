@@ -1,715 +1,658 @@
 <!DOCTYPE html>
-<html
-  th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}"
-  xmlns:th="http://www.thymeleaf.org"
-  lang="vi"
->
-  <head>
-    <meta charset="UTF-8" />
-    <title>Quản lý Thể loại - DEVNEST LEARNING</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
+<html th:replace="~{/layout::view(~{::title}, ~{::body}, ~{::style})}" xmlns:th="http://www.thymeleaf.org" lang="vi">
 
-      body {
-        background-color: #f7f9fc;
-        color: #333;
-      }
+<head>
+	<meta charset="UTF-8" />
+	<title>Quản lý Thể loại - DEVNEST LEARNING</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+		}
 
-      .manage-categories-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 1rem;
-      }
+		body {
+			background-color: #f7f9fc;
+			color: #333;
+		}
 
-      .manage-categories-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
+		.manage-categories-container {
+			max-width: 1200px;
+			margin: 2rem auto;
+			padding: 1rem;
+		}
 
-      .manage-categories-header h1 {
-        color: #002855;
-        font-size: 2rem;
-      }
+		.manage-categories-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 1.5rem;
+		}
 
-      .manage-categories-header .button-group {
-        display: flex;
-        gap: 0.5rem;
-      }
+		.manage-categories-header h1 {
+			color: #002855;
+			font-size: 2rem;
+		}
 
-      .add-category-btn,
-      .import-excel-btn,
-      .export-excel-btn {
-        background-color: #002855;
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-        text-decoration: none;
-      }
+		.manage-categories-header .button-group {
+			display: flex;
+			gap: 0.5rem;
+		}
 
-      .add-category-btn:hover,
-      .import-excel-btn:hover,
-      .export-excel-btn:hover {
-        background-color: #001f42;
-      }
+		.add-category-btn,
+		.import-excel-btn,
+		.export-excel-btn {
+			background-color: #002855;
+			color: white;
+			padding: 0.6rem 1.2rem;
+			border: none;
+			border-radius: 6px;
+			font-weight: bold;
+			cursor: pointer;
+			text-decoration: none;
+		}
 
-      .import-excel-btn {
-        background-color: #17a2b8;
-      }
+		.add-category-btn:hover,
+		.import-excel-btn:hover,
+		.export-excel-btn:hover {
+			background-color: #001f42;
+		}
 
-      .import-excel-btn:hover {
-        background-color: #138496;
-      }
+		.import-excel-btn {
+			background-color: #17a2b8;
+		}
 
-      .export-excel-btn {
-        background-color: #28a745;
-      }
+		.import-excel-btn:hover {
+			background-color: #138496;
+		}
 
-      .export-excel-btn:hover {
-        background-color: #218838;
-      }
+		.export-excel-btn {
+			background-color: #28a745;
+		}
 
-      .categories-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-      }
+		.export-excel-btn:hover {
+			background-color: #218838;
+		}
 
-      .categories-table th,
-      .categories-table td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-      }
+		.categories-table {
+			width: 100%;
+			border-collapse: collapse;
+			background: white;
+			border-radius: 12px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+		}
 
-      .categories-table th {
-        background-color: #002855;
-        color: white;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-      }
+		.categories-table th,
+		.categories-table td {
+			padding: 1rem;
+			text-align: left;
+			border-bottom: 1px solid #eee;
+		}
 
-      .categories-table th:last-child,
-      .categories-table td:last-child {
-        text-align: center;
-      }
+		.categories-table th {
+			background-color: #002855;
+			color: white;
+			text-transform: uppercase;
+			font-size: 0.85rem;
+		}
 
-      .category-name {
-        color: #002855;
-        font-weight: 500;
-      }
+		.categories-table th:last-child,
+		.categories-table td:last-child {
+			text-align: center;
+		}
 
-      .category-status.active {
-        color: #28a745;
-      }
+		.category-name {
+			color: #002855;
+			font-weight: 500;
+		}
 
-      .category-status.inactive {
-        color: #dc3545;
-      }
+		.category-status.active {
+			color: #28a745;
+		}
 
-      .action-buttons {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-        align-items: center;
-      }
+		.category-status.inactive {
+			color: #dc3545;
+		}
 
-      .btn-action {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem;
-        border: none;
-        cursor: pointer;
-      }
+		.action-buttons {
+			display: flex;
+			gap: 0.5rem;
+			justify-content: center;
+			align-items: center;
+		}
 
-      .edit-btn {
-        background-color: #ff6b00;
-        color: white;
-      }
+		.btn-action {
+			width: 40px;
+			height: 40px;
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.9rem;
+			border: none;
+			cursor: pointer;
+		}
 
-      .edit-btn:hover {
-        background-color: #e65c00;
-      }
+		.edit-btn {
+			background-color: #ff6b00;
+			color: white;
+		}
 
-      .delete-btn {
-        background-color: #dc3545;
-        color: white;
-      }
+		.edit-btn:hover {
+			background-color: #e65c00;
+		}
 
-      .delete-btn:hover {
-        background-color: #c82333;
-      }
+		.delete-btn {
+			background-color: #dc3545;
+			color: white;
+		}
 
-      .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-      }
+		.delete-btn:hover {
+			background-color: #c82333;
+		}
 
-      .modal-content,
-      .delete-modal-content {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        width: 90%;
-        max-width: 500px;
-      }
+		.modal {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 1000;
+			justify-content: center;
+			align-items: center;
+		}
 
-      .delete-modal-content p {
-        margin-bottom: 1.5rem;
-        color: #333;
-        font-size: 1rem;
-      }
+		.modal-content,
+		.delete-modal-content {
+			background-color: white;
+			padding: 1.5rem;
+			border-radius: 8px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+			width: 90%;
+			max-width: 500px;
+		}
 
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+		.delete-modal-content p {
+			margin-bottom: 1.5rem;
+			color: #333;
+			font-size: 1rem;
+		}
 
-      .modal-header h2 {
-        color: #002855;
-      }
+		.modal-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
 
-      .close-btn {
-        font-size: 1.5rem;
-        color: #666;
-        background: none;
-        border: none;
-        cursor: pointer;
-      }
+		.modal-header h2 {
+			color: #002855;
+		}
 
-      .form-group {
-        margin-bottom: 1rem;
-      }
+		.close-btn {
+			font-size: 1.5rem;
+			color: #666;
+			background: none;
+			border: none;
+			cursor: pointer;
+		}
 
-      .form-group label {
-        font-weight: 500;
-        display: block;
-        margin-bottom: 0.5rem;
-      }
+		.form-group {
+			margin-bottom: 1rem;
+		}
 
-      .form-group input,
-      .form-group select,
-      .form-group textarea {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-      }
+		.form-group label {
+			font-weight: 500;
+			display: block;
+			margin-bottom: 0.5rem;
+		}
 
-      .form-group .error {
-        color: #dc3545;
-        font-size: 0.85rem;
-      }
+		.form-group input,
+		.form-group select,
+		.form-group textarea {
+			width: 100%;
+			padding: 0.5rem;
+			border: 1px solid #ccc;
+			border-radius: 6px;
+		}
 
-      .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.8rem;
-      }
+		.form-group .error {
+			color: #dc3545;
+			font-size: 0.85rem;
+		}
 
-      .save-btn,
-      .cancel-btn,
-      .confirm-delete-btn {
-        padding: 0.6rem 1.2rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: 500;
-        cursor: pointer;
-      }
+		.modal-footer {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.8rem;
+		}
 
-      .save-btn {
-        background-color: #002855;
-        color: white;
-      }
+		.save-btn,
+		.cancel-btn,
+		.confirm-delete-btn {
+			padding: 0.6rem 1.2rem;
+			border: none;
+			border-radius: 6px;
+			font-weight: 500;
+			cursor: pointer;
+		}
 
-      .save-btn:hover {
-        background-color: #001f42;
-      }
+		.save-btn {
+			background-color: #002855;
+			color: white;
+		}
 
-      .cancel-btn {
-        background-color: #dc3545;
-        color: white;
-      }
+		.save-btn:hover {
+			background-color: #001f42;
+		}
 
-      .cancel-btn:hover {
-        background-color: #c82333;
-      }
+		.cancel-btn {
+			background-color: #6c757d;
+			color: white;
+		}
 
-      .confirm-delete-btn {
-        background-color: #dc3545;
-        color: white;
-      }
+		.cancel-btn:hover {
+			background-color: #5a6268;
+		}
 
-      .confirm-delete-btn:hover {
-        background-color: #c82333;
-      }
+		.confirm-delete-btn {
+			background-color: #dc3545;
+			color: white;
+		}
 
-      .error-message {
-        color: #dc3545;
-        margin-bottom: 1rem;
-        font-weight: 500;
-      }
+		.confirm-delete-btn:hover {
+			background-color: #c82333;
+		}
 
-      .field-error {
-        color: #dc3545;
-        font-size: 0.85rem;
-        display: none;
-      }
+		.error-message {
+			color: #dc3545;
+			margin-bottom: 1rem;
+			font-weight: 500;
+		}
 
-      .pagination {
-        margin-top: 1rem;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+		.field-error {
+			color: #dc3545;
+			font-size: 0.85rem;
+			display: none;
+		}
 
-      .pagination a {
-        margin: 0 8px;
-        text-decoration: none;
-        color: #002855;
-        font-weight: bold;
-      }
+		/* Pagination - Giống như trong Crud_User */
+		.pagination-section {
+			display: flex;
+			justify-content: center;
+			margin-top: 3rem;
+		}
 
-      .pagination span {
-        margin: 0 8px;
-      }
-    </style>
-  </head>
+		.pagination {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
 
-  <body>
-    <!-- Hidden elements to store Thymeleaf data -->
-    <div id="modal-data" style="display: none">
-      <span
-        id="show-add-modal"
-        th:text="${showAddModal != null ? showAddModal : 'false'}"
-      ></span>
-      <span
-        id="show-edit-modal"
-        th:text="${showEditModal != null ? showEditModal : 'false'}"
-      ></span>
-      <span
-        id="error-tenDanhMuc-text"
-        th:text="${tenDanhMucError != null ? tenDanhMucError : ''}"
-      ></span>
-      <span
-        id="error-import-text"
-        th:text="${error != null ? error : ''}"
-      ></span>
-    </div>
+		.pagination button {
+			padding: 0.5rem 1rem;
+			border: 1px solid #ddd;
+			background-color: white;
+			color: #333;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
 
-    <div class="manage-categories-container">
-      <div class="manage-categories-header">
-        <h1>Quản lý thể loại</h1>
-        <div class="button-group">
-          <button
-            class="add-category-btn"
-            onclick="openModal('add-category-modal')"
-          >
-            Thêm thể loại
-          </button>
-          <button
-            class="import-excel-btn"
-            onclick="openModal('import-category-modal')"
-          >
-            Nhập Excel
-          </button>
-          <a th:href="@{/Crud_Categories/export}" class="export-excel-btn"
-            >Xuất Excel</a
-          >
-        </div>
-      </div>
+		.pagination button:hover {
+			background-color: #002855;
+			color: white;
+			border-color: #002855;
+		}
 
-      <!-- Hiển thị thông báo lỗi nếu có -->
-      <div th:if="${error}" class="error-message" th:text="${error}"></div>
+		.pagination button.active {
+			background-color: #002855;
+			color: white;
+			border-color: #002855;
+		}
 
-      <table class="categories-table">
-        <thead>
-          <tr>
-            <th>Tên danh mục</th>
-            <th>Mô tả</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="category : ${categoryPage.content}">
-            <td class="category-name" th:text="${category.tenDanhMuc}"></td>
-            <td th:text="${category.description}"></td>
-            <td
-              th:class="'category-status ' + (${category.status} ? 'active' : 'inactive')"
-              th:text="${category.status ? 'Hoạt động' : 'Không hoạt động'}"
-            ></td>
-            <td>
-              <div class="action-buttons">
-                <button
-                  class="btn-action edit-btn"
-                  th:attr="data-id=${category.id}, 
+		.pagination button:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.pagination button:disabled:hover {
+			background-color: white;
+			color: #333;
+			border-color: #ddd;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Hidden elements to store Thymeleaf data -->
+	<div id="modal-data" style="display: none">
+		<span id="show-add-modal" th:text="${showAddModal != null ? showAddModal : 'false'}"></span>
+		<span id="show-edit-modal" th:text="${showEditModal != null ? showEditModal : 'false'}"></span>
+		<span id="error-tenDanhMuc-text" th:text="${tenDanhMucError != null ? tenDanhMucError : ''}"></span>
+		<span id="error-import-text" th:text="${error != null ? error : ''}"></span>
+	</div>
+
+	<div class="manage-categories-container">
+		<div class="manage-categories-header">
+			<h1>Quản lý thể loại</h1>
+			<div class="button-group">
+				<button class="add-category-btn" onclick="openModal('add-category-modal')">
+					 <i class="fas fa-plus"></i> Thêm thể loại
+				</button>
+				<button class="import-excel-btn" onclick="openModal('import-category-modal')">
+					 <i class="fas fa-file-excel"></i> Nhập Excel
+				</button>
+				<a th:href="@{/Crud_Categories/export}" class="export-excel-btn"><i class="fas fa-download"></i> Xuất Excel</a>
+			</div>
+		</div>
+
+		<!-- Hiển thị thông báo lỗi nếu có -->
+		<div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+		<table class="categories-table">
+			<thead>
+				<tr>
+					<th>Tên danh mục</th>
+					<th>Mô tả</th>
+					<th>Trạng thái</th>
+					<th>Hành động</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="category : ${categoryPage.content}">
+					<td class="category-name" th:text="${category.tenDanhMuc}"></td>
+					<td th:text="${category.description}"></td>
+					<td th:class="'category-status ' + (${category.status} ? 'active' : 'inactive')"
+						th:text="${category.status ? 'Hoạt động' : 'Không hoạt động'}"></td>
+					<td>
+						<div class="action-buttons">
+							<button class="btn-action edit-btn" th:attr="data-id=${category.id}, 
                                             data-ten=${category.tenDanhMuc}, 
                                             data-description=${category.description}, 
                                             data-status=${category.status ? 'Hoạt động' : 'Không hoạt động'}"
-                  onclick="openEditModal(this)"
-                >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button
-                  class="btn-action delete-btn"
-                  th:attr="data-id=${category.id}"
-                  onclick="openDeleteModal(this)"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="pagination">
-        <a
-          th:if="${categoryPage.hasPrevious()}"
-          th:href="@{/Crud_Categories(page=${categoryPage.number - 1}, size=${categoryPage.size})}"
-          >« Trước</a
-        >
-        <span
-          >Trang <span th:text="${categoryPage.number + 1}"></span> /
-          <span th:text="${categoryPage.totalPages}"></span
-        ></span>
-        <a
-          th:if="${categoryPage.hasNext()}"
-          th:href="@{/Crud_Categories(page=${categoryPage.number + 1}, size=${categoryPage.size})}"
-          >Sau »</a
-        >
-      </div>
+								onclick="openEditModal(this)">
+								<i class="fas fa-edit"></i>
+							</button>
+							<button class="btn-action delete-btn" th:attr="data-id=${category.id}"
+								onclick="openDeleteModal(this)">
+								<i class="fas fa-trash"></i>
+							</button>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<!-- Phân trang -->
+		<div class="pagination-section" th:if="${categoryPage.totalPages > 1}">
+			<div class="pagination">
+				<!-- Nút Previous -->
+				<button th:disabled="${categoryPage.number == 0}"
+					th:onclick="'window.location.href=\'' + @{/Crud_Categories(page=${categoryPage.number - 1}, size=${categoryPage.size})} + '\''"
+					id="prev-btn">‹ Trước</button>
 
-      <!-- Add Category Modal -->
-      <div class="modal" id="add-category-modal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Thêm thể loại mới</h2>
-            <button
-              class="close-btn"
-              onclick="closeModal('add-category-modal')"
-            >
-              ✕
-            </button>
-          </div>
-          <div class="modal-body">
-            <form
-              th:action="@{/Crud_Categories/add}"
-              th:object="${category}"
-              method="post"
-            >
-              <div class="form-group">
-                <label for="add-category-name">Tên danh mục</label>
-                <input
-                  type="text"
-                  id="add-category-name"
-                  th:field="*{tenDanhMuc}"
-                  placeholder="Nhập tên danh mục"
-                  required
-                />
-                <div class="error" th:errors="*{tenDanhMuc}"></div>
-              </div>
-              <div class="form-group">
-                <label for="add-category-description">Mô tả</label>
-                <textarea
-                  id="add-category-description"
-                  th:field="*{description}"
-                  placeholder="Nhập mô tả"
-                ></textarea>
-                <div class="error" th:errors="*{description}"></div>
-              </div>
-              <div class="form-group">
-                <label for="add-category-status">Trạng thái</label>
-                <select id="add-category-status" th:field="*{status}" required>
-                  <option value="">Chọn trạng thái</option>
-                  <option value="true">Hoạt động</option>
-                  <option value="false">Không hoạt động</option>
-                </select>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="cancel-btn"
-                  onclick="closeModal('add-category-modal')"
-                >
-                  Hủy
-                </button>
-                <button type="submit" class="save-btn">Thêm</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+				<!-- Các nút số trang -->
+				<button th:each="i : ${#numbers.sequence(0, categoryPage.totalPages - 1)}"
+					th:onclick="'window.location.href=\'' + @{/Crud_Categories(page=${i}, size=${categoryPage.size})} + '\''"
+					th:classappend="${i == categoryPage.number} ? 'active'"
+					th:style="${i < categoryPage.totalPages} ? 'display: block' : 'display: none'"
+					th:text="${i + 1}"></button>
 
-      <!-- Edit Category Modal -->
-      <div class="modal" id="edit-category-modal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Sửa thông tin thể loại</h2>
-            <button
-              class="close-btn"
-              onclick="closeModal('edit-category-modal')"
-            >
-              ✕
-            </button>
-          </div>
-          <div class="modal-body">
-            <div
-              id="edit-error-message"
-              class="error-message"
-              style="display: none"
-            ></div>
-            <form id="edit-category-form" method="post">
-              <input type="hidden" id="edit-category-id" name="id" />
-              <div class="form-group">
-                <label for="edit-category-name">Tên danh mục</label>
-                <input
-                  type="text"
-                  id="edit-category-name"
-                  name="tenDanhMuc"
-                  placeholder="Nhập tên danh mục"
-                  required
-                />
-                <div class="field-error" id="error-tenDanhMuc"></div>
-              </div>
-              <div class="form-group">
-                <label for="edit-category-description">Mô tả</label>
-                <textarea
-                  id="edit-category-description"
-                  name="description"
-                  placeholder="Nhập mô tả"
-                ></textarea>
-                <div class="field-error" id="error-description"></div>
-              </div>
-              <div class="form-group">
-                <label for="edit-category-status">Trạng thái</label>
-                <select id="edit-category-status" name="status" required>
-                  <option value="">Chọn trạng thái</option>
-                  <option value="true">Hoạt động</option>
-                  <option value="false">Không hoạt động</option>
-                </select>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="cancel-btn"
-                  onclick="closeModal('edit-category-modal')"
-                >
-                  Hủy
-                </button>
-                <button type="submit" class="save-btn">Lưu</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+				<!-- Nút Next -->
+				<button id="next-btn"
+					th:onclick="'window.location.href=\'' + @{/Crud_Categories(page=${categoryPage.number + 1}, size=${categoryPage.size})} + '\''"
+					th:disabled="${categoryPage.number == categoryPage.totalPages - 1}"
+					th:classappend="${categoryPage.number == categoryPage.totalPages - 1} ? 'disabled'">Sau ›</button>
+			</div>
+		</div>
 
-      <!-- Delete Confirmation Modal -->
-      <div class="modal" id="delete-category-modal">
-        <div class="delete-modal-content">
-          <p>Bạn có chắc chắn muốn xóa thể loại này không?</p>
-          <div class="modal-footer">
-            <button
-              class="cancel-btn"
-              onclick="closeModal('delete-category-modal')"
-            >
-              Hủy
-            </button>
-            <button class="confirm-delete-btn" id="confirm-delete-btn">
-              Xóa
-            </button>
-          </div>
-        </div>
-      </div>
+		<!-- Add Category Modal -->
+		<div class="modal" id="add-category-modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2>Thêm thể loại mới</h2>
+					<button class="close-btn" onclick="closeModal('add-category-modal')">
+						✕
+					</button>
+				</div>
+				<div class="modal-body">
+					<form th:action="@{/Crud_Categories/add}" th:object="${category}" method="post">
+						<div class="form-group">
+							<label for="add-category-name">Tên danh mục</label>
+							<input type="text" id="add-category-name" th:field="*{tenDanhMuc}"
+								placeholder="Nhập tên danh mục" required />
+							<div class="error" th:errors="*{tenDanhMuc}"></div>
+						</div>
+						<div class="form-group">
+							<label for="add-category-description">Mô tả</label>
+							<textarea id="add-category-description" th:field="*{description}"
+								placeholder="Nhập mô tả"></textarea>
+							<div class="error" th:errors="*{description}"></div>
+						</div>
+						<div class="form-group">
+							<label for="add-category-status">Trạng thái</label>
+							<select id="add-category-status" th:field="*{status}" required>
+								<option value="">Chọn trạng thái</option>
+								<option value="true">Hoạt động</option>
+								<option value="false">Không hoạt động</option>
+							</select>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="cancel-btn" onclick="closeModal('add-category-modal')">
+								Hủy
+							</button>
+							<button type="submit" class="save-btn">Thêm</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
-      <!-- Import Excel Modal -->
-      <div class="modal" id="import-category-modal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Nhập danh mục từ Excel</h2>
-            <button
-              class="close-btn"
-              onclick="closeModal('import-category-modal')"
-            >
-              ✕
-            </button>
-          </div>
-          <div class="modal-body">
-            <form
-              th:action="@{/Crud_Categories/import}"
-              method="post"
-              enctype="multipart/form-data"
-            >
-              <div class="form-group">
-                <label for="import-file">Chọn file Excel</label>
-                <input
-                  type="file"
-                  id="import-file"
-                  name="file"
-                  accept=".xlsx,.xls"
-                  required
-                />
-                <div class="error" id="error-import-file"></div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="cancel-btn"
-                  onclick="closeModal('import-category-modal')"
-                >
-                  Hủy
-                </button>
-                <button type="submit" class="save-btn">Nhập</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+		<!-- Edit Category Modal -->
+		<div class="modal" id="edit-category-modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2>Sửa thông tin thể loại</h2>
+					<button class="close-btn" onclick="closeModal('edit-category-modal')">
+						✕
+					</button>
+				</div>
+				<div class="modal-body">
+					<div id="edit-error-message" class="error-message" style="display: none"></div>
+					<form id="edit-category-form" method="post">
+						<input type="hidden" id="edit-category-id" name="id" />
+						<div class="form-group">
+							<label for="edit-category-name">Tên danh mục</label>
+							<input type="text" id="edit-category-name" name="tenDanhMuc" placeholder="Nhập tên danh mục"
+								required />
+							<div class="field-error" id="error-tenDanhMuc"></div>
+						</div>
+						<div class="form-group">
+							<label for="edit-category-description">Mô tả</label>
+							<textarea id="edit-category-description" name="description"
+								placeholder="Nhập mô tả"></textarea>
+							<div class="field-error" id="error-description"></div>
+						</div>
+						<div class="form-group">
+							<label for="edit-category-status">Trạng thái</label>
+							<select id="edit-category-status" name="status" required>
+								<option value="">Chọn trạng thái</option>
+								<option value="true">Hoạt động</option>
+								<option value="false">Không hoạt động</option>
+							</select>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="cancel-btn" onclick="closeModal('edit-category-modal')">
+								Hủy
+							</button>
+							<button type="submit" class="save-btn">Lưu</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
-    <!-- JavaScript for Modal -->
-    <script>
-      function openModal(modalId) {
-        document.getElementById(modalId).style.display = "flex";
-      }
+		<!-- Delete Confirmation Modal -->
+		<div class="modal" id="delete-category-modal">
+			<div class="delete-modal-content">
+				<p>Bạn có chắc chắn muốn xóa thể loại này không?</p>
+				<div class="modal-footer">
+					<button class="cancel-btn" onclick="closeModal('delete-category-modal')">
+						Hủy
+					</button>
+					<button class="confirm-delete-btn" id="confirm-delete-btn">
+						Xóa
+					</button>
+				</div>
+			</div>
+		</div>
 
-      function closeModal(modalId) {
-        document.getElementById(modalId).style.display = "none";
-        if (modalId === "edit-category-modal") {
-          document.getElementById("edit-error-message").style.display = "none";
-          document.getElementById("error-tenDanhMuc").style.display = "none";
-        }
-        if (modalId === "import-category-modal") {
-          document.getElementById("error-import-file").style.display = "none";
-        }
-      }
+		<!-- Import Excel Modal -->
+		<div class="modal" id="import-category-modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2>Nhập danh mục từ Excel</h2>
+					<button class="close-btn" onclick="closeModal('import-category-modal')">
+						✕
+					</button>
+				</div>
+				<div class="modal-body">
+					<form th:action="@{/Crud_Categories/import}" method="post" enctype="multipart/form-data">
+						<div class="form-group">
+							<label for="import-file">Chọn file Excel</label>
+							<input type="file" id="import-file" name="file" accept=".xlsx,.xls" required />
+							<div class="error" id="error-import-file"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="cancel-btn" onclick="closeModal('import-category-modal')">
+								Hủy
+							</button>
+							<button type="submit" class="save-btn">Nhập</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 
-      function openEditModal(button) {
-        const id = button.getAttribute("data-id");
-        const ten = button.getAttribute("data-ten");
-        const description = button.getAttribute("data-description");
-        const status =
-          button.getAttribute("data-status") === "Hoạt động" ? "true" : "false";
+	<!-- JavaScript for Modal -->
+	<script>
+		function openModal(modalId) {
+			document.getElementById(modalId).style.display = "flex";
+		}
 
-        document.getElementById("edit-category-id").value = id;
-        document.getElementById("edit-category-name").value = ten;
-        document.getElementById("edit-category-description").value =
-          description;
-        document.getElementById("edit-category-status").value = status;
-        document.getElementById("edit-category-form").action =
-          "/Crud_Categories/update/" + id;
+		function closeModal(modalId) {
+			document.getElementById(modalId).style.display = "none";
+			if (modalId === "edit-category-modal") {
+				document.getElementById("edit-error-message").style.display = "none";
+				document.getElementById("error-tenDanhMuc").style.display = "none";
+			}
+			if (modalId === "import-category-modal") {
+				document.getElementById("error-import-file").style.display = "none";
+			}
+		}
 
-        openModal("edit-category-modal");
-      }
+		function openEditModal(button) {
+			const id = button.getAttribute("data-id");
+			const ten = button.getAttribute("data-ten");
+			const description = button.getAttribute("data-description");
+			const status =
+				button.getAttribute("data-status") === "Hoạt động" ? "true" : "false";
 
-      function openDeleteModal(button) {
-        const id = button.getAttribute("data-id");
-        const deleteUrl = "/Crud_Categories/delete/" + id;
-        document.getElementById("confirm-delete-btn").onclick = function () {
-          window.location.href = deleteUrl;
-        };
-        openModal("delete-category-modal");
-      }
+			document.getElementById("edit-category-id").value = id;
+			document.getElementById("edit-category-name").value = ten;
+			document.getElementById("edit-category-description").value =
+				description;
+			document.getElementById("edit-category-status").value = status;
+			document.getElementById("edit-category-form").action =
+				"/Crud_Categories/update/" + id;
 
-      // Close modal when clicking outside
-      window.onclick = function (event) {
-        const addModal = document.getElementById("add-category-modal");
-        const editModal = document.getElementById("edit-category-modal");
-        const deleteModal = document.getElementById("delete-category-modal");
-        const importModal = document.getElementById("import-category-modal");
+			openModal("edit-category-modal");
+		}
 
-        if (event.target === addModal) {
-          addModal.style.display = "none";
-        }
-        if (event.target === editModal) {
-          editModal.style.display = "none";
-          document.getElementById("edit-error-message").style.display = "none";
-          document.getElementById("error-tenDanhMuc").style.display = "none";
-        }
-        if (event.target === deleteModal) {
-          deleteModal.style.display = "none";
-        }
-        if (event.target === importModal) {
-          importModal.style.display = "none";
-          document.getElementById("error-import-file").style.display = "none";
-        }
-      };
+		function openDeleteModal(button) {
+			const id = button.getAttribute("data-id");
+			const deleteUrl = "/Crud_Categories/delete/" + id;
+			document.getElementById("confirm-delete-btn").onclick = function () {
+				window.location.href = deleteUrl;
+			};
+			openModal("delete-category-modal");
+		}
 
-      // Tự động mở modal và hiển thị lỗi nếu có
-      window.onload = function () {
-        const showAddModal =
-          document.getElementById("show-add-modal").textContent === "true";
-        const showEditModal =
-          document.getElementById("show-edit-modal").textContent === "true";
-        const tenDanhMucError = document.getElementById(
-          "error-tenDanhMuc-text"
-        ).textContent;
-        const importError =
-          document.getElementById("error-import-text").textContent;
+		// Close modal when clicking outside
+		window.onclick = function (event) {
+			const addModal = document.getElementById("add-category-modal");
+			const editModal = document.getElementById("edit-category-modal");
+			const deleteModal = document.getElementById("delete-category-modal");
+			const importModal = document.getElementById("import-category-modal");
 
-        if (showAddModal) {
-          openModal("add-category-modal");
-          if (tenDanhMucError) {
-            document.querySelector(
-              "#add-category-modal .form-group:nth-child(1) .error"
-            ).textContent = tenDanhMucError;
-            document.querySelector(
-              "#add-category-modal .form-group:nth-child(1) .error"
-            ).style.display = "block";
-          }
-        }
-        if (showEditModal) {
-          openModal("edit-category-modal");
-          if (tenDanhMucError) {
-            document.querySelector(
-              "#edit-category-modal .form-group:nth-child(1) .field-error"
-            ).textContent = tenDanhMucError;
-            document.querySelector(
-              "#edit-category-modal .form-group:nth-child(1) .field-error"
-            ).style.display = "block";
-          }
-        }
-        if (importError) {
-          openModal("import-category-modal");
-          document.querySelector(
-            "#import-category-modal .form-group .error"
-          ).textContent = importError;
-          document.querySelector(
-            "#import-category-modal .form-group .error"
-          ).style.display = "block";
-        }
-      };
-    </script>
-  </body>
+			if (event.target === addModal) {
+				addModal.style.display = "none";
+			}
+			if (event.target === editModal) {
+				editModal.style.display = "none";
+				document.getElementById("edit-error-message").style.display = "none";
+				document.getElementById("error-tenDanhMuc").style.display = "none";
+			}
+			if (event.target === deleteModal) {
+				deleteModal.style.display = "none";
+			}
+			if (event.target === importModal) {
+				importModal.style.display = "none";
+				document.getElementById("error-import-file").style.display = "none";
+			}
+		};
+
+		// Tự động mở modal và hiển thị lỗi nếu có
+		window.onload = function () {
+			const showAddModal =
+				document.getElementById("show-add-modal").textContent === "true";
+			const showEditModal =
+				document.getElementById("show-edit-modal").textContent === "true";
+			const tenDanhMucError = document.getElementById(
+				"error-tenDanhMuc-text"
+			).textContent;
+			const importError =
+				document.getElementById("error-import-text").textContent;
+
+			if (showAddModal) {
+				openModal("add-category-modal");
+				if (tenDanhMucError) {
+					document.querySelector(
+						"#add-category-modal .form-group:nth-child(1) .error"
+					).textContent = tenDanhMucError;
+					document.querySelector(
+						"#add-category-modal .form-group:nth-child(1) .error"
+					).style.display = "block";
+				}
+			}
+			if (showEditModal) {
+				openModal("edit-category-modal");
+				if (tenDanhMucError) {
+					document.querySelector(
+						"#edit-category-modal .form-group:nth-child(1) .field-error"
+					).textContent = tenDanhMucError;
+					document.querySelector(
+						"#edit-category-modal .form-group:nth-child(1) .field-error"
+					).style.display = "block";
+				}
+			}
+			if (importError) {
+				openModal("import-category-modal");
+				document.querySelector(
+					"#import-category-modal .form-group .error"
+				).textContent = importError;
+				document.querySelector(
+					"#import-category-modal .form-group .error"
+				).style.display = "block";
+			}
+		};
+	</script>
+</body>
+
 </html>
